@@ -324,7 +324,9 @@ const pass=document.getElementById('adminPass').value.trim();
 if(pass===ADMIN_PASS){
 document.getElementById('loginWrap').style.display='none';
 document.getElementById('dashWrap').style.display='block';
-if(window.firebaseReady){loadAllData();}else{document.addEventListener('firebaseReady',function(){loadAllData();});}
+setTimeout(function(){
+if(window.db){loadAllData();}else{setTimeout(function(){if(window.db)loadAllData();},3000);}
+},500);
 }else{toast('Incorrect password.','err');}
 }
 
