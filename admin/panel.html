@@ -173,11 +173,23 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-
 </div>
 </div>
 <div class="card">
-<h3>⏳ Pending CNIC Verification</h3><button class="btn ok sm" onclick="bulkApprove()" style="margin-bottom:12px">✅ Approve All</button><div id="pendingCnic"><div class="spinner"></div></div></div><div class="card"><h3>📢 Send Announcement to All Vendors</h3>
+<h3>⏳ Pending CNIC Verification</h3><button class="btn ok sm" onclick="bulkApprove()" style="margin-bottom:12px">✅ Approve All</button><div id="pendingCnic"><div class="spinner"></div></div></div>
+<div class="card">
+<h3>📢 Ad Banners</h3>
+<div class="field"><label>Ad Title</label><input id="adTitle" type="text" placeholder="Business name or headline"/></div>
+<div class="field"><label>Description</label><input id="adDesc" type="text" placeholder="Short description"/></div>
+<div class="field"><label>Link (optional)</label><input id="adLink" type="text" placeholder="https://..."/></div>
+<div class="field"><label>CTA Button Text</label><input id="adCta" type="text" placeholder="e.g. Book Now, Call Us"/></div>
+<div class="field"><label>Duration (days)</label><input id="adDays" type="number" placeholder="30" value="30"/></div>
+<button class="btn grad" onclick="createAd()" style="width:100%;justify-content:center">📢 Create Ad</button>
+<div id="adsList" style="margin-top:14px"></div>
+</div>
+<div class="card"><h3>📢 Send Announcement to All Vendors</h3>
 <div class="field"><textarea id="announcementText" placeholder="Type your message to all vendors…" style="width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-family:inherit;min-height:80px"></textarea></div>
 <button class="btn wa" onclick="sendAnnouncement()" style="width:100%;justify-content:center">📢 Send to All Vendors via WhatsApp</button>
 </div>
 <div class="card"><h3>🚀 Quick Actions</h3>
+<button class="btn sm" onclick="sendPaymentReminders()" style="width:100%;justify-content:center;margin-bottom:8px;background:linear-gradient(120deg,#f7971e,#ffd200);color:#1a0a00">💰 Send Payment Reminders</button>
 <div style="display:flex;gap:10px;flex-wrap:wrap">
 <button class="btn grad" onclick="showPanel('vendors')">👥 Manage Vendors</button>
 <button class="btn warn" onclick="sendBulkReminder()">📢 Send Payment Reminders</button>
@@ -742,6 +754,64 @@ async function sendAnnouncement(){
       window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(fullMsg),'_blank');
     },i*1500);
   });
+}
+
+
+async function createAd(){
+  const title=document.getElementById('adTitle').value.trim();
+  const desc=document.getElementById('adDesc').value.trim();
+  const link=document.getElementById('adLink').value.trim();
+  const cta=document.getElementById('adCta').value.trim();
+  const days=parseInt(document.getElementById('adDays').value)||30;
+  if(!title){toast('Ad title required.','err');return;}
+  const expiresAt=new Date();
+  expiresAt.setDate(expiresAt.getDate()+days);
+  try{
+    await window.fbAdd(window.fbCol(window.db,'ads'),{title:title,description:desc,link:link,cta:cta,active:true,expiresAt:expiresAt.toISOString(),createdAt:new Date().toISOString()});
+    toast('Ad created!','ok');
+    loadAds();
+  }catch(e){toast('Could not create ad.','err');}
+}
+async function loadAds(){
+  try{
+    const snap=await window.fbGet(window.fbCol(window.db,'ads'));
+    const ads=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    const el=document.getElementById('adsList');
+    if(!ads.length){el.innerHTML='<div class="empty">No ads yet.</div>';return;}
+    el.innerHTML=ads.map(function(a){
+      return '<div style="background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">'
+      +'<div><div style="font-weight:700;font-size:.86rem">'+a.title+'</div>'
+      +'<div style="font-size:.74rem;color:var(--dim)">Expires: '+new Date(a.expiresAt).toLocaleDateString()+'</div></div>'
+      +'<button class="btn danger sm" onclick="deleteAd(''+a.id+'')">Delete</button>'
+      +'</div>';
+    }).join('');
+  }catch(e){}
+}
+async function deleteAd(id){
+  try{await window.fbDelete(window.fbDoc(window.db,'ads',id));loadAds();toast('Ad deleted.','ok');}catch(e){}
+}
+loadAds();
+
+
+async function sendPaymentReminders(){
+  const expired=allVendors.filter(function(v){
+    if(!v.trialEnd)return false;
+    return new Date(v.trialEnd)<new Date()&&v.subscription!=='premium';
+  });
+  if(!expired.length){toast('No expired vendors!','ok');return;}
+  toast('Sending reminders to '+expired.length+' vendors...','ok');
+  expired.forEach(function(v,i){
+    setTimeout(function(){
+      const waNum='92'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'');
+      const msg='Subscription Reminder - Pakistan Prime\n\nDear '+v.name+',\n\nYour free trial has expired!\n\nActivate Premium: PKR 500/month\n\nBenefits:\nStay listed on platform\nGet more customers\nPriority listing\n\nReply to activate!\n\nPakistan Prime Portal';
+      window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
+    },i*2000);
+  });
+}
+async function sendSingleReminder(phone,name){
+  const waNum='92'+phone.replace(/^0/,'').replace(/[^0-9]/g,'');
+  const msg='Subscription Reminder - Pakistan Prime\n\nDear '+name+',\n\nYour free trial has expired!\n\nActivate Premium: PKR 500/month\n\nReply to activate!\n\nPakistan Prime Portal';
+  window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
 }
 
 </script>
