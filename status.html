@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vendor Status — Abbottabad Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,getDocs}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);
+window.db=db;window.fbCol=collection;window.fbGet=getDocs;
+window.firebaseReady=true;
+document.dispatchEvent(new Event('firebaseReady'));
+</script>
+<style>
+:root{--bg:#0b0f19;--surface:rgba(18,24,38,0.75);--line:rgba(0,242,254,0.14);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--glow:0 0 18px rgba(0,242,254,0.2);--red:#ff5d6c;--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-fx{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.4}
+.b1{width:44vw;height:44vw;background:radial-gradient(circle,rgba(0,242,254,.5),transparent 65%);top:-10vw;left:-6vw;animation:drift 22s ease infinite alternate}
+.b2{width:38vw;height:38vw;background:radial-gradient(circle,rgba(43,111,255,.45),transparent 65%);bottom:-10vw;right:-5vw;animation:drift 26s ease infinite alternate-reverse}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(5vw,4vw)}}
+.grid-fx{position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(0,242,254,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,242,254,.04) 1px,transparent 1px);background-size:54px 54px}
+.shell{width:100%;max-width:1000px;margin:0 auto;padding:0 20px}
+header{padding:18px 0;border-bottom:1px solid var(--line);margin-bottom:32px;background:rgba(11,15,25,.55);backdrop-filter:blur(16px);position:sticky;top:0;z-index:50}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;font-family:'Orbitron',sans-serif;font-weight:800;font-size:.95rem}
+.mark{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#04121f;font-weight:900;font-size:1rem}
+.btn{display:inline-flex;align-items:center;gap:7px;cursor:pointer;border:0;font-family:'Manrope',sans-serif;font-weight:700;font-size:.86rem;padding:9px 16px;border-radius:10px;text-decoration:none;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad);box-shadow:var(--glow)}
+.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.page-head{text-align:center;margin-bottom:32px}
+.page-head h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,4vw,2.2rem);font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.page-head p{color:var(--dim);font-size:.95rem}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;text-align:center;backdrop-filter:blur(8px)}
+.stat-card .sn{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card .sl{font-size:.76rem;color:var(--dim);margin-top:6px;font-weight:600}
+.search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-bar input,.search-bar select{background:rgba(11,15,25,.75);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.88rem;padding:11px 14px;outline:0;flex:1;transition:border-color .25s}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--cyan)}
+.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.cat-tab{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--dim);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s}
+.cat-tab.active,.cat-tab:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,242,254,.08)}
+.vendor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.vendor-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;backdrop-filter:blur(8px);transition:all .3s;position:relative}
+.vendor-card:hover{border-color:var(--cyan);box-shadow:var(--glow);transform:translateY(-3px)}
+.vc-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.vc-avatar{width:46px;height:46px;border-radius:12px;background:var(--grad);display:grid;place-items:center;font-size:1.3rem;color:#04121f;font-weight:900;flex-shrink:0}
+.vc-name{font-weight:800;font-size:.96rem;margin-bottom:3px}
+.vc-cat{font-size:.74rem;color:var(--cyan);font-weight:700}
+.status-badge{position:absolute;top:14px;right:14px;font-size:.65rem;font-weight:800;padding:3px 9px;border-radius:999px}
+.online{background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3)}
+.offline{background:rgba(255,93,108,.1);color:var(--red);border:1px solid rgba(255,93,108,.2)}
+.vc-info{font-size:.8rem;color:var(--dim);line-height:1.8;margin-bottom:12px}
+.vc-rating{color:#ffd700;font-size:.82rem;margin-bottom:8px}
+.vc-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.btn.ok{background:linear-gradient(120deg,#1aff8c,#08b85f);color:#04190d}
+.btn.wa{background:linear-gradient(135deg,#25d366,#0fae53);color:#03190d}
+.spinner{width:30px;height:30px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:40px auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:48px 20px;color:var(--faint);font-size:.92rem;line-height:1.8}
+.verified-badge{font-size:.66rem;background:rgba(0,242,254,.1);color:var(--cyan);padding:2px 7px;border-radius:999px;border:1px solid rgba(0,242,254,.2);margin-left:6px}
+.lang-btn{background:rgba(18,24,38,.8);border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--dim);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+.lang-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+#toaster{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;width:min(92vw,380px)}
+.toast{padding:12px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:.88rem;font-weight:600;animation:toastIn .3s ease}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.summary-grid{grid-template-columns:repeat(2,1fr)}.vc-btns{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg-fx"><span class="blob b1"></span><span class="blob b2"></span></div>
+<div class="grid-fx"></div>
+<div id="toaster"></div>
+<header>
+<div class="shell nav-inner">
+<a class="brand" href="/"><span class="mark">A</span><span>Abbottabad <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Prime</span></span></a>
+<div style="display:flex;align-items:center;gap:10px">
+<button class="lang-btn" onclick="toggleLang()" id="langBtn">🌐 اردو</button>
+<a href="/" class="btn ghost" id="homeBtn">🏠 Home</a>
+</div>
+</div>
+</header>
+<div class="shell">
+<div class="page-head">
+<h1 id="pageTitle">🟢 Live Vendor Status</h1>
+<p id="pageSubtitle">See all registered vendors — who is online right now</p>
+</div>
+<div class="summary-grid">
+<div class="stat-card"><div class="sn" id="statTotal">—</div><div class="sl" id="lbl-total">Total Vendors</div></div>
+<div class="stat-card"><div class="sn" id="statOnline" style="color:var(--green)">—</div><div class="sl" id="lbl-online">Online Now</div></div>
+<div class="stat-card"><div class="sn" id="statOffline">—</div><div class="sl" id="lbl-offline">Offline</div></div>
+<div class="stat-card"><div class="sn" id="statVerified">—</div><div class="sl" id="lbl-verified">Verified</div></div>
+</div>
+<div class="search-bar">
+<input id="searchInput" type="text" placeholder="Search vendor name, category…" oninput="filterVendors()"/>
+<select id="statusFilter" onchange="filterVendors()"><option value="all">All Status</option><option value="online">🟢 Online Only</option><option value="offline">🔴 Offline</option></select>
+</div>
+<div class="cat-tabs" id="catTabs"></div>
+<div id="vendorGrid"><div class="spinner"></div></div>
+</div>
+<script>
+let allVendors=[];
+let currentCat='all';
+let curLang=localStorage.getItem('lang')||'en';
+
+function toast(msg,type){const el=document.createElement('div');el.className='toast '+(type||'');el.textContent=msg;document.getElementById('toaster').appendChild(el);setTimeout(function(){el.remove();},3500);}
+
+function starsHTML(r){if(!r||isNaN(parseFloat(r)))return '';const n=parseFloat(r);let s='';for(let i=1;i<=5;i++)s+=i<=Math.round(n)?'★':'☆';return s+' ('+n.toFixed(1)+')';}
+
+async function loadVendors(){
+try{
+const snap=await window.fbGet(window.fbCol(window.db,'vendors'));
+allVendors=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+allVendors.sort(function(a,b){
+if(a.status==='online'&&b.status!=='online')return -1;
+if(b.status==='online'&&a.status!=='online')return 1;
+return parseFloat(b.rating||0)-parseFloat(a.rating||0);
+});
+updateStats();
+buildCatTabs();
+renderVendors(allVendors);
+}catch(e){document.getElementById('vendorGrid').innerHTML='<div class="empty">Could not load vendors.</div>';}
+}
+
+function updateStats(){
+const online=allVendors.filter(function(v){return v.status==='online';}).length;
+const verified=allVendors.filter(function(v){return v.verified;}).length;
+document.getElementById('statTotal').textContent=allVendors.length;
+document.getElementById('statOnline').textContent=online;
+document.getElementById('statOffline').textContent=allVendors.length-online;
+document.getElementById('statVerified').textContent=verified;
+}
+
+function buildCatTabs(){
+const cats=['all',...new Set(allVendors.map(function(v){return v.category||'Other';}))];
+const wrap=document.getElementById('catTabs');
+wrap.innerHTML='';
+cats.forEach(function(c){
+const btn=document.createElement('button');
+btn.className='cat-tab'+(c==='all'?' active':'');
+btn.textContent=c==='all'?(curLang==='ur'?'سب':'All'):c;
+btn.onclick=function(){
+currentCat=c;
+document.querySelectorAll('.cat-tab').forEach(function(b){b.classList.remove('active');});
+btn.classList.add('active');
+filterVendors();
+};
+wrap.appendChild(btn);
+});
+}
+
+function filterVendors(){
+const q=document.getElementById('searchInput').value.toLowerCase();
+const s=document.getElementById('statusFilter').value;
+let f=allVendors.filter(function(v){
+const matchQ=!q||(v.name||'').toLowerCase().includes(q)||(v.category||'').toLowerCase().includes(q)||(v.address||'').toLowerCase().includes(q);
+const matchS=s==='all'||(s==='online'&&v.status==='online')||(s==='offline'&&v.status!=='online');
+const matchC=currentCat==='all'||(v.category||'Other')===currentCat;
+return matchQ&&matchS&&matchC;
+});
+renderVendors(f);
+}
+
+function renderVendors(vendors){
+const grid=document.getElementById('vendorGrid');
+if(!vendors.length){grid.innerHTML='<div class="empty">No vendors found.</div>';return;}
+grid.innerHTML='';
+vendors.forEach(function(v){
+const isOnline=v.status==='online';
+const waNum='92'+(v.phone||'').replace(/^0/,'').replace(/[^0-9]/g,'');
+const card=document.createElement('div');card.className='vendor-card';
+card.innerHTML='<span class="status-badge '+(isOnline?'online':'offline')+'">'+(isOnline?'🟢 Online':'🔴 Offline')+'</span>'
++'<div class="vc-top"><div class="vc-avatar">'+(v.name?v.name[0].toUpperCase():'?')+'</div>'
++'<div><div class="vc-name">'+v.name+(v.verified?'<span class="verified-badge">✅ Verified</span>':'')+'</div>'
++'<div class="vc-cat">'+v.category+'</div></div></div>'
++(v.rating&&parseFloat(v.rating)>0?'<div class="vc-rating">'+starsHTML(v.rating)+'</div>':'')
++'<div class="vc-info">📞 '+v.phone+'<br>📍 '+v.address
++(v.hours&&v.hours!='N/A'?'<br>🕐 '+v.hours:'')
++(v.experience&&v.experience!='0'?'<br>⏳ '+v.experience+' yrs exp':'')
++(v.description&&v.description!='N/A'?'<br>📝 '+v.description.substring(0,60)+'…':'')
++'</div>'
++'<div class="vc-btns">'
++'<a href="tel:'+v.phone+'" class="btn ok">📞 Call</a>'
++'<a href="https://wa.me/'+waNum+'" target="_blank" class="btn wa">💬 WhatsApp</a>'
++'</div>';
+grid.appendChild(card);
+});
+}
+
+// Language
+const T={en:{pageTitle:'🟢 Live Vendor Status',pageSubtitle:'See all registered vendors — who is online right now',total:'Total Vendors',online:'Online Now',offline:'Offline',verified:'Verified',search:'Search vendor name, category…',all:'All Status',onlineOnly:'🟢 Online Only',offlineOnly:'🔴 Offline',home:'🏠 Home',lang:'🌐 اردو'},ur:{pageTitle:'🟢 لائیو وینڈر اسٹیٹس',pageSubtitle:'تمام رجسٹرڈ سروسز دیکھیں — ابھی کون آن لائن ہے',total:'کل سروسز',online:'ابھی آن لائن',offline:'آف لائن',verified:'تصدیق شدہ',search:'نام یا زمرہ تلاش کریں…',all:'سب',onlineOnly:'🟢 صرف آن لائن',offlineOnly:'🔴 آف لائن',home:'🏠 ہوم',lang:'🌐 English'}};
+
+function applyLang(){
+const t=T[curLang];
+document.getElementById('pageTitle').textContent=t.pageTitle;
+document.getElementById('pageSubtitle').textContent=t.pageSubtitle;
+document.getElementById('lbl-total').textContent=t.total;
+document.getElementById('lbl-online').textContent=t.online;
+document.getElementById('lbl-offline').textContent=t.offline;
+document.getElementById('lbl-verified').textContent=t.verified;
+document.getElementById('searchInput').placeholder=t.search;
+document.getElementById('opt-all').textContent=t.all;
+document.getElementById('opt-online').textContent=t.onlineOnly;
+document.getElementById('opt-offline').textContent=t.offlineOnly;
+document.getElementById('homeBtn').textContent=t.home;
+document.getElementById('langBtn').textContent=t.lang;
+document.documentElement.setAttribute('dir',curLang==='ur'?'rtl':'ltr');
+}
+
+function toggleLang(){curLang=curLang==='en'?'ur':'en';localStorage.setItem('lang',curLang);applyLang();buildCatTabs();}
+
+applyLang();
+
+document.addEventListener('firebaseReady',function(){loadVendors();});
+if(window.firebaseReady)loadVendors();
+</script>
+</body>
+</html>

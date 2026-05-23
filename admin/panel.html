@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Panel — Abbottabad Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,getDocs,doc,updateDoc,deleteDoc,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);
+window.db=db;window.fbCol=collection;window.fbGet=getDocs;
+window.fbDoc=doc;window.fbUpdate=updateDoc;window.fbDelete=deleteDoc;
+window.fbQ=query;window.fbWhere=where;
+window.firebaseReady=true;
+document.dispatchEvent(new Event('firebaseReady'));
+</script>
+<style>
+:root{
+--bg:#0b0f19;--surface:#121826;--surface2:rgba(18,24,38,0.8);
+--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;
+--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;
+--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);
+--glow:0 0 20px rgba(0,242,254,0.2);--glow2:0 0 30px rgba(0,242,254,0.4);
+--red:#ff5d6c;--gold:#ffd700;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-fx{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35}
+.blob.b1{width:40vw;height:40vw;background:radial-gradient(circle,rgba(0,242,254,.5),transparent 65%);top:-10vw;left:-5vw;animation:drift 20s ease infinite alternate}
+.blob.b2{width:35vw;height:35vw;background:radial-gradient(circle,rgba(255,93,108,.4),transparent 65%);bottom:-10vw;right:-5vw;animation:drift 25s ease infinite alternate-reverse}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(5vw,4vw)}}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:36px 28px;box-shadow:var(--glow2);text-align:center}
+.login-card h1{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--red);margin-bottom:6px}
+.login-card p{color:var(--dim);font-size:.86rem;margin-bottom:22px}
+.dash-wrap{display:none;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--line);padding:18px 0;z-index:50;overflow-y:auto}
+.sidebar .brand{padding:0 18px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.sidebar .brand h2{font-family:'Orbitron',sans-serif;font-size:.85rem;font-weight:700;color:var(--red)}
+.sidebar .brand p{font-size:.72rem;color:var(--faint);margin-top:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 18px;color:var(--dim);font-weight:600;font-size:.86rem;cursor:pointer;border:0;background:none;width:100%;text-align:left;font-family:inherit;transition:all .25s;border-left:3px solid transparent;text-decoration:none}
+.nav-item:hover,.nav-item.active{color:var(--cyan);background:rgba(0,242,254,.06);border-left-color:var(--cyan)}
+.main{margin-left:220px;padding:22px;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.topbar h2{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;color:var(--red)}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+.stat-card{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center;transition:all .3s}
+.stat-card:hover{border-color:var(--cyan)}
+.stat-card .sn{font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card .sl{font-size:.74rem;color:var(--dim);margin-top:5px;font-weight:600}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.card h3{font-family:'Orbitron',sans-serif;font-size:.88rem;font-weight:700;color:var(--cyan);margin-bottom:12px}
+.search-bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search-bar input,.search-bar select{background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.86rem;padding:10px 12px;outline:0;flex:1}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--cyan)}
+.vendor-list{display:flex;flex-direction:column;gap:10px}
+.vendor-row{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.vendor-row .vr-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.vendor-row .vr-name{font-weight:700;font-size:.92rem}
+.vendor-row .vr-cat{font-size:.74rem;color:var(--cyan);margin-top:2px}
+.vendor-row .vr-info{font-size:.8rem;color:var(--dim);line-height:1.6;margin-bottom:10px}
+.vendor-row .vr-btns{display:flex;gap:7px;flex-wrap:wrap}
+.badge{font-size:.68rem;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.badge-online{background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3)}
+.badge-offline{background:rgba(255,93,108,.1);color:var(--red);border:1px solid rgba(255,93,108,.2)}
+.badge-trial{background:rgba(255,196,0,.15);color:#ffd24d;border:1px solid rgba(255,196,0,.3)}
+.badge-premium{background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid rgba(0,242,254,.2)}
+.badge-expired{background:rgba(255,93,108,.08);color:var(--red);border:1px solid rgba(255,93,108,.15)}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:'Manrope',sans-serif;font-weight:700;font-size:.82rem;padding:8px 14px;border-radius:9px;text-decoration:none;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn.ok{background:linear-gradient(120deg,#1aff8c,#08b85f);color:#04190d}
+.btn.danger{background:linear-gradient(120deg,#ff5d6c,#c81e3a);color:#fff}
+.btn.warn{background:linear-gradient(120deg,#f7971e,#ffd200);color:#1a0a00}
+.btn.sm{padding:6px 10px;font-size:.76rem;border-radius:7px}
+.btn.wa{background:linear-gradient(135deg,#25d366,#0fae53);color:#03190d}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.78rem;font-weight:700;color:var(--dim);margin-bottom:5px}
+.field input,.field select{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:9px;color:var(--txt);font-family:inherit;font-size:.88rem;padding:10px 12px;outline:0;transition:border-color .25s}
+.field input:focus,.field select:focus{border-color:var(--cyan)}
+.tab-btns{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tab-btn{padding:7px 12px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--dim);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s}
+.tab-btn.active{background:var(--grad);color:#04121f;border-color:transparent}
+.order-row{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.order-row .or-name{font-weight:700;font-size:.88rem}
+.order-row .or-meta{font-size:.78rem;color:var(--dim);line-height:1.6;margin-top:4px}
+.status-pill{font-size:.68rem;font-weight:800;padding:3px 8px;border-radius:999px}
+.pill-pending{background:rgba(255,196,0,.15);color:#ffd24d;border:1px solid rgba(255,196,0,.3)}
+.pill-accepted{background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3)}
+.pill-done{background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid rgba(0,242,254,.2)}
+.spinner{width:26px;height:26px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:16px auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:30px 20px;color:var(--faint);font-size:.88rem;line-height:1.8}
+.revenue-card{background:linear-gradient(135deg,rgba(0,242,254,.08),rgba(43,111,255,.08));border:1px solid rgba(0,242,254,.25);border-radius:14px;padding:18px;margin-bottom:12px;text-align:center}
+.revenue-card .rn{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:800;color:var(--green)}
+.revenue-card .rl{font-size:.82rem;color:var(--dim);margin-top:6px}
+#toaster{position:fixed;top:14px;right:14px;z-index:200;display:flex;flex-direction:column;gap:7px;width:min(90vw,340px)}
+.toast{display:flex;gap:9px;padding:11px 13px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600;animation:toastIn .3s ease;cursor:pointer}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.mobile-toggle{display:none;position:fixed;bottom:18px;right:18px;z-index:60;width:46px;height:46px;border-radius:50%;background:var(--grad);border:0;color:#04121f;font-size:1.3rem;cursor:pointer}
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%);transition:transform .3s}
+.sidebar.open{transform:translateX(0)}
+.main{margin-left:0;padding:14px}
+.stats-grid{grid-template-columns:repeat(2,1fr)}
+.mobile-toggle{display:block}
+}
+</style>
+</head>
+<body>
+<div class="bg-fx"><span class="blob b1"></span><span class="blob b2"></span></div>
+<div id="toaster"></div>
+<div class="login-wrap" id="loginWrap">
+<div class="login-card">
+<div style="font-size:2rem;margin-bottom:10px">🔒</div>
+<h1>Admin Panel</h1>
+<p>Restricted access. Enter admin password.</p>
+<div class="field"><label>Admin Password</label><input id="adminPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"/></div>
+<button class="btn grad full" onclick="doAdminLogin()">🔓 Unlock Admin Panel</button>
+<p style="margin-top:14px;font-size:.78rem;color:var(--faint)"><a href="/" style="color:var(--cyan)">← Back to main site</a></p>
+</div>
+</div>
+<div class="dash-wrap" id="dashWrap">
+<aside class="sidebar" id="sidebar">
+<div class="brand">
+<h2>🔒 Admin Panel</h2>
+<p>Abbottabad Prime Portal</p>
+</div>
+<button class="nav-item active" onclick="showPanel('overview')" id="nav-overview">📊 Overview</button>
+<button class="nav-item" onclick="showPanel('vendors')" id="nav-vendors">👥 All Vendors</button>
+<button class="nav-item" onclick="showPanel('orders')" id="nav-orders">📦 All Orders</button>
+<button class="nav-item" onclick="showPanel('revenue')" id="nav-revenue">💰 Revenue</button>
+<button class="nav-item" onclick="showPanel('transport')" id="nav-transport">🚗 Transport</button>
+<div style="padding:14px 18px;border-top:1px solid var(--line);margin-top:auto">
+<a href="/" class="btn ghost" style="width:100%;justify-content:center;margin-bottom:8px;font-size:.8rem">🏠 Main Site</a>
+<a href="/vendor/dashboard.html" class="btn ghost" style="width:100%;justify-content:center;margin-bottom:8px;font-size:.8rem">📊 Vendor Dashboard</a>
+<button class="btn danger" onclick="doAdminLogout()" style="width:100%;justify-content:center;font-size:.8rem">🚪 Logout</button>
+</div>
+</aside>
+<main class="main">
+<div class="topbar">
+<h2 id="pageTitle">📊 Admin Overview</h2>
+<div style="display:flex;align-items:center;gap:10px">
+<button class="btn ghost sm" onclick="refreshAll()">🔄 Refresh</button>
+<div style="font-size:.78rem;color:var(--faint)" id="lastRefresh"></div>
+</div>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><div class="sn" id="statTotal">0</div><div class="sl">Total Vendors</div></div>
+<div class="stat-card"><div class="sn" id="statOnline">0</div><div class="sl">Online Now</div></div>
+<div class="stat-card"><div class="sn" id="statTrial">0</div><div class="sl">On Trial</div></div>
+<div class="stat-card"><div class="sn" id="statPremium">0</div><div class="sl">Premium</div></div>
+<div class="stat-card"><div class="sn" id="statExpired">0</div><div class="sl">Expired</div></div>
+</div>
+<div class="panel active" id="panel-overview">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div class="card">
+<h3>📋 Recent Registrations</h3>
+<div id="recentVendors"><div class="spinner"></div></div>
+</div>
+<div class="card">
+<h3>⚠️ Expired Listings</h3>
+<div id="expiredVendors"><div class="spinner"></div></div>
+</div>
+</div>
+<div class="card">
+<h3>⏳ Pending CNIC Verification</h3><button class="btn ok sm" onclick="bulkApprove()" style="margin-bottom:12px">✅ Approve All</button><div id="pendingCnic"><div class="spinner"></div></div></div><div class="card"><h3>📢 Send Announcement to All Vendors</h3>
+<div class="field"><textarea id="announcementText" placeholder="Type your message to all vendors…" style="width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-family:inherit;min-height:80px"></textarea></div>
+<button class="btn wa" onclick="sendAnnouncement()" style="width:100%;justify-content:center">📢 Send to All Vendors via WhatsApp</button>
+</div>
+<div class="card"><h3>🚀 Quick Actions</h3>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button class="btn grad" onclick="showPanel('vendors')">👥 Manage Vendors</button>
+<button class="btn warn" onclick="sendBulkReminder()">📢 Send Payment Reminders</button>
+<a href="https://wa.me/923174886655" target="_blank" class="btn wa">💬 Support Chat</a>
+<button class="btn ghost" onclick="exportData()">📥 Export CSV</button>
+<button class="btn ghost" onclick="sendDailyReport()" style="background:rgba(37,211,102,.08);border-color:rgba(37,211,102,.3);color:#25d366">📊 Send Daily Report</button>
+</div>
+</div>
+</div>
+<div class="panel" id="panel-vendors">
+<div class="card">
+<h3>👥 All Registered Vendors</h3>
+<div class="search-bar">
+<input id="vendorSearch" type="text" placeholder="Search by name, phone, category…" oninput="filterVendors()"/>
+<select id="vendorCity" onchange="filterVendors()" style="max-width:140px"><option value="all">All Cities</option>
+<optgroup label="Hazara Division">
+<option value="Abbottabad">Abbottabad</option>
+<option value="Mansehra">Mansehra</option>
+<option value="Haripur">Haripur</option>
+<option value="Battagram">Battagram</option>
+<option value="Kohistan">Kohistan</option>
+<option value="Torghar">Torghar</option>
+<option value="Shangla">Shangla</option>
+</optgroup>
+<optgroup label="KPK Central">
+<option value="Peshawar">Peshawar</option>
+<option value="Mardan">Mardan</option>
+<option value="Nowshera">Nowshera</option>
+<option value="Charsadda">Charsadda</option>
+<option value="Malakand">Malakand</option>
+<option value="Dir Upper">Dir Upper</option>
+<option value="Dir Lower">Dir Lower</option>
+<option value="Buner">Buner</option>
+<option value="Chitral">Chitral</option>
+<option value="Swat">Swat</option>
+</optgroup>
+<optgroup label="KPK Southern">
+<option value="Kohat">Kohat</option>
+<option value="Bannu">Bannu</option>
+<option value="Lakki Marwat">Lakki Marwat</option>
+<option value="Tank">Tank</option>
+<option value="Dera Ismail Khan">Dera Ismail Khan</option>
+<option value="Karak">Karak</option>
+</optgroup>
+<optgroup label="Tribal Districts">
+<option value="Khyber">Khyber</option>
+<option value="Mohmand">Mohmand</option>
+<option value="Bajaur">Bajaur</option>
+<option value="Kurram">Kurram</option>
+<option value="North Waziristan">North Waziristan</option>
+<option value="South Waziristan">South Waziristan</option>
+</optgroup>
+<optgroup label="Punjab">
+<option value="Rawalpindi">Rawalpindi</option>
+<option value="Islamabad">Islamabad</option>
+<option value="Lahore">Lahore</option>
+<option value="Multan">Multan</option>
+<option value="Faisalabad">Faisalabad</option>
+</optgroup>
+</select>
+<select id="vendorFilter" onchange="filterVendors()">
+<option value="all">All Status</option>
+<option value="online">🟢 Online</option>
+<option value="offline">🔴 Offline</option>
+<option value="trial">⏳ Trial</option>
+<option value="premium">💎 Premium</option>
+<option value="expired">⚠️ Expired</option>
+</select>
+</div>
+<div class="vendor-list" id="vendorsList"><div class="spinner"></div></div>
+</div>
+</div>
+<div class="panel" id="panel-orders">
+<div class="card">
+<h3>📦 All Orders</h3>
+<div class="tab-btns">
+<button class="tab-btn active" onclick="filterAllOrders('all',this)">📦 All</button>
+<button class="tab-btn" onclick="filterAllOrders('pending',this)">⏳ Pending</button>
+<button class="tab-btn" onclick="filterAllOrders('accepted',this)">✅ Accepted</button>
+<button class="tab-btn" onclick="filterAllOrders('done',this)">🎉 Done</button>
+</div>
+<div id="allOrdersList"><div class="spinner"></div></div>
+</div>
+</div>
+
+<div class="panel" id="panel-transport">
+<div class="card">
+<h3>🚗 Transport Providers</h3>
+<div class="search-bar">
+<input id="transportSearch" type="text" placeholder="Search by name, phone, vehicle…" oninput="filterTransport()"/>
+<select id="transportFilter" onchange="filterTransport()">
+<option value="all">All</option>
+<option value="passenger">🧍 Passenger</option>
+<option value="delivery">📦 Delivery</option>
+<option value="pending">⏳ Pending</option>
+<option value="approved">✅ Approved</option>
+</select>
+</div>
+<div id="transportList"><div class="spinner"></div></div>
+</div>
+</div>
+<div class="panel" id="panel-revenue">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
+<div class="revenue-card"><div class="rn" id="revMonthly">0</div><div class="rl">PKR This Month</div></div>
+<div class="revenue-card"><div class="rn" id="revTotal">0</div><div class="rl">PKR Total Earned</div></div>
+<div class="revenue-card"><div class="rn" id="revPotential">0</div><div class="rl">PKR Potential/month</div></div>
+</div>
+<div class="card">
+<h3>⚠️ Vendors Awaiting Payment</h3>
+<div id="awaitingPayment"><div class="spinner"></div></div>
+</div>
+</div>
+</main>
+</div>
+<button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+<script>
+const ADMIN_PASS='admin123';
+let allVendors=[];
+let allOrders=[];
+
+function toast(msg,type){
+const el=document.createElement('div');
+el.className='toast '+(type||'info');
+el.innerHTML='<span>'+(type==='ok'?'✅':type==='err'?'⚠️':'ℹ️')+'</span><span>'+msg+'</span>';
+document.getElementById('toaster').appendChild(el);
+const t=setTimeout(function(){el.remove();},4500);
+el.onclick=function(){clearTimeout(t);el.remove();};
+}
+
+function doAdminLogin(){
+const pass=document.getElementById('adminPass').value.trim();
+if(pass===ADMIN_PASS){
+document.getElementById('loginWrap').style.display='none';
+document.getElementById('dashWrap').style.display='block';
+if(window.firebaseReady){loadAllData();}else{document.addEventListener('firebaseReady',function(){loadAllData();});}
+}else{toast('Incorrect password.','err');}
+}
+
+function doAdminLogout(){
+document.getElementById('dashWrap').style.display='none';
+document.getElementById('loginWrap').style.display='flex';
+document.getElementById('adminPass').value='';
+}
+
+document.getElementById('adminPass').addEventListener('keydown',function(e){if(e.key==='Enter')doAdminLogin();});
+
+async function loadAllData(){
+await loadVendors();
+await loadOrders();
+loadRevenue();
+await loadTransport();
+document.getElementById('lastRefresh').textContent='Refreshed: '+new Date().toLocaleTimeString();
+}
+
+function refreshAll(){loadAllData();toast('Data refreshed!','ok');}
+
+async function loadVendors(){
+try{
+const snap=await window.fbGet(window.fbCol(window.db,'vendors'));
+allVendors=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+allVendors.sort(function(a,b){return new Date(b.registered||0)-new Date(a.registered||0);});
+updateStats();
+renderVendors(allVendors);
+renderRecentVendors();
+renderExpiredVendors();
+renderPendingCnic();
+renderAwaitingPayment();
+}catch(e){toast('Could not load vendors.','err');}
+}
+
+async function loadOrders(){
+try{
+const snap=await window.fbGet(window.fbCol(window.db,'orders'));
+allOrders=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+renderAllOrders(allOrders);
+}catch(e){
+document.getElementById('allOrdersList').innerHTML='<div class="empty">No orders yet.</div>';
+}
+}
+
+function getSubStatus(v){
+const now=new Date();
+if(v.subscription==='premium')return{label:'💎 Premium',cls:'badge-premium'};
+if(v.trialEnd&&new Date(v.trialEnd)>now)return{label:'⏳ Trial',cls:'badge-trial'};
+return{label:'⚠️ Expired',cls:'badge-expired'};
+}
+
+function updateStats(){
+const now=new Date();
+const online=allVendors.filter(function(v){return v.status==='online';}).length;
+const trial=allVendors.filter(function(v){return v.subscription==='trial'&&v.trialEnd&&new Date(v.trialEnd)>now;}).length;
+const premium=allVendors.filter(function(v){return v.subscription==='premium';}).length;
+const expired=allVendors.filter(function(v){return v.trialEnd&&new Date(v.trialEnd)<now&&v.subscription!=='premium';}).length;
+document.getElementById('statTotal').textContent=allVendors.length;
+document.getElementById('statOnline').textContent=online;
+document.getElementById('statTrial').textContent=trial;
+document.getElementById('statPremium').textContent=premium;
+document.getElementById('statExpired').textContent=expired;
+}
+
+function renderVendors(vendors){
+const list=document.getElementById('vendorsList');
+if(!vendors.length){list.innerHTML='<div class="empty">No vendors found.</div>';return;}
+list.innerHTML='';
+vendors.forEach(function(v){
+const isOnline=v.status==='online';
+const sub=getSubStatus(v);
+const div=document.createElement('div');div.className='vendor-row';
+div.innerHTML='<div class="vr-top">'
++'<div><div class="vr-name">'+v.name+'</div><div class="vr-cat">'+v.category+'</div></div>'
++'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'
++'<span class="badge '+(isOnline?'badge-online':'badge-offline')+'">'+(isOnline?'🟢 Online':'🔴 Offline')+'</span>'
++'<span class="badge '+sub.cls+'">'+sub.label+'</span>'
++(v.rating&&parseFloat(v.rating)>0?'<span style="color:var(--gold);font-size:.78rem">⭐ '+parseFloat(v.rating).toFixed(1)+'</span>':'')
++'</div></div>'
++'<div class="vr-info">📞 '+v.phone+' | 📧 '+(v.email||'N/A')+'<br>📍 '+v.address+(v.city?'<br>🌍 City: '+v.city:'')+'<br>📅 Registered: '+(v.registered?new Date(v.registered).toLocaleDateString():'Unknown')+(v.approvedAt?'<br>✅ Approved: '+new Date(v.approvedAt).toLocaleDateString():'')+(v.cnic?'<br>🪪 <a href="'+v.cnic+'" target="_blank" style="color:var(--cyan)">View CNIC Image</a>':'<br>🪪 No CNIC uploaded')+'<br>🔑 Pass: '+(v.password||'N/A')+'</div>'
++'<div class="vr-btns">'
++(!v.adminApproved?'<button class="btn ok sm" data-id="'+v.id+'" data-phone="'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'')+'" onclick="approveVendor(this)">✅ Approve</button>':'')
++(sub.label!=='💎 Premium'?'<button class="btn ok sm" onclick="activatePremium(\''+v.id+'\')">💎 Premium</button>':'')
++(v.blacklisted?'<button class="btn ok sm" data-id="'+v.id+'" onclick="toggleBlacklist(this.dataset.id,false)">✅ Unblacklist</button>':'<button class="btn danger sm" data-id="'+v.id+'" onclick="toggleBlacklist(this.dataset.id,true)">⛔ Blacklist</button>')
++'<a href="https://wa.me/92'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'')+'" target="_blank" class="btn wa sm">💬 WA</a>'
++'<button class="btn danger sm" onclick="deleteVendor(\''+v.id+'\',\''+v.name.replace(/\'/g,"\\'")+'\')">🗑️ Delete</button>'
++'</div>';
++'</div>';
+list.appendChild(div);
+});
+}
+
+function filterVendors(){
+const q=document.getElementById('vendorSearch').value.toLowerCase();
+const f=document.getElementById('vendorFilter').value;
+const now=new Date();
+const cityF=document.getElementById('vendorCity').value;
+const filtered=allVendors.filter(function(v){
+const matchCity=cityF==='all'||!v.city||v.city===cityF;
+const matchQ=!q||(v.name||'').toLowerCase().includes(q)||(v.phone||'').includes(q)||(v.category||'').toLowerCase().includes(q);
+let matchF=true;
+if(f==='online')matchF=v.status==='online';
+else if(f==='offline')matchF=v.status!=='online';
+else if(f==='trial')matchF=v.subscription==='trial'&&v.trialEnd&&new Date(v.trialEnd)>now;
+else if(f==='premium')matchF=v.subscription==='premium';
+else if(f==='expired')matchF=v.trialEnd&&new Date(v.trialEnd)<now&&v.subscription!=='premium';
+return matchQ&&matchF&&matchCity;
+});
+renderVendors(filtered);
+}
+
+function renderRecentVendors(){
+const container=document.getElementById('recentVendors');
+const recent=allVendors.slice(0,5);
+if(!recent.length){container.innerHTML='<div class="empty" style="padding:14px">No vendors yet.</div>';return;}
+container.innerHTML=recent.map(function(v){
+return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)">'
++'<div><div style="font-weight:700;font-size:.84rem">'+v.name+'</div><div style="font-size:.72rem;color:var(--faint)">'+v.category+'</div></div>'
++'<span class="badge '+(v.status==='online'?'badge-online':'badge-offline')+'">'+(v.status==='online'?'Online':'Offline')+'</span>'
++'</div>';
+}).join('');
+}
+
+function renderExpiredVendors(){
+const container=document.getElementById('expiredVendors');
+const now=new Date();
+const expired=allVendors.filter(function(v){return v.trialEnd&&new Date(v.trialEnd)<now&&v.subscription!=='premium';});
+if(!expired.length){container.innerHTML='<div class="empty" style="padding:14px">No expired listings.</div>';return;}
+container.innerHTML=expired.map(function(v){
+return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)">'
++'<div><div style="font-weight:700;font-size:.84rem">'+v.name+'</div><div style="font-size:.72rem;color:var(--faint)">'+v.phone+'</div></div>'
++'<button class="btn warn sm" onclick="sendPaymentReminder(\''+v.phone+'\',\''+v.name.replace(/'/g,"\\'")+'\')">💬 Remind</button>'
++'</div>';
+}).join('');
+}
+
+function renderAwaitingPayment(){
+const container=document.getElementById('awaitingPayment');
+const now=new Date();
+const awaiting=allVendors.filter(function(v){return v.subscription!=='premium';});
+if(!awaiting.length){container.innerHTML='<div class="empty">All vendors are premium!</div>';return;}
+container.innerHTML='<div style="font-size:.8rem;color:var(--faint);margin-bottom:10px">'+awaiting.length+' vendor(s) need payment</div>'
++awaiting.map(function(v){
+const waNum='92'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'');
+const isExpired=v.trialEnd&&new Date(v.trialEnd)<now;
+const msg='Hello '+v.name+'! Your Abbottabad Prime Portal listing '+(isExpired?'has expired':'trial ends soon')+'. Pay 500 PKR/month to keep your listing active. Contact: wa.me/923174886655';
+return '<div class="order-row"><div class="or-name">'+v.name+'</div>'
++'<div class="or-meta">📞 '+v.phone+'<br>📋 '+v.category+'</div>'
++'<div style="display:flex;gap:6px;margin-top:8px">'
++'<a href="https://wa.me/'+waNum+'?text='+encodeURIComponent(msg)+'" target="_blank" class="btn wa sm">💬 Send Reminder</a>'
++'<button class="btn ok sm" onclick="activatePremium(\''+v.id+'\')">💎 Activate</button>'
++'</div></div>';
+}).join('');
+}
+
+function renderAllOrders(orders){
+const list=document.getElementById('allOrdersList');
+if(!orders.length){list.innerHTML='<div class="empty">No orders yet.</div>';return;}
+list.innerHTML='';
+const statusMap={pending:'pill-pending',accepted:'pill-accepted',done:'pill-done',rejected:'pill-rejected'};
+orders.forEach(function(o){
+const div=document.createElement('div');div.className='order-row';
+div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'
++'<div class="or-name">'+o.customerName+' → '+o.vendorName+'</div>'
++'<span class="status-pill '+(statusMap[o.status||'pending']||'pill-pending')+'">'+capitalise(o.status||'pending')+'</span>'
++'</div>'
++'<div class="or-meta">📞 Customer: '+o.customerPhone+'<br>🛠️ '+o.service+(o.createdAt?'<br>🕐 '+new Date(o.createdAt).toLocaleString():'')+'</div>';
+list.appendChild(div);
+});
+}
+
+function filterAllOrders(status,btn){
+document.querySelectorAll('#panel-orders .tab-btn').forEach(function(b){b.classList.remove('active');});
+btn.classList.add('active');
+const filtered=status==='all'?allOrders:allOrders.filter(function(o){return (o.status||'pending')===status;});
+renderAllOrders(filtered);
+}
+
+async function activatePremium(id){
+try{
+await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{subscription:'premium',verified:true});
+const v=allVendors.find(function(v){return v.id===id;});
+if(v){v.subscription='premium';v.verified=true;}
+updateStats();renderVendors(allVendors);renderRecentVendors();renderExpiredVendors();renderAwaitingPayment();
+toast('Vendor activated as Premium!','ok');
+}catch(e){toast('Could not activate.','err');}
+}
+
+async function deleteVendor(id,name){
+if(!confirm('Delete vendor "'+name+'" permanently?'))return;
+try{
+await window.fbDelete(window.fbDoc(window.db,'vendors',id));
+allVendors=allVendors.filter(function(v){return v.id!==id;});
+updateStats();filterVendors();
+toast('Vendor deleted.','ok');
+}catch(e){toast('Could not delete.','err');}
+}
+
+function loadRevenue(){
+const premium=allVendors.filter(function(v){return v.subscription==='premium';}).length;
+const potential=allVendors.length*500;
+document.getElementById('revMonthly').textContent=(premium*500).toLocaleString();
+document.getElementById('revTotal').textContent=(premium*500).toLocaleString();
+document.getElementById('revPotential').textContent=potential.toLocaleString();
+}
+
+function sendPaymentReminder(phone,name){
+const waNum='92'+phone.replace(/^0/,'').replace(/[^0-9]/g,'');
+const msg='Hello '+name+'! Your Abbottabad Prime Portal listing needs renewal. Pay 500 PKR/month via WhatsApp: wa.me/923174886655 to keep your listing active. Thank you!';
+window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+async function sendBulkReminder(){
+const now=new Date();
+const expired=allVendors.filter(function(v){return v.trialEnd&&new Date(v.trialEnd)<now&&v.subscription!=='premium';});
+if(!expired.length){toast('No expired vendors found.','info');return;}
+toast('Opening WhatsApp for '+expired.length+' vendors…','ok');
+expired.forEach(function(v,i){setTimeout(function(){sendPaymentReminder(v.phone,v.name);},i*1500);});
+}
+
+function exportData(){
+const csv=['Name,Phone,Email,Category,Status,Subscription,Rating,Registered']
+.concat(allVendors.map(function(v){
+return [v.name,v.phone,v.email||'',v.category,v.status,v.subscription||'trial',v.rating||'0',v.registered?new Date(v.registered).toLocaleDateString():''].join(',');
+})).join('\n');
+const blob=new Blob([csv],{type:'text/csv'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download='vendors.csv';a.click();
+toast('Data exported!','ok');
+}
+
+function capitalise(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+
+function showPanel(name){
+document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+document.getElementById('panel-'+name).classList.add('active');
+document.getElementById('nav-'+name).classList.add('active');
+const titles={overview:'📊 Admin Overview',vendors:'👥 All Vendors',orders:'📦 All Orders',revenue:'💰 Revenue Tracker',transport:'🚗 Transport Providers'};
+document.getElementById('pageTitle').textContent=titles[name]||name;
+document.getElementById('sidebar').classList.remove('open');
+}
+
+document.addEventListener('firebaseReady',function(){
+if(document.getElementById('dashWrap').style.display==='block')loadAllData();
+});
+
+async function approveVendor(btn){const id=btn.dataset.id;const phone=btn.dataset.phone;
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{adminApproved:true,verified:true,approvedAt:new Date().toISOString()});
+    const v=allVendors.find(function(v){return v.id===id;});
+    if(v){v.adminApproved=true;v.verified=true;}
+    // Send WhatsApp to vendor
+    const msg='✅ *Abbottabad Prime Portal*\n\nCongratulations '+name+'!\n\nYour transport registration has been *approved*!\n\nLogin: https://www.appabbottabad.com/transport/login.html\n\n🚀 Welcome to the team!';
+    window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
+    toast('Transport approved!','ok');
+    filterTransport();
+  }catch(e){toast('Could not approve.','err');}
+}
+
+async function deleteTransport(btn){const id=btn.dataset.id;const name=btn.dataset.name;
+  if(!confirm('Delete transport provider "'+name+'"?'))return;
+  try{
+    await window.fbDelete(window.fbDoc(window.db,'transport',id));
+    allTransport=allTransport.filter(function(t){return t.id!==id;});
+    filterTransport();
+    toast('Deleted.','ok');
+  }catch(e){toast('Could not delete.','err');}
+}
+
+
+async function toggleVendorOfMonth(id,value){
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{vendorOfMonth:value});
+    const v=allVendors.find(function(v){return v.id===id;});
+    if(v)v.vendorOfMonth=value;
+    updateStats();filterVendors();
+    toast(value?'🏆 Vendor of Month assigned!':'Badge removed.','ok');
+  }catch(e){toast('Could not update.','err');}
+}
+
+
+async function toggleFeatured(id,value){
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{featured:value});
+    const v=allVendors.find(function(v){return v.id===id;});
+    if(v)v.featured=value;
+    filterVendors();
+    toast(value?'⭐ Vendor featured!':'Feature removed.','ok');
+  }catch(e){toast('Could not update.','err');}
+}
+
+
+function sendDailyReport(){
+  const now=new Date();
+  const online=allVendors.filter(function(v){return v.status==='online';}).length;
+  const premium=allVendors.filter(function(v){return v.subscription==='premium';}).length;
+  const expired=allVendors.filter(function(v){
+    return v.trialEnd&&new Date(v.trialEnd)<now&&v.subscription!=='premium';
+  }).length;
+  const topVendor=allVendors.filter(function(v){return v.rating&&parseFloat(v.rating)>0;})
+    .sort(function(a,b){return parseFloat(b.rating)-parseFloat(a.rating);})[0];
+  const vom=allVendors.find(function(v){return v.vendorOfMonth;});
+  const featured=allVendors.filter(function(v){return v.featured;}).length;
+  const pendingCnic=allVendors.filter(function(v){return v.cnic&&!v.adminApproved;}).length;
+
+  const msg='📊 *Pakistan Prime — Daily Report*'
+  +'\n📅 '+now.toLocaleDateString('en-PK',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+  +'\n\n👥 Total Vendors: *'+allVendors.length+'*'
+  +'\n🟢 Online Now: *'+online+'*'
+  +'\n💎 Premium: *'+premium+'*'
+  +'\n⚠️ Expired: *'+expired+'*'
+  +'\n⭐ Featured: *'+featured+'*'
+  +'\n📦 Total Orders: *'+allOrders.length+'*'
+  +'\n🪪 Pending CNIC: *'+pendingCnic+'*'
+  +(topVendor?'\n\n🏆 Top Rated: *'+topVendor.name+'* ('+parseFloat(topVendor.rating).toFixed(1)+'⭐)':'')
+  +(vom?'\n🌟 Vendor of Month: *'+vom.name+'*':'')
+  +'\n\n💰 Monthly Revenue: PKR *'+(premium*500).toLocaleString()+'*'
+  +'\n📈 Potential: PKR *'+(allVendors.length*500).toLocaleString()+'*'
+  +'\n\n_Pakistan Prime Portal_ 🚀';
+
+  window.open('https://wa.me/923174886655?text='+encodeURIComponent(msg),'_blank');
+  toast('📊 Daily report sent to WhatsApp!','ok');
+}
+
+
+async function toggleBlacklist(id,value){
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{blacklisted:value,status:value?'offline':'online'});
+    const v=allVendors.find(function(v){return v.id===id;});
+    if(v){v.blacklisted=value;v.status=value?'offline':'online';}
+    filterVendors();
+    toast(value?'⛔ Vendor blacklisted!':'✅ Vendor un-blacklisted.','ok');
+  }catch(e){toast('Could not update.','err');}
+}
+
+
+function renderPendingCnic(){
+  const container=document.getElementById('pendingCnic');
+  if(!container)return;
+  const pending=allVendors.filter(function(v){
+    return v.cnic&&v.cnic.length>5&&(v.adminApproved===false||v.adminApproved===undefined||v.adminApproved===null||!v.adminApproved);
+  });
+  if(!pending.length){
+    container.innerHTML='<div style="font-size:.84rem;color:var(--faint);padding:10px">✅ All vendors verified!</div>';
+    return;
+  }
+  container.innerHTML=pending.map(function(v){
+    const waNum='92'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'');
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px">'
+    +'<div><div style="font-weight:700;font-size:.86rem">'+v.name+'</div>'
+    +'<div style="font-size:.74rem;color:var(--faint)">'+v.phone+' — '+v.category+'</div></div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+    +(v.cnic?'<a href="'+v.cnic+'" target="_blank" class="btn ghost sm">🪪 View CNIC</a>':'<span style="font-size:.72rem;color:var(--red)">No CNIC</span>')
++(!v.adminApproved?'<button class="btn ok sm" data-id="'+v.id+'" data-phone="'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'')+'" onclick="approveVendor(this)">✅ Approve</button>':'')
+    +'<button class="btn danger sm" data-id="'+v.id+'" data-num="'+waNum+'" onclick="rejectVendor(this)">❌ Reject</button>'
+    +'</div></div>';
+  }).join('');
+}
+
+async function rejectVendor(btn){
+  const id=btn.dataset.id;
+  const waNum=btn.dataset.num;
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{adminApproved:false,status:'offline',rejected:true});
+    const v=allVendors.find(function(v){return v.id===id;});
+    if(v){v.rejected=true;v.status='offline';}
+    const msg='❌ *Pakistan Prime Portal*\n\nYour vendor registration has been rejected.\nPlease contact support for more info.\n\nWhatsApp: wa.me/923174886655';
+    window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
+    toast('Vendor rejected.','ok');
+    renderPendingCnic();
+  }catch(e){toast('Could not reject.','err');}
+}
+
+
+let adminLat=null,adminLng=null;
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(function(pos){
+    adminLat=pos.coords.latitude;
+    adminLng=pos.coords.longitude;
+  });
+}
+function getDistKm(lat1,lng1,lat2,lng2){
+  const R=6371;
+  const dLat=(lat2-lat1)*Math.PI/180;
+  const dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
+}
+
+
+async function bulkApprove(){
+  const pending=allVendors.filter(function(v){
+    return v.cnic&&v.cnic.length>5&&!v.adminApproved;
+  });
+  if(!pending.length){toast('No pending vendors!','info');return;}
+  if(!confirm('Approve all '+pending.length+' pending vendors?'))return;
+  let done=0;
+  for(const v of pending){
+    try{
+      await window.fbUpdate(window.fbDoc(window.db,'vendors',v.id),{
+        adminApproved:true,
+        verified:true,
+        approvedAt:new Date().toISOString()
+      });
+      v.adminApproved=true;
+      v.verified=true;
+      done++;
+    }catch(e){}
+  }
+  toast('Approved '+done+' vendors!','ok');
+  renderPendingCnic();
+  filterVendors();
+}
+
+
+async function sendAnnouncement(){
+  const msg=document.getElementById('announcementText').value.trim();
+  if(!msg){toast('Please type a message.','err');return;}
+  if(!allVendors.length){toast('No vendors loaded.','err');return;}
+  const fullMsg='📢 *Pakistan Prime — Announcement*\n\n'+msg+'\n\n_Pakistan Prime Portal 🚀_';
+  toast('Opening WhatsApp for '+allVendors.length+' vendors…','ok');
+  allVendors.forEach(function(v,i){
+    setTimeout(function(){
+      const waNum='92'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'');
+      window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(fullMsg),'_blank');
+    },i*1500);
+  });
+}
+
+</script>
+</body>
+</html>

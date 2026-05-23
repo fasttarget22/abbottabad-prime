@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vendor Login — Pakistan Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--glow:0 0 20px rgba(0,242,254,0.2);--glow2:0 0 35px rgba(0,242,254,0.4);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:40px 32px;box-shadow:var(--glow2)}
+.brand{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:28px}
+.mark{width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;color:#04121f;font-weight:900;font-size:1.2rem;box-shadow:var(--glow)}
+.title{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:700;text-align:center;margin-bottom:6px}
+.subtitle{color:var(--dim);font-size:.88rem;text-align:center;margin-bottom:28px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:7px}
+.field input{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-family:inherit;font-size:.95rem;padding:13px 15px;outline:0;transition:border-color .25s}
+.field input:focus{border-color:var(--cyan)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;cursor:pointer;border:0;font-family:'Manrope',sans-serif;font-weight:700;font-size:.95rem;padding:14px;border-radius:12px;transition:all .25s;text-decoration:none;margin-top:8px}
+.btn.grad{color:#04121f;background:var(--grad);box-shadow:var(--glow)}
+.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+#toaster{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;width:min(92vw,380px)}
+.toast{padding:12px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:.88rem;font-weight:600}
+.toast.ok{border-color:rgba(26,255,140,.5)}.toast.err{border-color:rgba(255,93,108,.5)}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="card">
+<div class="brand">
+<span class="mark">P</span>
+<span style="font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:800">Pakistan <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Prime</span></span>
+</div>
+<div class="title">📊 Vendor Login</div>
+<div class="subtitle">Access your dashboard</div>
+<div class="field">
+<label>Email Address</label>
+<input id="email" type="email" placeholder="yourname@gmail.com"/>
+</div>
+<div class="field">
+<label>Password</label>
+<input id="pass" type="password" placeholder="••••••••"/>
+</div>
+<button class="btn grad" id="loginBtn" onclick="doLogin()">🔓 Login to Dashboard</button>
+<a href="/" class="btn ghost">🏠 Back to Main Site</a>
+</div>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,getDocs,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);
+
+function toast(msg,type){const el=document.createElement('div');el.className='toast '+(type||'');el.textContent=msg;document.getElementById('toaster').appendChild(el);setTimeout(function(){el.remove();},4000);}
+
+function getCookie(name){const v=document.cookie.match('(^|;) ?'+name+'=([^;]*)(;|$)');return v?decodeURIComponent(v[2]):null;}
+
+// Check if already logged in
+const savedEmail=localStorage.getItem('vendorEmail')||getCookie('vendorEmail');
+if(savedEmail){window.location.href='/vendor/dashboard.html';}
+
+window.doLogin=async function(){
+  const email=document.getElementById('email').value.trim().toLowerCase();
+  const pass=document.getElementById('pass').value.trim();
+  if(!email||!pass){toast('Please enter email and password.','err');return;}
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='Logging in…';
+  try{
+    const snap=await getDocs(query(collection(db,'vendors'),where('email','==',email.toLowerCase())));
+    if(snap.empty){toast('No account found with this email.','err');btn.disabled=false;btn.textContent='🔓 Login to Dashboard';return;}
+    const vendor=snap.docs[0].data();
+    console.log('DB pass:',vendor.password,'|Entered:',pass,'|Match:',vendor.password===pass);
+if(vendor.password!==pass){toast('Incorrect password. Check console for debug.','err');btn.disabled=false;btn.textContent='🔓 Login to Dashboard';return;}
+    const expires=new Date(Date.now()+30*24*60*60*1000).toUTCString();
+    localStorage.setItem('vendorEmail',email);
+    localStorage.setItem('vendorPhone',vendor.phone);
+    document.cookie='vendorEmail='+encodeURIComponent(email)+';expires='+expires+';path=/';
+    document.cookie='vendorPhone='+encodeURIComponent(vendor.phone)+';expires='+expires+';path=/';
+    window.location.href='/vendor/dashboard.html';
+  }catch(e){
+    toast('Login failed: '+e.message,'err');
+    btn.disabled=false;btn.textContent='🔓 Login to Dashboard';
+  }
+};
+
+document.getElementById('email').addEventListener('keydown',function(e){if(e.key==='Enter')window.doLogin();});
+document.getElementById('pass').addEventListener('keydown',function(e){if(e.key==='Enter')window.doLogin();});
+</script>
+</body>
+</html>

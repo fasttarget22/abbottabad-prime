@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vendor Dashboard — Abbottabad Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,addDoc,getDocs,doc,updateDoc,deleteDoc,query,where,orderBy}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);
+
+window.db=db;window.auth=auth;
+window.fbCol=collection;window.fbAdd=addDoc;window.fbGet=getDocs;
+window.fbDoc=doc;window.fbUpdate=updateDoc;window.fbDelete=deleteDoc;
+window.fbQ=query;window.fbWhere=where;window.fbOrder=orderBy;
+
+// localStorage session check
+function getCookie(n){const v=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)');return v?decodeURIComponent(v[2]):null;}
+(function(){
+const vendorEmail=localStorage.getItem('vendorEmail')||getCookie('vendorEmail');
+if(!vendorEmail){window.location.href='/vendor/login.html';}
+else{loadVendorData(vendorEmail);}
+})();
+</script>
+<style>
+:root{
+--bg:#0b0f19;--surface:#121826;--surface2:rgba(18,24,38,0.8);
+--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;
+--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;
+--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);
+--glow:0 0 20px rgba(0,242,254,0.2);--glow2:0 0 30px rgba(0,242,254,0.4);
+--red:#ff5d6c;--gold:#ffd700;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.bg-fx{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.4}
+.blob.b1{width:40vw;height:40vw;background:radial-gradient(circle,rgba(0,242,254,.5),transparent 65%);top:-10vw;left:-5vw;animation:drift 20s ease infinite alternate}
+.blob.b2{width:35vw;height:35vw;background:radial-gradient(circle,rgba(43,111,255,.45),transparent 65%);bottom:-10vw;right:-5vw;animation:drift 25s ease infinite alternate-reverse}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(5vw,4vw)}}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:36px 28px;box-shadow:var(--glow2);text-align:center}
+.login-card h1{font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:700;color:var(--cyan);margin-bottom:6px}
+.login-card p{color:var(--dim);font-size:.88rem;margin-bottom:24px}
+.dash-wrap{display:none;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--line);padding:20px 0;z-index:50;overflow-y:auto;transition:transform .3s}
+.sidebar .brand{display:flex;align-items:center;gap:10px;padding:0 20px 20px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.sidebar .brand .mark{width:34px;height:34px;border-radius:9px;background:var(--grad);display:grid;place-items:center;color:#04121f;font-weight:900;font-size:1rem}
+.sidebar .brand span{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:12px;padding:13px 20px;color:var(--dim);font-weight:600;font-size:.9rem;cursor:pointer;border:0;background:none;width:100%;text-align:left;font-family:inherit;transition:all .25s;border-left:3px solid transparent;text-decoration:none}
+.nav-item:hover,.nav-item.active{color:var(--cyan);background:rgba(0,242,254,.06);border-left-color:var(--cyan)}
+.nav-item .nb{background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:2px 6px;border-radius:999px;margin-left:auto}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--line);margin-top:16px}
+.main{margin-left:240px;padding:24px;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.topbar h2{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:700;color:var(--cyan)}
+.topbar .vendor-info{display:flex;align-items:center;gap:12px}
+.topbar .v-avatar{width:40px;height:40px;border-radius:10px;background:var(--grad);display:grid;place-items:center;font-weight:900;font-size:1.1rem;color:#04121f}
+.status-bar{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;margin-bottom:20px}
+.toggle-sw{position:relative;width:52px;height:28px;flex-shrink:0}
+.toggle-sw input{opacity:0;width:0;height:0}
+.toggle-sw .sl{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.1);border-radius:999px;transition:.3s}
+.toggle-sw .sl:before{content:"";position:absolute;width:20px;height:20px;left:4px;top:4px;background:#fff;border-radius:50%;transition:.3s}
+.toggle-sw input:checked+.sl{background:var(--green)}
+.toggle-sw input:checked+.sl:before{transform:translateX(24px)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:18px 16px;text-align:center;transition:all .3s}
+.stat-card:hover{border-color:var(--cyan);box-shadow:var(--glow)}
+.stat-card .sn{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card .sl2{font-size:.78rem;color:var(--dim);margin-top:6px;font-weight:600}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.card h3{font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:14px;color:var(--cyan)}
+.order-list{display:flex;flex-direction:column;gap:12px}
+.order-item{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.order-item .oi-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.order-item .oi-name{font-weight:700;font-size:.95rem}
+.order-item .oi-service{font-size:.78rem;color:var(--cyan);margin-top:2px}
+.order-item .oi-meta{font-size:.82rem;color:var(--dim);line-height:1.6;margin-bottom:10px}
+.order-item .oi-btns{display:flex;gap:8px;flex-wrap:wrap}
+.status-pill{font-size:.7rem;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.pill-pending{background:rgba(255,196,0,.15);color:#ffd24d;border:1px solid rgba(255,196,0,.3)}
+.pill-accepted{background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3)}
+.pill-done{background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid rgba(0,242,254,.2)}
+.pill-rejected{background:rgba(255,93,108,.1);color:var(--red);border:1px solid rgba(255,93,108,.2)}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:14px}
+.menu-item-card{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:14px;transition:all .3s}
+.menu-item-card:hover{border-color:var(--cyan)}
+.menu-item-card .mi-icon{font-size:2rem;margin-bottom:8px}
+.menu-item-card .mi-name{font-weight:700;font-size:.92rem;margin-bottom:4px}
+.menu-item-card .mi-price{color:var(--green);font-weight:800;font-size:.95rem}
+.menu-item-card .mi-desc{font-size:.78rem;color:var(--dim);margin-top:4px;line-height:1.4}
+.mi-avail{font-size:.7rem;padding:3px 8px;border-radius:999px;font-weight:700;margin-top:6px;display:inline-block}
+.mi-avail.yes{background:rgba(26,255,140,.15);color:var(--green)}
+.mi-avail.no{background:rgba(255,93,108,.1);color:var(--red)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0;transition:border-color .25s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan)}
+.field textarea{resize:vertical;min-height:75px}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:0;font-family:'Manrope',sans-serif;font-weight:700;font-size:.88rem;padding:10px 18px;border-radius:10px;text-decoration:none;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad);box-shadow:var(--glow)}
+.btn.grad:hover{box-shadow:var(--glow2);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn.ok{background:linear-gradient(120deg,#1aff8c,#08b85f);color:#04190d}
+.btn.danger{background:linear-gradient(120deg,#ff5d6c,#c81e3a);color:#fff}
+.btn.warn{background:linear-gradient(120deg,#f7971e,#ffd200);color:#1a0a00}
+.btn.sm{padding:7px 12px;font-size:.78rem;border-radius:8px}
+.btn.wa{background:linear-gradient(135deg,#25d366,#0fae53);color:#03190d}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.sub-card{background:linear-gradient(135deg,rgba(0,242,254,.1),rgba(43,111,255,.1));border:1px solid rgba(0,242,254,.3);border-radius:16px;padding:20px;margin-bottom:16px}
+.sub-card .sub-title{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;margin-bottom:8px}
+.sub-badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:.78rem;font-weight:800;margin-bottom:12px}
+.trial{background:rgba(255,196,0,.15);color:#ffd24d;border:1px solid rgba(255,196,0,.3)}
+.active-sub{background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3)}
+.expired{background:rgba(255,93,108,.1);color:var(--red);border:1px solid rgba(255,93,108,.2)}
+.profile-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.p-avatar{width:70px;height:70px;border-radius:16px;background:var(--grad);display:grid;place-items:center;font-size:2rem;font-weight:900;color:#04121f;flex-shrink:0}
+.p-name{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:700}
+.p-cat{font-size:.84rem;color:var(--cyan);margin-top:4px}
+.p-rating{color:var(--gold);font-size:.9rem;margin-top:4px}
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(4,8,16,.85);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{width:100%;max-width:480px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px 24px;position:relative;animation:rise .35s ease}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.modal-box .mx{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt);cursor:pointer;display:grid;place-items:center;font-size:1rem}
+.modal-box h3{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;color:var(--cyan);margin-bottom:16px;padding-right:30px}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,360px)}
+.toast{display:flex;gap:10px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:.86rem;font-weight:600;animation:toastIn .3s ease;cursor:pointer}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.trial-banner{background:linear-gradient(135deg,rgba(255,196,0,.12),rgba(255,150,0,.08));border:1px solid rgba(255,196,0,.3);border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:.86rem}
+.tab-btns{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--dim);font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s}
+.tab-btn.active{background:var(--grad);color:#04121f;border-color:transparent}
+.empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:.9rem;line-height:1.8}
+
+.photo-upload-wrap{margin-bottom:16px}
+.photo-preview{width:100%;height:180px;border-radius:14px;object-fit:cover;border:2px solid var(--line);display:none;margin-bottom:10px}
+.photo-preview.show{display:block}
+.upload-area{border:2px dashed var(--line);border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .3s;background:rgba(0,242,254,.03)}
+.upload-area:hover{border-color:var(--cyan);background:rgba(0,242,254,.06)}
+.upload-area .ua-icon{font-size:2.5rem;margin-bottom:8px}
+.upload-area p{font-size:.84rem;color:var(--dim);margin-top:4px}
+.upload-progress{display:none;margin-top:10px}
+.upload-progress.show{display:block}
+.prog-bar{height:4px;background:rgba(0,242,254,.15);border-radius:999px;margin-top:8px;overflow:hidden}
+.prog-fill{height:100%;background:var(--grad);border-radius:999px;width:0%;transition:width .3s}
+
+.spinner{width:28px;height:28px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:20px auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.mobile-nav-btn{display:none;position:fixed;bottom:20px;right:20px;z-index:60;width:48px;height:48px;border-radius:50%;background:var(--grad);border:0;color:#04121f;font-size:1.4rem;cursor:pointer;box-shadow:var(--glow2)}
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.main{margin-left:0;padding:16px}
+.stats-grid{grid-template-columns:repeat(2,1fr)}
+.mobile-nav-btn{display:block}
+.row-2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-fx"><span class="blob b1"></span><span class="blob b2"></span></div>
+<div id="toaster"></div>
+<div id="dashWrap">
+<aside class="sidebar" id="sidebar">
+<div class="brand">
+<span class="mark">A</span>
+<span>Prime <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Vendor</span></span>
+</div>
+<button class="nav-item active" onclick="showPanel('overview')" id="nav-overview">📊 Overview</button>
+<button class="nav-item" onclick="showPanel('orders')" id="nav-orders">📦 Orders <span class="nb" id="orderBadge" style="display:none">0</span></button>
+<button class="nav-item" onclick="showPanel('menu')" id="nav-menu">📋 Menu / Catalogue</button>
+<button class="nav-item" onclick="showPanel('profile')" id="nav-profile">👤 My Profile</button>
+<button class="nav-item" onclick="showPanel('subscription')" id="nav-subscription">💎 Subscription</button>
+<button class="nav-item" onclick="showPanel('ratings')" id="nav-ratings">⭐ My Ratings</button>
+<button class="nav-item" onclick="showPanel('qr')" id="nav-qr">📱 My QR Code</button>
+<button class="nav-item" onclick="showPanel('offers')" id="nav-offers">🔥 Flash Sale</button>
+<div class="sidebar-footer">
+<a href="/" class="btn ghost" style="width:100%;justify-content:center;margin-bottom:8px">🏠 Main Site</a>
+<button class="btn danger" onclick="doLogout()" style="width:100%;justify-content:center">🚪 Logout</button>
+</div>
+</aside>
+<main class="main">
+<div class="topbar">
+<h2 id="pageTitle">📊 Overview</h2>
+<div class="vendor-info">
+<div class="v-avatar" id="topAvatar">?</div>
+<div>
+<div style="font-weight:700;font-size:.9rem" id="topName">Loading...</div>
+<div style="font-size:.76rem;color:var(--cyan)" id="topCat"></div>
+</div>
+</div>
+</div>
+<div class="trial-banner" id="trialBanner" style="display:none">
+<span style="font-size:1.4rem;flex-shrink:0">⏰</span>
+<div><b style="color:#ffd24d">Free Trial Active</b> — <span id="trialDaysLeft"></span> days remaining. Pay 500 PKR/month after trial.</div>
+<a href="https://wa.me/923174886655?text=I want to pay subscription for Abbottabad Prime Portal" target="_blank" class="btn warn sm" style="margin-left:auto;flex-shrink:0">💳 Pay Now</a>
+</div>
+<div class="status-bar" id="statusBar">
+<label class="toggle-sw"><input type="checkbox" id="statusToggle" onchange="toggleStatus()"/><span class="sl"></span></label>
+<div>
+<div style="font-weight:700;font-size:.9rem" id="statusText">🟢 Online — Customers can find you</div>
+<div style="font-size:.76rem;color:var(--faint)">Toggle to go offline</div>
+</div>
+</div>
+<div class="panel active" id="panel-overview">
+<div class="stats-grid">
+<div class="stat-card"><div class="sn" id="statOrders">0</div><div class="sl2">Total Orders</div></div>
+<div class="stat-card"><div class="sn" id="statPending">0</div><div class="sl2">Pending</div></div>
+<div class="stat-card"><div class="sn" id="statRating">—</div><div class="sl2">My Rating</div></div>
+<div class="stat-card"><div class="sn" id="statMenu">0</div><div class="sl2">Menu Items</div></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<div class="card">
+<h3>📦 Recent Orders</h3>
+<div id="recentOrders"><div class="spinner"></div></div>
+</div>
+<div class="card">
+<h3>📋 Quick Actions</h3>
+<button class="btn grad full" onclick="showPanel('menu');openAddMenu()">➕ Add Menu Item</button>
+<button class="btn ghost full" onclick="showPanel('orders')" style="margin-top:8px">📦 View All Orders</button>
+<button class="btn ghost full" onclick="showPanel('profile')" style="margin-top:8px">✏️ Edit Profile</button>
+<button class="btn ghost full" onclick="requestNotificationPermission()" style="margin-top:8px">🔔 Enable Order Notifications</button>
+<a href="https://wa.me/923174886655" target="_blank" class="btn wa full" style="margin-top:8px">💬 Contact Support</a>
+</div>
+</div>
+</div>
+<div class="panel" id="panel-orders">
+<div class="tab-btns">
+<button class="tab-btn active" onclick="filterOrders('all',this)">📦 All</button>
+<button class="tab-btn" onclick="filterOrders('pending',this)">⏳ Pending</button>
+<button class="tab-btn" onclick="filterOrders('accepted',this)">✅ Accepted</button>
+<button class="tab-btn" onclick="filterOrders('done',this)">🎉 Done</button>
+<button class="tab-btn" onclick="filterOrders('rejected',this)">❌ Rejected</button>
+</div>
+<div class="order-list" id="ordersList"><div class="spinner"></div></div>
+</div>
+<div class="panel" id="panel-menu">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+<div>
+<h3 style="font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--cyan)">📋 My Menu / Catalogue</h3>
+<p style="font-size:.82rem;color:var(--faint);margin-top:4px">Add items customers can order via WhatsApp</p>
+</div>
+<button class="btn grad" onclick="openAddMenu()">➕ Add Item</button>
+</div>
+<div class="menu-grid" id="menuGrid"><div class="spinner"></div></div>
+</div>
+<div class="panel" id="panel-profile">
+<div class="card">
+<div class="profile-header">
+<div class="p-avatar" id="profileAvatar">?</div>
+<div>
+<div class="p-name" id="profileName">Loading...</div>
+<div class="p-cat" id="profileCat"></div>
+<div class="p-rating" id="profileRating"></div>
+</div>
+</div>
+
+<div class="card photo-upload-wrap">
+<h3>📸 Business Photo</h3>
+<img id="photoPreview" class="photo-preview" src="" alt="Business Photo"/>
+<div class="upload-area" onclick="document.getElementById('photoInput').click()">
+<div class="ua-icon">📷</div>
+<p><b>Click to upload business photo</b></p>
+<p>Shows on your vendor card for customers</p>
+</div>
+<input type="file" id="photoInput" accept="image/*" style="display:none" onchange="uploadPhoto(this)"/>
+<div class="upload-progress" id="uploadProgress">
+<div style="font-size:.82rem;color:var(--dim)" id="uploadStatus">Uploading...</div>
+<div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+</div>
+</div>
+<div class="field"><label>Full Name</label><input id="pName" type="text"/></div>
+<div class="row-2">
+<div class="field"><label>Phone</label><input id="pPhone" type="tel" readonly style="opacity:.6"/></div>
+<div class="field"><label>Experience (Years)</label><input id="pExp" type="number" min="0"/></div>
+</div>
+<div class="field"><label>Address</label><input id="pAddress" type="text"/></div>
+<div class="field"><label>Working Hours</label><input id="pHours" type="text" placeholder="e.g. 9AM-9PM, Mon-Sat"/></div>
+<div class="field"><label>Description</label><textarea id="pDesc" placeholder="Describe your services…"></textarea></div>
+<button class="btn ok full" id="saveProfileBtn" onclick="saveProfile()">💾 Save Profile</button>
+</div>
+</div>
+<div class="panel" id="panel-subscription">
+<div class="sub-card">
+<div class="sub-title">📋 Subscription Status</div>
+<div class="sub-badge" id="subBadge">Loading...</div>
+<div style="font-size:.88rem;color:var(--dim);line-height:1.7" id="subInfo"></div>
+</div>
+<div class="card">
+<h3>💎 Plans</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">
+<div style="background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center">
+<div style="font-size:1.5rem;margin-bottom:8px">🆓</div>
+<div style="font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;color:var(--cyan)">Free Trial</div>
+<div style="font-size:1.4rem;font-weight:800;margin:8px 0">0 PKR</div>
+<div style="font-size:.78rem;color:var(--dim)">30 days<br>All features</div>
+</div>
+<div style="background:rgba(0,242,254,.06);border:1px solid rgba(0,242,254,.3);border-radius:12px;padding:16px;text-align:center">
+<div style="font-size:1.5rem;margin-bottom:8px">💎</div>
+<div style="font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;color:var(--cyan)">Premium</div>
+<div style="font-size:1.4rem;font-weight:800;margin:8px 0">500 PKR</div>
+<div style="font-size:.78rem;color:var(--dim)">Per month<br>✅ Verified badge</div>
+</div>
+</div>
+<a href="https://wa.me/923174886655?text=I want to pay 500 PKR subscription. My phone: " target="_blank" class="btn warn full" style="margin-top:16px">💳 Pay via WhatsApp — 500 PKR/month</a>
+</div>
+</div>
+
+<div class="panel" id="panel-qr">
+<div class="card">
+<h3>📱 My QR Code</h3>
+<p style="font-size:.84rem;color:var(--dim);margin-bottom:20px">Share this QR code with customers — they scan it to instantly view your profile and book you!</p>
+<div style="text-align:center;padding:20px">
+<div id="qrCanvas" style="display:inline-block;background:#fff;padding:16px;border-radius:16px;box-shadow:0 0 30px rgba(0,242,254,.3)"></div>
+<div style="margin-top:16px;font-size:.82rem;color:var(--dim)" id="qrLink"></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+<button class="btn grad" onclick="downloadQR()">⬇️ Download QR</button>
+<button class="btn wa" onclick="shareQR()">💬 Share on WhatsApp</button>
+</div>
+<div style="margin-top:16px;background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:12px;padding:14px">
+<div style="font-size:.8rem;font-weight:700;color:var(--cyan);margin-bottom:8px">📋 How to use your QR Code:</div>
+<div style="font-size:.78rem;color:var(--dim);line-height:1.9">
+✅ Print it and display at your shop<br>
+✅ Share as image on WhatsApp<br>
+✅ Add to your business card<br>
+✅ Post on Facebook/Instagram<br>
+✅ Customers scan → instantly book you!
+</div>
+</div>
+</div>
+</div>
+
+<div class="panel" id="panel-offers">
+<div class="card">
+<h3>🔥 Flash Sale / Daily Offer</h3>
+<p style="font-size:.84rem;color:var(--dim);margin-bottom:16px">Post a special offer — shows as banner on your vendor card for customers!</p>
+<div class="field"><label>🏷️ Offer Title</label><input id="offerTitle" type="text" placeholder="e.g. 50% off AC Service today!"/></div>
+<div class="field"><label>💰 Original Price (PKR)</label><input id="offerOriginal" type="number" placeholder="e.g. 2000"/></div>
+<div class="field"><label>💥 Offer Price (PKR)</label><input id="offerPrice" type="number" placeholder="e.g. 1000"/></div>
+<div class="field"><label>⏰ Valid Until</label><input id="offerExpiry" type="datetime-local"/></div>
+<div class="field"><label>📝 Details (optional)</label><textarea id="offerDesc" placeholder="Any conditions or details…" style="min-height:60px"></textarea></div>
+<button class="btn grad full" onclick="saveOffer()">🔥 Post Flash Sale</button>
+<button class="btn ghost full" onclick="removeOffer()" style="margin-top:8px">❌ Remove Current Offer</button>
+</div>
+<div class="card" id="currentOfferCard" style="display:none">
+<h3>✅ Current Active Offer</h3>
+<div id="currentOfferInfo"></div>
+</div>
+</div>
+<div class="panel" id="panel-ratings">
+<div class="card">
+<h3>⭐ My Ratings & Reviews</h3>
+<div id="ratingsContent"><div class="spinner"></div></div>
+</div>
+</div>
+</main>
+</div>
+<div class="modal-overlay" id="menuModal">
+<div class="modal-box">
+<button class="mx" onclick="closeMenuModal()">✕</button>
+<h3 id="menuModalTitle">➕ Add Menu Item</h3>
+<div class="field"><label>Item Name</label><input id="miName" type="text" placeholder="e.g. Chicken Biryani, AC Service"/></div>
+<div class="row-2">
+<div class="field"><label>Price (PKR)</label><input id="miPrice" type="number" placeholder="e.g. 350"/></div>
+<div class="field"><label>Category/Type</label><input id="miType" type="text" placeholder="e.g. Food, Service"/></div>
+</div>
+<div class="field"><label>Description</label><textarea id="miDesc" placeholder="Details about this item…" style="min-height:70px"></textarea></div>
+<div class="field"><label>Icon/Emoji</label><input id="miIcon" type="text" placeholder="e.g. 🍗 🔧 💇" maxlength="4"/></div>
+<div class="field">
+<label>📸 Item Photo (optional)</label>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<img id="miPhotoPreview" style="width:60px;height:60px;border-radius:10px;object-fit:cover;border:1px solid var(--line);display:none"/>
+<label style="display:inline-flex;align-items:center;gap:8px;background:rgba(0,242,254,.07);border:1px solid rgba(0,242,254,.3);border-radius:10px;padding:9px 14px;cursor:pointer;font-size:.84rem;font-weight:700;color:var(--cyan)">
+📷 Choose Photo
+<input type="file" accept="image/*" id="miPhotoInput" style="display:none" onchange="uploadMenuPhoto(this)"/>
+</label>
+<span id="miPhotoStatus" style="font-size:.76rem;color:var(--dim)"></span>
+</div>
+</div>
+<div class="field" style="display:flex;align-items:center;gap:12px">
+<input type="checkbox" id="miAvail" checked style="width:18px;height:18px;cursor:pointer"/>
+<label for="miAvail" style="font-size:.88rem;color:var(--dim);cursor:pointer">Available now</label>
+</div>
+<button class="btn grad full" id="saveMenuBtn" onclick="saveMenuItem()">💾 Save Item</button>
+</div>
+</div>
+<button class="mobile-nav-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+<script>
+let vendorData=null;
+let allOrders=[];
+let allMenuItems=[];
+let editingMenuId=null;
+let currentOrderFilter='all';
+
+function toast(msg,type){
+const el=document.createElement('div');
+el.className='toast '+(type||'info');
+el.innerHTML='<span>'+(type==='ok'?'✅':type==='err'?'⚠️':'ℹ️')+'</span><span>'+msg+'</span>';
+document.getElementById('toaster').appendChild(el);
+const t=setTimeout(function(){el.remove();},4500);
+el.onclick=function(){clearTimeout(t);el.remove();};
+}
+
+function showLogin(){window.location.href='/vendor/login.html';}
+
+
+
+
+
+function doLogout(){
+localStorage.removeItem('vendorEmail');
+localStorage.removeItem('vendorPhone');
+document.cookie='vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+document.cookie='vendorPhone=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+window.location.href='/vendor/login.html';
+}
+
+async function loadVendorData(email){
+try{
+const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'vendors'),window.fbWhere('email','==',email)));
+if(snap.empty){toast('No vendor profile found.','err');localStorage.removeItem('vendorEmail');window.location.href='/vendor/login.html';return;}
+vendorData=Object.assign({id:snap.docs[0].id},snap.docs[0].data());
+renderVendorInfo();
+loadOrders();
+requestNotificationPermission();
+startOrderPolling();
+loadMenuItems();
+loadRatings();
+checkSubscription();
+}catch(e){toast('Could not load profile.','err');}
+}
+
+function renderVendorInfo(){
+if(!vendorData)return;
+const avatar=vendorData.name?vendorData.name[0].toUpperCase():'?';
+document.getElementById('topAvatar').textContent=avatar;
+document.getElementById('topName').textContent=vendorData.name||'';
+document.getElementById('topCat').textContent=vendorData.category||'';
+document.getElementById('profileAvatar').textContent=avatar;
+document.getElementById('profileName').textContent=vendorData.name||'';
+document.getElementById('profileCat').textContent=vendorData.category||'';
+document.getElementById('profileRating').textContent=(vendorData.rating&&parseFloat(vendorData.rating)>0?'⭐ '+parseFloat(vendorData.rating).toFixed(1)+' ('+vendorData.votes+' reviews)':'No ratings yet')+(vendorData.fastResponder?' ⚡ Fast Responder':'');
+document.getElementById('pName').value=vendorData.name||'';
+document.getElementById('pPhone').value=vendorData.phone||'';
+document.getElementById('pExp').value=vendorData.experience||'';
+document.getElementById('pAddress').value=vendorData.address||'';
+document.getElementById('pHours').value=vendorData.hours||'';
+document.getElementById('pDesc').value=vendorData.description||'';
+const isOnline=vendorData.status==='online';
+document.getElementById('statusToggle').checked=isOnline;
+document.getElementById('statusText').textContent=isOnline?'🟢 Online — Customers can find you':'🔴 Offline — Hidden from customers';
+if(vendorData.rating&&parseFloat(vendorData.rating)>0){
+document.getElementById('statRating').textContent=parseFloat(vendorData.rating).toFixed(1)+'⭐';
+}
+}
+
+function checkSubscription(){
+if(!vendorData)return;
+const now=new Date();
+const trialEnd=vendorData.trialEnd?new Date(vendorData.trialEnd):null;
+const subBadge=document.getElementById('subBadge');
+const subInfo=document.getElementById('subInfo');
+const trialBanner=document.getElementById('trialBanner');
+if(vendorData.subscription==='premium'){
+subBadge.className='sub-badge active-sub';subBadge.textContent='💎 Premium Active';
+subInfo.innerHTML='Your listing is <b style="color:var(--green)">fully verified and active</b>.';
+}else if(trialEnd&&now<trialEnd){
+const days=Math.ceil((trialEnd-now)/(1000*60*60*24));
+subBadge.className='sub-badge trial';subBadge.textContent='🆓 Free Trial';
+subInfo.innerHTML='<b style="color:#ffd24d">'+days+' days remaining</b> in your free trial.';
+trialBanner.style.display='flex';
+document.getElementById('trialDaysLeft').textContent=days;
+}else{
+subBadge.className='sub-badge expired';subBadge.textContent='⚠️ Expired';
+subInfo.innerHTML='Your trial has <b style="color:var(--red)">expired</b>. Pay 500 PKR/month to continue.';
+}
+}
+
+async function toggleStatus(){
+if(!vendorData)return;
+const isOnline=document.getElementById('statusToggle').checked;
+document.getElementById('statusText').textContent=isOnline?'🟢 Online — Customers can find you':'🔴 Offline — Hidden from customers';
+try{
+await window.fbUpdate(window.fbDoc(window.db,'vendors',vendorData.id),{status:isOnline?'online':'offline'});
+vendorData.status=isOnline?'online':'offline';
+toast(isOnline?'🟢 You are now Online!':'🔴 You are now Offline.',isOnline?'ok':'info');
+}catch(e){toast('Could not update status.','err');}
+}
+
+async function saveProfile(){
+if(!vendorData)return;
+const payload={
+name:document.getElementById('pName').value.trim(),
+address:document.getElementById('pAddress').value.trim(),
+experience:document.getElementById('pExp').value.trim(),
+hours:document.getElementById('pHours').value.trim(),
+description:document.getElementById('pDesc').value.trim()
+};
+if(!payload.name||!payload.address){toast('Name and address required.','err');return;}
+const btn=document.getElementById('saveProfileBtn');
+btn.disabled=true;btn.textContent='Saving…';
+try{
+await window.fbUpdate(window.fbDoc(window.db,'vendors',vendorData.id),payload);
+Object.assign(vendorData,payload);
+renderVendorInfo();
+toast('Profile updated!','ok');
+}catch(e){toast('Could not save profile.','err');}
+finally{btn.disabled=false;btn.textContent='💾 Save Profile';}
+}
+
+function getCatFlow(category){
+const cat=(category||'').toLowerCase();
+if(cat.includes('ride')||cat.includes('car')||cat.includes('bike')||cat.includes('transport'))return{accept:'🚗 Confirm Ride',done:'✅ Trip Completed',icon:'🚗'};
+if(cat.includes('food')||cat.includes('restaurant')||cat.includes('kitchen')||cat.includes('bakery'))return{accept:'👨‍🍳 Start Cooking',done:'🍽️ Delivered',icon:'🍽️'};
+if(cat.includes('doctor')||cat.includes('physician')||cat.includes('specialist'))return{accept:'📅 Appointment Confirmed',done:'✅ Visited',icon:'🩺'};
+if(cat.includes('lab')||cat.includes('pharmacy')||cat.includes('health'))return{accept:'🔬 Processing',done:'✅ Completed',icon:'🏥'};
+if(cat.includes('plumber')||cat.includes('electric')||cat.includes('ac')||cat.includes('repair')||cat.includes('technical')||cat.includes('solar'))return{accept:'🔧 On the Way',done:'✅ Job Completed',icon:'🔧'};
+if(cat.includes('salon')||cat.includes('barber')||cat.includes('beauty'))return{accept:'💇 Appointment Set',done:'✅ Service Done',icon:'💇'};
+if(cat.includes('property')||cat.includes('real estate'))return{accept:'🏢 Meeting Scheduled',done:'✅ Deal Closed',icon:'🏢'};
+if(cat.includes('tutor')||cat.includes('education')||cat.includes('teacher'))return{accept:'📚 Class Scheduled',done:'✅ Session Done',icon:'🎓'};
+if(cat.includes('photo')||cat.includes('event')||cat.includes('wedding'))return{accept:'📸 Event Confirmed',done:'✅ Completed',icon:'📸'};
+if(cat.includes('web')||cat.includes('app')||cat.includes('digital')||cat.includes('it'))return{accept:'💻 Project Started',done:'✅ Delivered',icon:'💻'};
+if(cat.includes('store')||cat.includes('shop')||cat.includes('kiryana'))return{accept:'📦 Order Confirmed',done:'✅ Delivered',icon:'🛒'};
+return{accept:'✅ Accept',done:'🎉 Mark Done',icon:'📋'};
+}
+
+function capitalise(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+
+function getTimeAgo(date){
+const diff=Math.floor((new Date()-date)/1000);
+if(diff<60)return 'Just now';
+if(diff<3600)return Math.floor(diff/60)+' min ago';
+if(diff<86400)return Math.floor(diff/3600)+' hr ago';
+return Math.floor(diff/86400)+' days ago';
+}
+
+async function loadOrders(){
+try{
+const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'orders'),window.fbWhere('vendorPhone','==',vendorData.phone)));
+allOrders=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+allOrders.sort(function(a,b){return new Date(b.createdAt||0)-new Date(a.createdAt||0);});
+updateOrderStats();
+renderOrders(allOrders);
+renderRecentOrders();
+}catch(e){
+document.getElementById('ordersList').innerHTML='<div class="empty">No orders yet.<br>Share your profile to get bookings!</div>';
+document.getElementById('recentOrders').innerHTML='<div class="empty" style="padding:20px">No orders yet.</div>';
+}
+}
+
+function updateOrderStats(){
+document.getElementById('statOrders').textContent=allOrders.length;
+const pending=allOrders.filter(function(o){return o.status==='pending'||!o.status;}).length;
+document.getElementById('statPending').textContent=pending;
+if(pending>0){
+document.getElementById('orderBadge').textContent=pending;
+document.getElementById('orderBadge').style.display='inline';
+}
+}
+
+function renderRecentOrders(){
+const container=document.getElementById('recentOrders');
+const recent=allOrders.slice(0,3);
+if(!recent.length){container.innerHTML='<div class="empty" style="padding:16px">No orders yet.</div>';return;}
+container.innerHTML=recent.map(function(o){
+const statusMap={pending:'pill-pending',accepted:'pill-accepted',done:'pill-done',rejected:'pill-rejected'};
+return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)">'
++'<div><div style="font-weight:700;font-size:.88rem">'+o.customerName+'</div><div style="font-size:.76rem;color:var(--faint)">'+o.service+'</div></div>'
++'<span class="status-pill '+(statusMap[o.status||'pending']||'pill-pending')+'">'+capitalise(o.status||'pending')+'</span>'
++'</div>';
+}).join('');
+}
+
+function renderOrders(orders){
+const list=document.getElementById('ordersList');
+if(!orders.length){
+list.innerHTML='<div class="empty">'
++'<div style="font-size:3rem;margin-bottom:12px">📭</div>'
++'<div style="font-weight:700;font-size:1rem;color:var(--txt);margin-bottom:8px">No orders found!</div>'
++'<div>When customers book you, orders appear here.</div>'
++'</div>';
+return;
+}
+list.innerHTML='';
+orders.forEach(function(o){
+const flow=getCatFlow(o.service||vendorData.category);
+const div=document.createElement('div');div.className='order-item';
+const statusMap={pending:'pill-pending',accepted:'pill-accepted',done:'pill-done',rejected:'pill-rejected'};
+const timeAgo=o.createdAt?getTimeAgo(new Date(o.createdAt)):'';
+div.innerHTML='<div class="oi-top">'
++'<div><div class="oi-name">'+flow.icon+' '+o.customerName+'</div><div class="oi-service">'+o.service+'</div></div>'
++'<div style="text-align:right"><span class="status-pill '+(statusMap[o.status||'pending']||'pill-pending')+'">'+capitalise(o.status||'pending')+'</span>'
++(timeAgo?'<div style="font-size:.7rem;color:var(--faint);margin-top:4px">'+timeAgo+'</div>':'')
++'</div></div>'
++'<div class="oi-meta">📞 <a href="tel:'+o.customerPhone+'" style="color:var(--cyan)">'+o.customerPhone+'</a>'
++(o.message?'<br>💬 '+o.message:'')
++(o.createdAt?'<br>🕐 '+new Date(o.createdAt).toLocaleString():'')
++'</div>'
++'<div class="oi-btns">'
++(o.status==='pending'||!o.status?
+'<button class="btn ok sm" onclick="updateOrderStatus(\''+o.id+'\',\'accepted\')">'+flow.accept+'</button>'
++'<button class="btn danger sm" onclick="updateOrderStatus(\''+o.id+'\',\'rejected\')">❌ Reject</button>':'')
++(o.status==='accepted'&&needsDelivery(o.service)?'<button class="btn warn sm" onclick="requestDelivery('+JSON.stringify(o).replace(/"/g,"'")+')" style="background:linear-gradient(120deg,#f7971e,#ffd200);color:#1a0a00">🚚 Request Delivery</button>':'')+
+(o.status==='accepted'?
+'<button class="btn grad sm" onclick="updateOrderStatus(\''+o.id+'\',\'done\')">'+flow.done+'</button>':'')
++'<a href="tel:'+o.customerPhone+'" class="btn ghost sm">📞 Call</a>'
++'<a href="https://wa.me/92'+o.customerPhone.replace(/^0/,'').replace(/[^0-9]/g,'')+'" target="_blank" class="btn wa sm">💬 WA</a>'
++'</div>';
+list.appendChild(div);
+});
+}
+
+function filterOrders(status,btn){
+currentOrderFilter=status;
+document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+btn.classList.add('active');
+const filtered=status==='all'?allOrders:allOrders.filter(function(o){return (o.status||'pending')===status;});
+renderOrders(filtered);
+}
+
+async function updateOrderStatus(orderId,status){
+try{
+await window.fbUpdate(window.fbDoc(window.db,'orders',orderId),{status:status});
+const order=allOrders.find(function(o){return o.id===orderId;});
+if(order){order.status=status;}
+// Notify customer on every stage
+if(order&&order.customerPhone){
+  const custNum='92'+order.customerPhone.replace(/^0/,'').replace(/[^0-9]/g,'');
+  const flow=getCatFlow(order.service||vendorData.category);
+  const stages={
+    accepted:'✅ *Order Confirmed!*\n\nDear '+order.customerName+',\n\nYour booking with *'+vendorData.name+'* has been confirmed!\n\n🛠️ Service: '+order.service+'\n📞 Vendor: '+vendorData.phone+'\n📍 '+vendorData.address+(vendorData.hours&&vendorData.hours!='N/A'?'\n🕐 '+vendorData.hours:'')+'\n\n_Abbottabad Prime Portal 🚀_',
+    rejected:'❌ *Booking Cancelled*\n\nDear '+order.customerName+',\n\nSorry, *'+vendorData.name+'* cannot take your booking right now.\n\n🛠️ Service: '+order.service+'\n\nPlease try another provider:\nhttps://www.appabbottabad.com\n\n_Abbottabad Prime Portal 🚀_',
+    done:'🎉 *Service Completed!*\n\nDear '+order.customerName+',\n\nYour service with *'+vendorData.name+'* has been completed!\n\n🛠️ Service: '+order.service+'\n\nPlease rate your experience:\nhttps://www.appabbottabad.com\n\nThank you! 🌟 _Abbottabad Prime Portal_'
+  };
+  if(stages[status]){
+    window.open('https://wa.me/'+custNum+'?text='+encodeURIComponent(stages[status]),'_blank');
+  }
+}
+if(status==='accepted'&&order){
+  const custNum='92'+order.customerPhone.replace(/^0/,'').replace(/[^0-9]/g,'');
+  const msg='✅ *Booking Confirmed!*\n\nDear '+order.customerName+',\n\nYour booking with *'+vendorData.name+'* has been confirmed!\n\n🛠️ Service: '+order.service+'\n📞 Contact: '+vendorData.phone+'\n📍 Address: '+vendorData.address+(vendorData.hours&&vendorData.hours!='N/A'?'\n🕐 Hours: '+vendorData.hours:'')+'\n\nThank you for using *Abbottabad Prime Portal*! 🚀';
+  window.open('https://wa.me/'+custNum+'?text='+encodeURIComponent(msg),'_blank');
+}
+if(status==='rejected'&&order){
+  const custNum='92'+order.customerPhone.replace(/^0/,'').replace(/[^0-9]/g,'');
+  const msg='❌ *Booking Update*\n\nDear '+order.customerName+',\n\nUnfortunately *'+vendorData.name+'* is unable to take your booking at this time.\n\n🛠️ Service: '+order.service+'\n\nPlease try booking another provider on *Abbottabad Prime Portal*. 🙏\n\nhttps://www.appabbottabad.com';
+  window.open('https://wa.me/'+custNum+'?text='+encodeURIComponent(msg),'_blank');
+}
+updateOrderStats();
+filterOrders(currentOrderFilter,document.querySelector('.tab-btn.active'));
+renderRecentOrders();
+toast('Order '+capitalise(status)+'!','ok');
+}catch(e){toast('Could not update order.','err');}
+}
+
+async function loadMenuItems(){
+try{
+const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'menu'),window.fbWhere('vendorPhone','==',vendorData.phone)));
+allMenuItems=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+document.getElementById('statMenu').textContent=allMenuItems.length;
+renderMenuItems();
+}catch(e){renderMenuItems();}
+}
+
+function renderMenuItems(){
+const grid=document.getElementById('menuGrid');
+if(!allMenuItems.length){
+grid.innerHTML='<div class="empty" style="grid-column:1/-1">No menu items yet.<br>Add your services or products!</div>';
+return;
+}
+grid.innerHTML='';
+allMenuItems.forEach(function(item){
+const div=document.createElement('div');div.className='menu-item-card';
+div.innerHTML='<div class="mi-icon">'+(item.photo?'<img src="'+item.photo+'" style="width:60px;height:60px;border-radius:10px;object-fit:cover;margin-bottom:8px;display:block"/>':item.icon&&item.icon.trim()?item.icon.trim():'📋')+'</div>'
++'<div class="mi-name">'+item.name+'</div>'
++'<div class="mi-price">PKR '+item.price+'</div>'
++(item.description?'<div class="mi-desc">'+item.description+'</div>':'')
++'<div><span class="mi-avail '+(item.available?'yes':'no')+'">'+(item.available?'✅ Available':'❌ Unavailable')+'</span></div>'
++'<div style="display:flex;gap:6px;margin-top:10px">'
++'<button class="btn ghost sm" onclick="editMenuItem(\''+item.id+'\')">✏️ Edit</button>'
++'<button class="btn danger sm" onclick="deleteMenuItem(\''+item.id+'\')">🗑️</button>'
++'<button class="btn sm" onclick="toggleMenuAvail(\''+item.id+'\','+item.available+')" style="background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid var(--line)">'+(item.available?'Disable':'Enable')+'</button>'
++'</div>';
+grid.appendChild(div);
+});
+}
+
+function openAddMenu(){
+editingMenuId=null;
+document.getElementById('menuModalTitle').textContent='➕ Add Menu Item';
+['miName','miPrice','miType','miDesc','miIcon'].forEach(function(id){document.getElementById(id).value='';});
+document.getElementById('miAvail').checked=true;
+document.getElementById('menuModal').classList.add('open');
+}
+
+function editMenuItem(id){
+const item=allMenuItems.find(function(i){return i.id===id;});
+if(!item)return;
+editingMenuId=id;
+document.getElementById('menuModalTitle').textContent='✏️ Edit Menu Item';
+document.getElementById('miName').value=item.name||'';
+document.getElementById('miPrice').value=item.price||'';
+document.getElementById('miType').value=item.type||'';
+document.getElementById('miDesc').value=item.description||'';
+document.getElementById('miIcon').value=item.icon||'';
+document.getElementById('miAvail').checked=item.available!==false;
+document.getElementById('menuModal').classList.add('open');
+}
+
+function closeMenuModal(){document.getElementById('menuModal').classList.remove('open');currentMenuPhotoUrl='';const p=document.getElementById('miPhotoPreview');if(p){p.src='';p.style.display='none';}const s=document.getElementById('miPhotoStatus');if(s)s.textContent='';}
+
+async function saveMenuItem(){
+const name=document.getElementById('miName').value.trim();
+const price=document.getElementById('miPrice').value.trim();
+if(!name||!price){toast('Name and price required.','err');return;}
+const payload={
+name:name,price:price,
+type:document.getElementById('miType').value.trim(),
+description:document.getElementById('miDesc').value.trim(),
+icon:document.getElementById('miIcon').value.trim()||'📋',
+available:document.getElementById('miAvail').checked,photo:currentMenuPhotoUrl||'',
+vendorPhone:vendorData.phone,
+vendorName:vendorData.name
+};
+const btn=document.getElementById('saveMenuBtn');
+btn.disabled=true;btn.textContent='Saving…';
+try{
+if(editingMenuId){
+await window.fbUpdate(window.fbDoc(window.db,'menu',editingMenuId),payload);
+const idx=allMenuItems.findIndex(function(i){return i.id===editingMenuId;});
+if(idx>-1)allMenuItems[idx]=Object.assign({id:editingMenuId},payload);
+toast('Item updated!','ok');
+}else{
+const ref=await window.fbAdd(window.fbCol(window.db,'menu'),payload);
+allMenuItems.push(Object.assign({id:ref.id},payload));
+toast('Item added!','ok');
+}
+document.getElementById('statMenu').textContent=allMenuItems.length;
+renderMenuItems();
+closeMenuModal();
+}catch(e){toast('Could not save item.','err');}
+finally{btn.disabled=false;btn.textContent='💾 Save Item';}
+}
+
+async function deleteMenuItem(id){
+if(!confirm('Delete this item?'))return;
+try{
+await window.fbDelete(window.fbDoc(window.db,'menu',id));
+allMenuItems=allMenuItems.filter(function(i){return i.id!==id;});
+document.getElementById('statMenu').textContent=allMenuItems.length;
+renderMenuItems();
+toast('Item deleted.','ok');
+}catch(e){toast('Could not delete.','err');}
+}
+
+async function toggleMenuAvail(id,current){
+try{
+await window.fbUpdate(window.fbDoc(window.db,'menu',id),{available:!current});
+const item=allMenuItems.find(function(i){return i.id===id;});
+if(item)item.available=!current;
+renderMenuItems();
+toast(!current?'Item enabled!':'Item disabled!','ok');
+}catch(e){toast('Could not update.','err');}
+}
+
+async function loadRatings(){
+const container=document.getElementById('ratingsContent');
+if(!vendorData.rating||parseFloat(vendorData.rating)===0){
+container.innerHTML='<div class="empty">No ratings yet.<br>Serve customers well and ask them to rate you!</div>';
+return;
+}
+const r=parseFloat(vendorData.rating);
+const v=parseInt(vendorData.votes)||0;
+let stars='';for(let i=1;i<=5;i++)stars+=i<=Math.round(r)?'★':'☆';
+container.innerHTML='<div style="text-align:center;padding:20px">'
++'<div style="font-size:3rem;color:var(--gold)">'+stars+'</div>'
++'<div style="font-family:\'Orbitron\',sans-serif;font-size:2rem;font-weight:800;color:var(--gold);margin:8px 0">'+r.toFixed(1)+'</div>'
++'<div style="color:var(--dim);font-size:.9rem">Based on <b>'+v+'</b> customer review'+(v>1?'s':'')+'</div>'
++'</div>';
+}
+
+function showPanel(name){
+document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+document.getElementById('panel-'+name).classList.add('active');
+document.getElementById('nav-'+name).classList.add('active');
+const titles={overview:'📊 Overview',orders:'📦 My Orders',menu:'📋 Menu / Catalogue',profile:'👤 My Profile',subscription:'💎 Subscription',ratings:'⭐ My Ratings',qr:'📱 My QR Code',offers:'🔥 Flash Sale'};
+document.getElementById('pageTitle').textContent=titles[name]||name;
+document.getElementById('sidebar').classList.remove('open');
+}
+
+const IMGBB_API='06ca0498b7cee7caaf0189aacc66151d';
+
+async function uploadPhoto(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size>5*1024*1024){toast('Image must be under 5MB','err');return;}
+  const prog=document.getElementById('uploadProgress');
+  const fill=document.getElementById('progFill');
+  const status=document.getElementById('uploadStatus');
+  prog.classList.add('show');
+  status.textContent='Uploading...';
+  fill.style.width='30%';
+  try{
+    const reader=new FileReader();
+    reader.onload=async function(e){
+      const base64=e.target.result.split(',')[1];
+      fill.style.width='60%';
+      const form=new FormData();
+      form.append('image',base64);
+      const res=await fetch('https://api.imgbb.com/1/upload?key='+IMGBB_API,{method:'POST',body:form});
+      const data=await res.json();
+      if(data.success){
+        fill.style.width='100%';
+        status.textContent='✅ Upload successful!';
+        const url=data.data.url;
+        document.getElementById('photoPreview').src=url;
+        document.getElementById('photoPreview').classList.add('show');
+        // Save to Firebase
+        if(vendorData){
+          await window.fbUpdate(window.fbDoc(window.db,'vendors',vendorData.id),{photo:url});
+          vendorData.photo=url;
+          toast('Business photo saved!','ok');
+        }
+      }else{
+        status.textContent='Upload failed.';
+        toast('Upload failed.','err');
+      }
+    };
+    reader.readAsDataURL(file);
+  }catch(e){
+    status.textContent='Error uploading.';
+    toast('Could not upload photo.','err');
+  }
+}
+
+// Load existing photo
+const _origRenderInfo=renderVendorInfo;
+renderVendorInfo=function(){
+  _origRenderInfo();
+  if(vendorData&&vendorData.photo){
+    const prev=document.getElementById('photoPreview');
+    if(prev){prev.src=vendorData.photo;prev.classList.add('show');}
+  }
+};
+
+
+let currentMenuPhotoUrl='';
+async function uploadMenuPhoto(input){
+  const file=input.files[0];
+  if(!file)return;
+  const status=document.getElementById('miPhotoStatus');
+  const preview=document.getElementById('miPhotoPreview');
+  status.textContent='Uploading...';
+  try{
+    const reader=new FileReader();
+    reader.onload=async function(e){
+      const base64=e.target.result.split(',')[1];
+      const form=new FormData();
+      form.append('image',base64);
+      const res=await fetch('https://api.imgbb.com/1/upload?key=06ca0498b7cee7caaf0189aacc66151d',{method:'POST',body:form});
+      const data=await res.json();
+      if(data.success){
+        currentMenuPhotoUrl=data.data.url;
+        preview.src=currentMenuPhotoUrl;
+        preview.style.display='block';
+        status.textContent='✅ Photo ready!';
+      }else{status.textContent='Upload failed.';}
+    };
+    reader.readAsDataURL(file);
+  }catch(e){status.textContent='Error.';}
+}
+
+
+function needsDelivery(category){
+  const cat=(category||'').toLowerCase();
+  return cat.includes('shop')||cat.includes('store')||cat.includes('kiryana')||
+         cat.includes('food')||cat.includes('restaurant')||cat.includes('kitchen')||
+         cat.includes('bakery')||
+         cat.includes('grocery')||cat.includes('delivery')||cat.includes('cargo');
+}
+
+async function requestDelivery(order){
+  const waMsg='🚚 *Delivery Request — Abbottabad Prime*\n\n'
+  +'📦 Item: '+order.service+'\n'
+  +'👤 Customer: '+order.customerName+'\n'
+  +'📞 Customer Phone: '+order.customerPhone+'\n'
+  +'📍 Pickup: '+vendorData.name+' — '+vendorData.address+'\n\n'
+  +'Please confirm delivery availability!';
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'transport'),
+      window.fbWhere('type','==','delivery'),
+      window.fbWhere('status','==','online'),
+      window.fbWhere('adminApproved','==',true)
+    ));
+    const riders=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    if(!riders.length){
+      toast('No delivery riders online right now. Try WhatsApp manually.','err');
+      window.open('https://wa.me/923174886655?text='+encodeURIComponent(waMsg),'_blank');
+      return;
+    }
+    // Show rider selection
+    let msg='Choose a delivery rider:\n\n';
+    riders.forEach(function(r,i){msg+=(i+1)+'. '+r.name+' ('+r.vehicle+') — '+r.phone+'\n';});
+    const choice=prompt(msg+'\nEnter rider number (1-'+riders.length+'):');
+    const idx=parseInt(choice)-1;
+    if(isNaN(idx)||idx<0||idx>=riders.length){toast('Cancelled.','info');return;}
+    const rider=riders[idx];
+    const riderNum='92'+rider.phone.replace(/^0/,'').replace(/[^0-9]/g,'');
+    window.open('https://wa.me/'+riderNum+'?text='+encodeURIComponent(waMsg),'_blank');
+    toast('Delivery request sent to '+rider.name+'!','ok');
+  }catch(e){
+    toast('Could not load riders. Sending to support.','err');
+    window.open('https://wa.me/923174886655?text='+encodeURIComponent(waMsg),'_blank');
+  }
+}
+
+
+function loadQRCode(){
+  if(!vendorData)return;
+  const profileUrl='https://www.appabbottabad.com/?vendor='+encodeURIComponent(vendorData.phone);
+  document.getElementById('qrLink').textContent=profileUrl;
+  const qrDiv=document.getElementById('qrCanvas');
+  qrDiv.innerHTML='';
+  const size=200;
+  const img=document.createElement('img');
+  img.src='https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&data='+encodeURIComponent(profileUrl)+'&bgcolor=ffffff&color=000000&margin=10';
+  img.width=size;img.height=size;
+  img.style.borderRadius='8px';
+  img.alt='QR Code';
+  qrDiv.appendChild(img);
+}
+
+function downloadQR(){
+  if(!vendorData)return;
+  const profileUrl='https://www.appabbottabad.com/?vendor='+encodeURIComponent(vendorData.phone);
+  const url='https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='+encodeURIComponent(profileUrl)+'&bgcolor=ffffff&color=000000&margin=20';
+  const a=document.createElement('a');
+  a.href=url;a.download=vendorData.name+'_QR.png';a.target='_blank';
+  a.click();
+  toast('QR Code downloading!','ok');
+}
+
+function shareQR(){
+  if(!vendorData)return;
+  const profileUrl='https://www.appabbottabad.com/?vendor='+encodeURIComponent(vendorData.phone);
+  const msg='📱 *Book My Services on Abbottabad Prime!*\n\n👤 '+vendorData.name+'\n🛠️ '+vendorData.category+'\n📞 '+vendorData.phone+'\n\n🔗 '+profileUrl+'\n\n_Powered by Abbottabad Prime Portal 🚀_';
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+// Load QR when panel opened
+const _origShowPanel=showPanel;
+showPanel=function(name){
+  _origShowPanel(name);
+  if(name==='qr')loadQRCode();if(name==='offers')loadCurrentOffer();
+};
+
+
+// Push Notifications
+async function requestNotificationPermission(){
+  if(!('Notification' in window))return;
+  if(Notification.permission==='default'){
+    const perm=await Notification.requestPermission();
+    if(perm==='granted')toast('🔔 Notifications enabled!','ok');
+  }
+}
+
+function sendNotification(title,body,icon){
+  if(Notification.permission==='granted'){
+    const n=new Notification(title,{
+      body:body,
+      icon:icon||'https://www.appabbottabad.com/baba.jpg',
+      badge:'https://www.appabbottabad.com/baba.jpg',
+      vibrate:[200,100,200],
+      tag:'order-alert'
+    });
+    n.onclick=function(){window.focus();showPanel('orders');n.close();};
+    setTimeout(function(){n.close();},8000);
+  }
+}
+
+// Check for new orders every 30 seconds
+let lastOrderCount=0;
+let notifInterval=null;
+
+function startOrderPolling(){
+  if(notifInterval)return;
+  notifInterval=setInterval(async function(){
+    if(!vendorData)return;
+    try{
+      const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'orders'),window.fbWhere('vendorPhone','==',vendorData.phone)));
+      const orders=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+      const pending=orders.filter(function(o){return o.status==='pending'||!o.status;});
+      if(lastOrderCount>0&&pending.length>lastOrderCount){
+        const newOrder=pending[0];
+        sendNotification(
+          '🔔 New Order!',
+          'From: '+newOrder.customerName+' — '+newOrder.service,
+          'https://www.appabbottabad.com/baba.jpg'
+        );
+        toast('🔔 New order from '+newOrder.customerName+'!','ok');
+      }
+      lastOrderCount=pending.length;
+      document.getElementById('orderBadge').textContent=pending.length;
+      if(pending.length>0)document.getElementById('orderBadge').style.display='inline';
+      else document.getElementById('orderBadge').style.display='none';
+    }catch(e){}
+  },30000);
+}
+
+
+async function saveOffer(){
+  if(!vendorData)return;
+  const title=document.getElementById('offerTitle').value.trim();
+  const original=document.getElementById('offerOriginal').value;
+  const price=document.getElementById('offerPrice').value;
+  const expiry=document.getElementById('offerExpiry').value;
+  const desc=document.getElementById('offerDesc').value.trim();
+  if(!title||!price||!expiry){toast('Please fill title, price and expiry.','err');return;}
+  try{
+    const offer={title:title,originalPrice:original||'',offerPrice:price,expiry:expiry,desc:desc,active:true,createdAt:new Date().toISOString()};
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',vendorData.id),{offer:offer});
+    vendorData.offer=offer;
+    toast('🔥 Flash sale is LIVE!','ok');
+    loadCurrentOffer();
+  }catch(e){toast('Could not save offer.','err');}
+}
+
+async function removeOffer(){
+  if(!vendorData)return;
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',vendorData.id),{offer:null});
+    vendorData.offer=null;
+    document.getElementById('currentOfferCard').style.display='none';
+    toast('Offer removed.','ok');
+  }catch(e){toast('Could not remove.','err');}
+}
+
+function loadCurrentOffer(){
+  if(!vendorData||!vendorData.offer)return;
+  const o=vendorData.offer;
+  const card=document.getElementById('currentOfferCard');
+  const info=document.getElementById('currentOfferInfo');
+  card.style.display='block';
+  info.innerHTML='<div style="background:rgba(255,100,0,.08);border:1px solid rgba(255,150,0,.25);border-radius:10px;padding:12px">'
+  +'<div style="font-weight:800;color:#ffd200;font-size:.95rem">🔥 '+o.title+'</div>'
+  +(o.originalPrice?'<div style="font-size:.82rem;color:var(--dim);text-decoration:line-through;margin-top:4px">PKR '+parseInt(o.originalPrice).toLocaleString()+'</div>':'')
+  +'<div style="font-size:1rem;font-weight:800;color:var(--green)">PKR '+parseInt(o.offerPrice).toLocaleString()+'</div>'
+  +'<div style="font-size:.76rem;color:var(--dim);margin-top:4px">⏰ Valid until: '+new Date(o.expiry).toLocaleString()+'</div>'
+  +(o.desc?'<div style="font-size:.78rem;color:var(--dim);margin-top:4px">'+o.desc+'</div>':'')
+  +'</div>';
+}
+
+
+// Fast Responder Badge — auto assign if vendor responds within 5 minutes
+async function checkFastResponder(){
+  if(!vendorData||!allOrders.length)return;
+  const accepted=allOrders.filter(function(o){return o.status==='accepted'&&o.createdAt&&o.acceptedAt;});
+  if(accepted.length<3)return; // Need at least 3 orders
+  const fastCount=accepted.filter(function(o){
+    const responseTime=(new Date(o.acceptedAt)-new Date(o.createdAt))/60000; // minutes
+    return responseTime<=5;
+  }).length;
+  const fastPercent=fastCount/accepted.length;
+  if(fastPercent>=0.8&&!vendorData.fastResponder){
+    // 80%+ orders responded within 5 min = Fast Responder
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',vendorData.id),{fastResponder:true});
+    vendorData.fastResponder=true;
+    toast('⚡ You earned the Fast Responder badge!','ok');
+  }
+}
+
+// Track acceptance time on order accept
+const _origUpdateOrderStatus=updateOrderStatus;
+updateOrderStatus=async function(orderId,status){
+  if(status==='accepted'){
+    try{
+      await window.fbUpdate(window.fbDoc(window.db,'orders',orderId),{acceptedAt:new Date().toISOString()});
+    }catch(e){}
+  }
+  await _origUpdateOrderStatus(orderId,status);
+  if(status==='accepted')checkFastResponder();
+};
+
+</script>
+</body>
+</html>

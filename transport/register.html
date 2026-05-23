@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Transport Registration — Abbottabad Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,addDoc,getDocs,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import{getAuth,createUserWithEmailAndPassword}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);const auth=getAuth(app);
+window.db=db;window.auth=auth;
+window.fbCol=collection;window.fbAdd=addDoc;window.fbGet=getDocs;
+window.fbQ=query;window.fbWhere=where;
+window.fbCreateUser=createUserWithEmailAndPassword;
+</script>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--glow:0 0 20px rgba(0,242,254,0.2);--red:#ff5d6c;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding:20px}
+.shell{max-width:560px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:28px;text-decoration:none;color:inherit}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#04121f;font-weight:900;font-size:1.1rem}
+.brand-txt{font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:800}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px 24px;box-shadow:var(--glow);margin-bottom:20px}
+.card h2{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:700;color:var(--cyan);margin-bottom:6px}
+.card p{color:var(--dim);font-size:.86rem;margin-bottom:20px}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.type-card{border:2px solid var(--line);border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all .3s}
+.type-card:hover,.type-card.active{border-color:var(--cyan);background:rgba(0,242,254,.06)}
+.type-card .ti{font-size:2rem;margin-bottom:8px}
+.type-card .tn{font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:700;color:var(--cyan)}
+.type-card .td{font-size:.72rem;color:var(--dim);margin-top:4px}
+.vehicle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.v-btn{border:1px solid var(--line);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .25s;font-size:.76rem;font-weight:700;color:var(--dim)}
+.v-btn:hover,.v-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,242,254,.06)}
+.v-btn .vi{font-size:1.4rem;display:block;margin-bottom:4px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0;transition:border-color .25s}
+.field input:focus{border-color:var(--cyan)}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;cursor:pointer;border:0;font-family:'Manrope',sans-serif;font-weight:700;font-size:.95rem;padding:13px;border-radius:12px;transition:all .25s;margin-top:8px;text-decoration:none}
+.btn.grad{color:#04121f;background:var(--grad);box-shadow:var(--glow)}
+.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.cnic-upload{border:2px dashed rgba(255,196,0,.3);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .3s;background:rgba(255,196,0,.04)}
+.cnic-upload:hover{border-color:rgba(255,196,0,.6)}
+.cnic-preview{width:100%;max-height:120px;object-fit:cover;border-radius:8px;display:none;margin-top:10px}
+#toaster{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;width:min(92vw,380px)}
+.toast{padding:12px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:.88rem;font-weight:600}
+.toast.ok{border-color:rgba(26,255,140,.5)}.toast.err{border-color:rgba(255,93,108,.5)}
+.spinner{width:24px;height:24px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:0 auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="shell">
+<a class="brand" href="/"><span class="mark">A</span><span class="brand-txt">Abbottabad <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Prime</span></span></a>
+<div class="card">
+<h2>🚗 Transport Registration</h2>
+<p>Register as a transport provider — passenger rides or delivery service</p>
+<div class="type-grid">
+<div class="type-card active" id="type-passenger" onclick="selectType('passenger')">
+<div class="ti">🧍</div><div class="tn">Passenger</div><div class="td">Rides & intercity travel</div>
+</div>
+<div class="type-card" id="type-delivery" onclick="selectType('delivery')">
+<div class="ti">📦</div><div class="tn">Delivery</div><div class="td">Parcels & cargo</div>
+</div>
+</div>
+<div class="field">
+<label>🚙 Vehicle Type</label>
+<div class="vehicle-grid">
+<div class="v-btn active" id="v-bike" onclick="selectVehicle('bike')"><span class="vi">🏍️</span>Bike</div>
+<div class="v-btn" id="v-car" onclick="selectVehicle('car')"><span class="vi">🚗</span>Car</div>
+<div class="v-btn" id="v-van" onclick="selectVehicle('van')"><span class="vi">🚐</span>Van</div>
+<div class="v-btn" id="v-pickup" onclick="selectVehicle('pickup')"><span class="vi">🛻</span>Pickup</div>
+<div class="v-btn" id="v-cargo" onclick="selectVehicle('cargo')"><span class="vi">🚛</span>Cargo</div>
+<div class="v-btn" id="v-suzuki" onclick="selectVehicle('suzuki')"><span class="vi">🚌</span>Suzuki</div>
+</div>
+</div>
+<div class="field"><label>Full Name</label><input id="tName" type="text" placeholder="Your full name"/></div>
+<div class="row-2">
+<div class="field"><label>Phone</label><input id="tPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+<div class="field"><label>Experience (Yrs)</label><input id="tExp" type="number" min="0" placeholder="e.g. 3"/></div>
+</div>
+<div class="field"><label>Area / Route</label><input id="tArea" type="text" placeholder="e.g. Abbottabad to Islamabad"/></div>
+<div class="field"><label>Vehicle Number</label><input id="tVehicle" type="text" placeholder="e.g. ABC-1234"/></div>
+<div class="row-2">
+<div class="field"><label>📧 Email</label><input id="tEmail" type="email" placeholder="yourname@gmail.com"/></div>
+<div class="field"><label>🔑 Password</label><input id="tPass" type="password" placeholder="Min 6 chars"/></div>
+</div>
+<div class="field">
+<label>🪪 CNIC Photo (Required)</label>
+<div class="cnic-upload" onclick="document.getElementById('tCnic').click()">
+<div style="font-size:1.8rem">🪪</div>
+<p style="font-size:.82rem;color:var(--dim);margin-top:6px">Tap to upload CNIC photo</p>
+<input type="file" id="tCnic" accept="image/*" style="display:none" onchange="uploadTransportCnic(this)"/>
+<img id="tCnicPreview" class="cnic-preview"/>
+<p style="font-size:.72rem;color:var(--faint);margin-top:6px" id="tCnicStatus">Required for verification</p>
+</div>
+</div>
+<div class="field">
+<label>📸 Your Photo (optional)</label>
+<div style="display:flex;align-items:center;gap:10px">
+<img id="tPhotoPreview" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:1px solid var(--line);display:none"/>
+<label style="display:inline-flex;align-items:center;gap:7px;background:rgba(0,242,254,.07);border:1px solid rgba(0,242,254,.25);border-radius:10px;padding:9px 14px;cursor:pointer;font-size:.84rem;font-weight:700;color:var(--cyan)">
+📷 Upload Photo
+<input type="file" accept="image/*" id="tPhoto" style="display:none" onchange="uploadTransportPhoto(this)"/>
+</label>
+<span id="tPhotoStatus" style="font-size:.76rem;color:var(--dim)"></span>
+</div>
+</div>
+<button class="btn grad" onclick="registerTransport()">🚀 Register Now</button>
+<a href="/transport/login.html" class="btn ghost">🔑 Already registered? Login</a>
+<a href="/" class="btn ghost" style="margin-top:4px">🏠 Back to Main Site</a>
+</div>
+</div>
+<script>
+const IMGBB='06ca0498b7cee7caaf0189aacc66151d';
+let selectedType='passenger';
+let selectedVehicle='bike';
+let cnicUrl='';
+let photoUrl='';
+function toast(msg,type){const el=document.createElement('div');el.className='toast '+(type||'');el.textContent=msg;document.getElementById('toaster').appendChild(el);setTimeout(function(){el.remove();},4000);}
+function selectType(t){selectedType=t;document.querySelectorAll('.type-card').forEach(function(c){c.classList.remove('active');});document.getElementById('type-'+t).classList.add('active');}
+function selectVehicle(v){selectedVehicle=v;document.querySelectorAll('.v-btn').forEach(function(b){b.classList.remove('active');});document.getElementById('v-'+v).classList.add('active');}
+async function uploadImg(file,previewId,statusId){
+  const status=document.getElementById(statusId);const preview=document.getElementById(previewId);
+  status.textContent='Uploading...';
+  const reader=new FileReader();
+  return new Promise(function(resolve){
+    reader.onload=async function(e){
+      const base64=e.target.result.split(',')[1];
+      const form=new FormData();form.append('image',base64);
+      const res=await fetch('https://api.imgbb.com/1/upload?key='+IMGBB,{method:'POST',body:form});
+      const data=await res.json();
+      if(data.success){preview.src=data.data.url;preview.style.display='block';status.textContent='✅ Uploaded!';status.style.color='#1aff8c';resolve(data.data.url);}
+      else{status.textContent='Failed.';resolve('');}
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function uploadTransportCnic(input){if(!input.files[0])return;uploadImg(input.files[0],'tCnicPreview','tCnicStatus').then(function(url){cnicUrl=url;});}
+function uploadTransportPhoto(input){if(!input.files[0])return;uploadImg(input.files[0],'tPhotoPreview','tPhotoStatus').then(function(url){photoUrl=url;});}
+async function registerTransport(){
+  const name=document.getElementById('tName').value.trim();
+  const phone=document.getElementById('tPhone').value.trim();
+  const email=document.getElementById('tEmail').value.trim();
+  const pass=document.getElementById('tPass').value;
+  const area=document.getElementById('tArea').value.trim();
+  const vehicle=document.getElementById('tVehicle').value.trim();
+  const exp=document.getElementById('tExp').value.trim();
+  if(!name||!phone||!email||!pass||!area){toast('Please fill all required fields.','err');return;}
+  if(!cnicUrl){toast('Please upload your CNIC photo.','err');return;}
+  if(pass.length<6){toast('Password must be at least 6 characters.','err');return;}
+  const btn=document.querySelector('.btn.grad');
+  btn.disabled=true;btn.innerHTML='<div class="spinner"></div>';
+  try{
+    await window.fbCreateUser(window.auth,email,pass);
+    await window.fbAdd(window.fbCol(window.db,'transport'),{
+      name:name,phone:phone,email:email,
+      type:selectedType,vehicle:selectedVehicle,
+      vehicleNumber:vehicle,area:area,
+      experience:exp||'0',cnic:cnicUrl,photo:photoUrl,
+      status:'offline',adminApproved:false,
+      verified:false,rating:'0',votes:'0',
+      registered:new Date().toISOString()
+    });
+    toast('Registration successful! Await admin approval.','ok');
+    setTimeout(function(){window.location.href='/transport/login.html';},2000);
+  }catch(e){
+    toast('Registration failed: '+e.message,'err');
+    btn.disabled=false;btn.innerHTML='🚀 Register Now';
+  }
+}
+</script>
+</body>
+</html>

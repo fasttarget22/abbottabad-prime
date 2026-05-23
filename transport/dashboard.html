@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Transport Dashboard — Abbottabad Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,getDocs,doc,updateDoc,query,where,addDoc}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import{getAuth,signOut,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);const auth=getAuth(app);
+window.db=db;window.auth=auth;
+window.fbCol=collection;window.fbGet=getDocs;
+window.fbDoc=doc;window.fbUpdate=updateDoc;
+window.fbQ=query;window.fbWhere=where;
+window.fbAdd=addDoc;
+window.fbSignOut=signOut;
+onAuthStateChanged(auth,function(user){
+if(user){window.currentUser=user;loadDriver(user.email);}
+else{window.location.href='/transport/login.html';}
+});
+</script>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--surface2:rgba(18,24,38,0.8);--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--glow:0 0 18px rgba(0,242,254,0.2);--red:#ff5d6c;--gold:#ffd700;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--line);padding:18px 0;z-index:50;overflow-y:auto;transition:transform .3s}
+.sidebar .brand{padding:0 18px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.sidebar .brand h2{font-family:'Orbitron',sans-serif;font-size:.85rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar .brand p{font-size:.72rem;color:var(--faint);margin-top:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 18px;color:var(--dim);font-weight:600;font-size:.86rem;cursor:pointer;border:0;background:none;width:100%;text-align:left;font-family:inherit;transition:all .25s;border-left:3px solid transparent}
+.nav-item:hover,.nav-item.active{color:var(--cyan);background:rgba(0,242,254,.06);border-left-color:var(--cyan)}
+.main{margin-left:220px;padding:22px;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.topbar h2{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;color:var(--cyan)}
+.status-bar{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;margin-bottom:20px}
+.toggle-sw{position:relative;width:52px;height:28px;flex-shrink:0}
+.toggle-sw input{opacity:0;width:0;height:0}
+.toggle-sw .sl{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.1);border-radius:999px;transition:.3s}
+.toggle-sw .sl:before{content:"";position:absolute;width:20px;height:20px;left:4px;top:4px;background:#fff;border-radius:50%;transition:.3s}
+.toggle-sw input:checked+.sl{background:var(--green)}
+.toggle-sw input:checked+.sl:before{transform:translateX(24px)}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.stat-card{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}
+.stat-card .sn{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card .sl{font-size:.76rem;color:var(--dim);margin-top:6px;font-weight:600}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.card h3{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;color:var(--cyan);margin-bottom:14px}
+.trip-card{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.trip-card .tc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.trip-card .tc-name{font-weight:700;font-size:.92rem}
+.trip-card .tc-meta{font-size:.8rem;color:var(--dim);line-height:1.7;margin-bottom:10px}
+.trip-card .tc-btns{display:flex;gap:8px;flex-wrap:wrap}
+.status-pill{font-size:.68rem;font-weight:800;padding:3px 9px;border-radius:999px}
+.pill-pending{background:rgba(255,196,0,.15);color:#ffd24d;border:1px solid rgba(255,196,0,.3)}
+.pill-accepted{background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3)}
+.pill-done{background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid rgba(0,242,254,.2)}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:'Manrope',sans-serif;font-weight:700;font-size:.82rem;padding:8px 14px;border-radius:9px;text-decoration:none;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn.ok{background:linear-gradient(120deg,#1aff8c,#08b85f);color:#04190d}
+.btn.danger{background:linear-gradient(120deg,#ff5d6c,#c81e3a);color:#fff}
+.btn.wa{background:linear-gradient(135deg,#25d366,#0fae53);color:#03190d}
+.btn.warn{background:linear-gradient(120deg,#f7971e,#ffd200);color:#1a0a00}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.btn.sm{padding:6px 10px;font-size:.76rem}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0;transition:border-color .25s}
+.field input:focus{border-color:var(--cyan)}
+.empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:.9rem;line-height:1.8}
+.spinner{width:28px;height:28px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:20px auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.mobile-btn{display:none;position:fixed;bottom:18px;right:18px;z-index:60;width:46px;height:46px;border-radius:50%;background:var(--grad);border:0;color:#04121f;font-size:1.3rem;cursor:pointer}
+.not-approved{background:linear-gradient(135deg,rgba(255,93,108,.1),rgba(200,30,58,.08));border:1px solid rgba(255,93,108,.3);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,340px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600;animation:toastIn .3s ease;cursor:pointer}
+.toast.ok{border-color:rgba(26,255,140,.5)}.toast.err{border-color:rgba(255,93,108,.5)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:14px}.stats-grid{grid-template-columns:repeat(2,1fr)}.mobile-btn{display:block}}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<aside class="sidebar" id="sidebar">
+<div class="brand"><h2>🚗 Transport</h2><p>Abbottabad Prime</p></div>
+<button class="nav-item active" onclick="showPanel('overview')" id="nav-overview">📊 Overview</button>
+<button class="nav-item" onclick="showPanel('trips')" id="nav-trips">🗺️ My Trips</button>
+<button class="nav-item" onclick="showPanel('profile')" id="nav-profile">👤 My Profile</button>
+<button class="nav-item" onclick="showPanel('earnings')" id="nav-earnings">💰 Earnings</button>
+<div style="padding:14px 18px;border-top:1px solid var(--line);margin-top:auto">
+<a href="/" class="btn ghost" style="width:100%;justify-content:center;margin-bottom:8px;font-size:.8rem">🏠 Main Site</a>
+<button class="btn danger" onclick="doLogout()" style="width:100%;justify-content:center;font-size:.8rem">🚪 Logout</button>
+</div>
+</aside>
+<main class="main">
+<div id="toaster"></div>
+<div class="topbar">
+<h2 id="pageTitle">📊 Overview</h2>
+<div style="display:flex;align-items:center;gap:10px">
+<div style="font-weight:700;font-size:.9rem" id="topName">Loading...</div>
+<div style="font-size:.72rem;color:var(--cyan)" id="topVehicle"></div>
+</div>
+</div>
+<div id="notApproved" class="not-approved" style="display:none">
+<div style="font-size:2rem;margin-bottom:8px">⏳</div>
+<div style="font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;color:#ffd24d;margin-bottom:6px">Pending Admin Approval</div>
+<div style="font-size:.84rem;color:var(--dim)">Your CNIC is being verified. You will receive a WhatsApp message once approved.</div>
+</div>
+<div class="status-bar" id="statusBar">
+<label class="toggle-sw"><input type="checkbox" id="statusToggle" onchange="toggleStatus()"/><span class="sl"></span></label>
+<div><div style="font-weight:700;font-size:.9rem" id="statusText">🔴 Offline</div><div style="font-size:.76rem;color:var(--faint)">Toggle to go online</div></div>
+</div>
+<div class="stats-grid">
+<div class="stat-card"><div class="sn" id="statTrips">0</div><div class="sl">Total Trips</div></div>
+<div class="stat-card"><div class="sn" id="statRating">—</div><div class="sl">My Rating</div></div>
+<div class="stat-card"><div class="sn" id="statEarnings">0</div><div class="sl">Est. Earnings</div></div>
+</div>
+<div class="panel active" id="panel-overview">
+<div class="card">
+<h3>🚗 Quick Info</h3>
+<div id="driverInfo"><div class="spinner"></div></div>
+</div>
+<div class="card">
+<h3>📋 Quick Actions</h3>
+<button class="btn grad full" onclick="shareLocation()">📍 Share My Location</button>
+<button class="btn ghost full" onclick="showPanel('trips')" style="margin-top:8px">🗺️ View All Trips</button>
+<a href="https://wa.me/923174886655" target="_blank" class="btn wa full" style="margin-top:8px">💬 Contact Support</a>
+</div>
+</div>
+<div class="panel" id="panel-trips">
+<div class="card">
+<h3>🗺️ My Trips & Deliveries</h3>
+<div id="tripsList"><div class="spinner"></div></div>
+</div>
+</div>
+<div class="panel" id="panel-profile">
+<div class="card">
+<h3>👤 My Profile</h3>
+<div class="field"><label>Full Name</label><input id="pName" type="text"/></div>
+<div class="field"><label>Phone</label><input id="pPhone" type="tel" readonly style="opacity:.6"/></div>
+<div class="field"><label>Area / Route</label><input id="pArea" type="text"/></div>
+<div class="field"><label>Vehicle Number</label><input id="pVehicle" type="text"/></div>
+<button class="btn ok full" onclick="saveProfile()">💾 Save Profile</button>
+</div>
+</div>
+<div class="panel" id="panel-earnings">
+<div class="card">
+<h3>💰 Earnings Tracker</h3>
+<div id="earningsContent"><div class="spinner"></div></div>
+</div>
+</div>
+</main>
+<button class="mobile-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+<script>
+let driverData=null;
+let allTrips=[];
+
+function toast(msg,type){const el=document.createElement('div');el.className='toast '+(type||'');el.textContent=msg;document.getElementById('toaster').appendChild(el);setTimeout(function(){el.remove();},4500);}
+
+async function loadDriver(email){
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'transport'),window.fbWhere('email','==',email)));
+    if(snap.empty){toast('No driver profile found.','err');doLogout();return;}
+    driverData=Object.assign({id:snap.docs[0].id},snap.docs[0].data());
+    renderDriverInfo();
+    loadTrips();
+    if(!driverData.adminApproved){document.getElementById('notApproved').style.display='block';}
+  }catch(e){toast('Could not load profile.','err');}
+}
+
+function renderDriverInfo(){
+  if(!driverData)return;
+  document.getElementById('topName').textContent=driverData.name||'';
+  document.getElementById('topVehicle').textContent=(driverData.vehicle||'')+(driverData.vehicleNumber?' — '+driverData.vehicleNumber:'');
+  document.getElementById('pName').value=driverData.name||'';
+  document.getElementById('pPhone').value=driverData.phone||'';
+  document.getElementById('pArea').value=driverData.area||'';
+  document.getElementById('pVehicle').value=driverData.vehicleNumber||'';
+  const isOnline=driverData.status==='online';
+  document.getElementById('statusToggle').checked=isOnline;
+  document.getElementById('statusText').textContent=isOnline?'🟢 Online — Ready for trips':'🔴 Offline — Not visible';
+  if(driverData.rating&&parseFloat(driverData.rating)>0)document.getElementById('statRating').textContent=parseFloat(driverData.rating).toFixed(1)+'⭐';
+  document.getElementById('driverInfo').innerHTML=
+    '<div style="font-size:.88rem;color:var(--dim);line-height:2">'
+    +'🚗 Vehicle: <b style="color:var(--txt)">'+driverData.vehicle+'</b><br>'
+    +'🔢 Reg: <b style="color:var(--txt)">'+driverData.vehicleNumber+'</b><br>'
+    +'📍 Area: <b style="color:var(--txt)">'+driverData.area+'</b><br>'
+    +'📦 Type: <b style="color:var(--txt)">'+driverData.type+'</b><br>'
+    +(driverData.adminApproved?'✅ <b style="color:var(--green)">Approved & Verified</b>':'⏳ <b style="color:#ffd24d">Pending Approval</b>')
+    +'</div>';
+}
+
+async function toggleStatus(){
+  if(!driverData)return;
+  const isOnline=document.getElementById('statusToggle').checked;
+  document.getElementById('statusText').textContent=isOnline?'🟢 Online — Ready for trips':'🔴 Offline — Not visible';
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'transport',driverData.id),{status:isOnline?'online':'offline'});
+    driverData.status=isOnline?'online':'offline';
+    toast(isOnline?'🟢 You are Online!':'🔴 You are Offline.',isOnline?'ok':'info');
+  }catch(e){toast('Could not update status.','err');}
+}
+
+async function loadTrips(){
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'trips'),window.fbWhere('driverPhone','==',driverData.phone)));
+    allTrips=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    allTrips.sort(function(a,b){return new Date(b.createdAt||0)-new Date(a.createdAt||0);});
+    document.getElementById('statTrips').textContent=allTrips.length;
+    document.getElementById('statEarnings').textContent=allTrips.filter(function(t){return t.status==='done';}).length*200;
+    renderTrips();
+    renderEarnings();
+  }catch(e){
+    document.getElementById('tripsList').innerHTML='<div class="empty">No trips yet.</div>';
+  }
+}
+
+function renderTrips(){
+  const list=document.getElementById('tripsList');
+  if(!allTrips.length){list.innerHTML='<div class="empty">📭<br><br>No trips assigned yet.<br>Go online to receive trip requests!</div>';return;}
+  list.innerHTML='';
+  allTrips.forEach(function(t){
+    const div=document.createElement('div');div.className='trip-card';
+    const statusMap={pending:'pill-pending',accepted:'pill-accepted',done:'pill-done'};
+    const custNum='92'+(t.customerPhone||'').replace(/^0/,'').replace(/[^0-9]/g,'');
+    div.innerHTML='<div class="tc-top"><div><div class="tc-name">'+t.customerName+'</div><div style="font-size:.74rem;color:var(--cyan)">'+t.type+'</div></div><span class="status-pill '+(statusMap[t.status||'pending']||'pill-pending')+'">'+capitalise(t.status||'pending')+'</span></div>'
+    +'<div class="tc-meta">📞 '+t.customerPhone+'<br>📍 '+t.area+(t.createdAt?'<br>🕐 '+new Date(t.createdAt).toLocaleString():'')+'</div>'
+    +'<div class="tc-btns">'
+    +(t.status==='pending'?'<button class="btn ok sm" onclick="updateTrip(\''+t.id+'\',\'accepted\',\''+custNum+'\',\''+t.customerName+'\')">✅ Accept</button><button class="btn danger sm" onclick="updateTrip(\''+t.id+'\',\'rejected\',\''+custNum+'\',\''+t.customerName+'\')">❌ Reject</button>':'')
+    +(t.status==='accepted'?'<button class="btn warn sm" onclick="markDelivered(\''+t.id+'\',\''+custNum+'\',\''+t.customerName+'\')">📦 Mark Delivered</button>':'')
+    +'<a href="tel:'+t.customerPhone+'" class="btn ghost sm">📞 Call</a>'
+    +'<a href="https://wa.me/'+custNum+'" target="_blank" class="btn wa sm">💬 WA</a>'
+    +'</div>';
+    list.appendChild(div);
+  });
+}
+
+async function updateTrip(id,status,custNum,custName){
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'trips',id),{status:status});
+    const trip=allTrips.find(function(t){return t.id===id;});
+    if(trip)trip.status=status;
+    if(status==='accepted'){
+      const msg='✅ *Trip Confirmed!*\n\nDear '+custName+',\n\nYour trip/delivery has been *accepted* by '+driverData.name+'!\n\n🚗 Vehicle: '+driverData.vehicle+'\n🔢 Reg: '+driverData.vehicleNumber+'\n📞 Driver: '+driverData.phone+'\n\nThank you for using *Abbottabad Prime Portal*! 🚀';
+      window.open('https://wa.me/'+custNum+'?text='+encodeURIComponent(msg),'_blank');
+    }
+    renderTrips();
+    toast('Trip '+capitalise(status)+'!','ok');
+  }catch(e){toast('Could not update trip.','err');}
+}
+
+async function markDelivered(id,custNum,custName){
+  if(!navigator.geolocation){toast('GPS not available.','err');return;}
+  navigator.geolocation.getCurrentPosition(async function(pos){
+    const lat=pos.coords.latitude.toFixed(6);
+    const lng=pos.coords.longitude.toFixed(6);
+    const mapsLink='https://maps.google.com/?q='+lat+','+lng;
+    try{
+      await window.fbUpdate(window.fbDoc(window.db,'trips',id),{status:'done',deliveredAt:new Date().toISOString(),deliveryLat:lat,deliveryLng:lng});
+      const trip=allTrips.find(function(t){return t.id===id;});
+      if(trip)trip.status='done';
+      const msg='📦 *Delivered!*\n\nDear '+custName+',\n\nYour order has been *delivered* by '+driverData.name+'!\n\n📍 Delivery Location: '+mapsLink+'\n🕐 Time: '+new Date().toLocaleString()+'\n\nThank you for using *Abbottabad Prime Portal*! 🚀';
+      window.open('https://wa.me/'+custNum+'?text='+encodeURIComponent(msg),'_blank');
+      renderTrips();
+      loadTrips();
+      toast('Marked as delivered!','ok');
+    }catch(e){toast('Could not update.','err');}
+  },function(){toast('Could not get GPS location.','err');});
+}
+
+function shareLocation(){
+  if(!navigator.geolocation){toast('GPS not available.','err');return;}
+  navigator.geolocation.getCurrentPosition(function(pos){
+    const lat=pos.coords.latitude.toFixed(6);
+    const lng=pos.coords.longitude.toFixed(6);
+    const link='https://maps.google.com/?q='+lat+','+lng;
+    const msg='📍 *My Current Location*\n\n'+driverData.name+' — '+driverData.vehicle+'\n\n'+link;
+    window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  },function(){toast('Could not get location.','err');});
+}
+
+function renderEarnings(){
+  const done=allTrips.filter(function(t){return t.status==='done';});
+  const est=done.length*200;
+  document.getElementById('earningsContent').innerHTML=
+    '<div style="text-align:center;padding:16px">'
+    +'<div style="font-family:\'Orbitron\',sans-serif;font-size:2rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">PKR '+est.toLocaleString()+'</div>'
+    +'<div style="color:var(--dim);font-size:.84rem;margin-top:6px">Estimated earnings ('+done.length+' completed trips)</div>'
+    +'<div style="font-size:.76rem;color:var(--faint);margin-top:10px">Based on average 200 PKR per trip</div>'
+    +'</div>'
+    +'<div style="font-size:.84rem;color:var(--dim);line-height:2;padding:0 4px">'
+    +'📦 Total Trips: <b style="color:var(--txt)">'+allTrips.length+'</b><br>'
+    +'✅ Completed: <b style="color:var(--green)">'+done.length+'</b><br>'
+    +'⏳ Pending: <b style="color:#ffd24d">'+allTrips.filter(function(t){return t.status==='pending';}).length+'</b>'
+    +'</div>';
+}
+
+async function saveProfile(){
+  if(!driverData)return;
+  const payload={name:document.getElementById('pName').value.trim(),area:document.getElementById('pArea').value.trim(),vehicleNumber:document.getElementById('pVehicle').value.trim()};
+  if(!payload.name){toast('Name required.','err');return;}
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'transport',driverData.id),payload);
+    Object.assign(driverData,payload);
+    renderDriverInfo();
+    toast('Profile saved!','ok');
+  }catch(e){toast('Could not save.','err');}
+}
+
+function capitalise(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+
+async function doLogout(){await window.fbSignOut(window.auth);window.location.href='/transport/login.html';}
+
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  document.getElementById('panel-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  const titles={overview:'📊 Overview',trips:'🗺️ My Trips',profile:'👤 My Profile',earnings:'💰 Earnings'};
+  document.getElementById('pageTitle').textContent=titles[name]||name;
+  document.getElementById('sidebar').classList.remove('open');
+}
+</script>
+</body>
+</html>
