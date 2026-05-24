@@ -886,7 +886,7 @@ const btn=document.getElementById('sendOtpBtn');
 btn.disabled=true;btn.textContent='Sending…';
 currentOTP=generateOTP();
 try{
-const otpRes=await fetch('/.netlify/functions/send-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,otp:currentOTP})});
+const otpRes=await fetch('/api/send-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,otp:currentOTP})});
 const otpData=await otpRes.json();
 if(otpRes.ok&&otpData.success){
 toast('OTP sent to '+email,'ok');
