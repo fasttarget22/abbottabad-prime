@@ -7,14 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import{getFirestore,collection,getDocs,doc,updateDoc,deleteDoc,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import{getFirestore,collection,getDocs,doc,updateDoc,deleteDoc,addDoc,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
 const db=getFirestore(app);
 window.db=db;window.fbCol=collection;window.fbGet=getDocs;
 window.fbDoc=doc;window.fbUpdate=updateDoc;window.fbDelete=deleteDoc;
-window.fbQ=query;window.fbWhere=where;
+window.fbQ=query;window.fbWhere=where;window.fbAdd=addDoc;
 window.firebaseReady=true;
 document.dispatchEvent(new Event('firebaseReady'));
+window._dbReady=true;
 </script>
 <style>
 :root{
@@ -125,7 +126,9 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-
 <h1>Admin Panel</h1>
 <p>Restricted access. Enter admin password.</p>
 <div class="field"><label>Admin Password</label><input id="adminPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"/></div>
-<button class="btn grad full" onclick="var p=document.getElementById('adminPass').value;if(p==='admin123'){document.getElementById('loginWrap').style.display='none';document.getElementById('dashWrap').style.display='block';setTimeout(function(){if(window.db)loadAllData();else setTimeout(function(){if(window.db)loadAllData();},2000);},500);}else{alert('Wrong password');}">🔓 Unlock Admin Panel</button>
+<button class="btn grad full" onclick="var p=document.getElementById('adminPass').value;if(p==='admin123'){document.getElementById('loginWrap').style.display='none';document.getElementById('dashWrap').style.display='block';document.getElementById('loginWrap').style.display='none';
+document.getElementById('dashWrap').style.display='block';
+var _t=setInterval(function(){if(window.db||window._dbReady){clearInterval(_t);loadAllData();}},300);}else{alert('Wrong password! Try admin123');}">🔓 Unlock Admin Panel</button>
 <p style="margin-top:14px;font-size:.78rem;color:var(--faint)"><a href="/" style="color:var(--cyan)">← Back to main site</a></p>
 </div>
 </div>
@@ -339,6 +342,7 @@ document.getElementById('adminPass').value='';
 document.getElementById('adminPass').addEventListener('keydown',function(e){if(e.key==='Enter')doAdminLogin();});
 
 async function loadAllData(){
+if(!window.db){setTimeout(loadAllData,1000);return;}
 await loadVendors();
 await loadOrders();
 loadRevenue();
@@ -349,7 +353,9 @@ document.getElementById('lastRefresh').textContent='Refreshed: '+new Date().toLo
 function refreshAll(){loadAllData();toast('Data refreshed!','ok');}
 
 async function loadVendors(){
+if(!window.db){toast("DB not ready, retrying...","err");setTimeout(loadVendors,1000);return;}
 try{
+toast("Loading vendors...","ok");
 const snap=await window.fbGet(window.fbCol(window.db,'vendors'));
 allVendors=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
 allVendors.sort(function(a,b){return new Date(b.registered||0)-new Date(a.registered||0);});
@@ -409,12 +415,11 @@ div.innerHTML='<div class="vr-top">'
 +'</div></div>'
 +'<div class="vr-info">📞 '+v.phone+' | 📧 '+(v.email||'N/A')+'<br>📍 '+v.address+(v.city?'<br>🌍 City: '+v.city:'')+'<br>📅 Registered: '+(v.registered?new Date(v.registered).toLocaleDateString():'Unknown')+(v.approvedAt?'<br>✅ Approved: '+new Date(v.approvedAt).toLocaleDateString():'')+(v.cnic?'<br>🪪 <a href="'+v.cnic+'" target="_blank" style="color:var(--cyan)">View CNIC Image</a>':'<br>🪪 No CNIC uploaded')+'<br>🔑 Pass: '+(v.password||'N/A')+'</div>'
 +'<div class="vr-btns">'
-+(!v.adminApproved?'<button class="btn ok sm" data-id="'+v.id+'" data-phone="'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'')+'" onclick="approveVendor(this)">✅ Approve</button>':'')
++(!v.adminApproved?'<button class="btn ok sm" data-id="'+v.id+'" data-phone="'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'')+'" onclick="approveVendor(this)">✅ Approve</button>':'<button class="btn sm" data-id="'+v.id+'" onclick="suspendVendor(this.dataset.id)" style="background:linear-gradient(120deg,#f7971e,#ffd200);color:#1a0a00">⏸️ Suspend</button>')
 +(sub.label!=='💎 Premium'?'<button class="btn ok sm" onclick="activatePremium(\''+v.id+'\')">💎 Premium</button>':'')
 +(v.blacklisted?'<button class="btn ok sm" data-id="'+v.id+'" onclick="toggleBlacklist(this.dataset.id,false)">✅ Unblacklist</button>':'<button class="btn danger sm" data-id="'+v.id+'" onclick="toggleBlacklist(this.dataset.id,true)">⛔ Blacklist</button>')
 +'<a href="https://wa.me/92'+v.phone.replace(/^0/,'').replace(/[^0-9]/g,'')+'" target="_blank" class="btn wa sm">💬 WA</a>'
 +'<button class="btn danger sm" onclick="deleteVendor(\''+v.id+'\',\''+v.name.replace(/\'/g,"\\'")+'\')">🗑️ Delete</button>'
-+'</div>';
 +'</div>';
 list.appendChild(div);
 });
@@ -575,17 +580,31 @@ document.addEventListener('firebaseReady',function(){
 if(document.getElementById('dashWrap').style.display==='block')loadAllData();
 });
 
-async function approveVendor(btn){const id=btn.dataset.id;const phone=btn.dataset.phone;
+async function suspendVendor(id){
+  if(!confirm('Suspend this vendor? They will be hidden and moved to Pending.'))return;
   try{
-    await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{adminApproved:true,verified:true,approvedAt:new Date().toISOString()});
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{adminApproved:false,verified:false,status:'offline',suspended:true});
     const v=allVendors.find(function(v){return v.id===id;});
-    if(v){v.adminApproved=true;v.verified=true;}
-    // Send WhatsApp to vendor
-    const msg='✅ *Abbottabad Prime Portal*\n\nCongratulations '+name+'!\n\nYour transport registration has been *approved*!\n\nLogin: https://www.appabbottabad.com/transport/login.html\n\n🚀 Welcome to the team!';
+    if(v){v.adminApproved=false;v.verified=false;v.status='offline';v.suspended=true;}
+    toast('Vendor suspended!','ok');
+    filterVendors();
+  }catch(e){toast('Could not suspend.','err');}
+}
+async function approveVendor(btn){
+  const id=btn.dataset.id;
+  const phone=btn.dataset.phone;
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,'vendors',id),{adminApproved:true,verified:true,suspended:false,status:'online',approvedAt:new Date().toISOString()});
+    const v=allVendors.find(function(v){return v.id===id;});
+    if(v){v.adminApproved=true;v.verified=true;v.suspended=false;v.status='online';}
+    const waNum='92'+(phone||'').replace(/^0/,'').replace(/[^0-9]/g,'');
+    const vname=v?v.name:'Vendor';
+    const msg='Approved! Dear '+vname+', your registration on Pakistan Prime Portal is approved! Login: https://www.appabbottabad.com/vendor/login.html';
     window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
-    toast('Transport approved!','ok');
-    filterTransport();
-  }catch(e){toast('Could not approve.','err');}
+    toast('Vendor approved and online!','ok');
+    filterVendors();
+    renderPendingCnic();
+  }catch(e){toast('Could not approve: '+e.message,'err');}
 }
 
 async function deleteTransport(btn){const id=btn.dataset.id;const name=btn.dataset.name;
@@ -784,7 +803,7 @@ async function loadAds(){
       return '<div style="background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">'
       +'<div><div style="font-weight:700;font-size:.86rem">'+a.title+'</div>'
       +'<div style="font-size:.74rem;color:var(--dim)">Expires: '+new Date(a.expiresAt).toLocaleDateString()+'</div></div>'
-      +'<button class="btn danger sm" onclick="deleteAd(''+a.id+'')">Delete</button>'
+      +'<button class="btn danger sm" onclick="deleteAd(\''+a.id+'\')">Delete</button>'
       +'</div>';
     }).join('');
   }catch(e){}
