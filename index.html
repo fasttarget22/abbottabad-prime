@@ -904,11 +904,31 @@ finally{btn.disabled=false;btn.textContent='✅ Verify & Register';}
 }
 
 function buildCategorySelect(sel){
-sel.innerHTML='<option value="" disabled selected>Select Service Category</option>';
+// Build main category selector first
+const mainSel=document.createElement('select');
+mainSel.id='regMainCat';
+mainSel.style.cssText=sel.style.cssText+'width:100%;margin-bottom:10px;';
+mainSel.className=sel.className;
+mainSel.innerHTML='<option value="" disabled selected>Select Main Category</option>';
 CATEGORIES.forEach(function(c){
-const og=document.createElement('optgroup');og.label=c.icon+' '+c.group;
-c.sub.forEach(function(s){const o=document.createElement('option');o.value=s.t;o.textContent=s.e+' '+s.t;og.appendChild(o);});
-sel.appendChild(og);
+  const o=document.createElement('option');
+  o.value=c.group;
+  o.textContent=c.icon+' '+c.group;
+  mainSel.appendChild(o);
+});
+sel.innerHTML='<option value="" disabled selected>Select Subcategory</option>';
+sel.disabled=true;
+sel.parentNode.insertBefore(mainSel,sel);
+mainSel.addEventListener('change',function(){
+  const selected=CATEGORIES.find(function(c){return c.group===this.value;},mainSel);
+  if(!selected)return;
+  sel.innerHTML='<option value="" disabled selected>Select '+selected.group+' Type</option>';
+  selected.sub.forEach(function(s){
+    const o=document.createElement('option');
+    o.value=s.t;o.textContent=s.e+' '+s.t;
+    sel.appendChild(o);
+  });
+  sel.disabled=false;
 });
 }
 function renderCatIcons(){
