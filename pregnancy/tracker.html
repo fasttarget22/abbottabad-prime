@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Pregnancy Tracker — Pakistan Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--pink:#ff6eb4;--gold:#ffd700;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.topbar h1{font-family:Orbitron,sans-serif;font-size:.95rem;font-weight:800;background:linear-gradient(110deg,#ff6eb4,#ff9a9e);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.shell{max-width:700px;margin:0 auto;padding:20px 16px}
+.hero{background:linear-gradient(135deg,rgba(255,110,180,.1),rgba(255,154,158,.05));border:1px solid rgba(255,110,180,.2);border-radius:20px;padding:24px;text-align:center;margin-bottom:20px}
+.week-circle{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#ff6eb4,#ff9a9e);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 0 30px rgba(255,110,180,.3)}
+.week-num{font-family:Orbitron,sans-serif;font-size:2rem;font-weight:800;color:#fff}
+.week-label{font-size:.7rem;color:rgba(255,255,255,.8);font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h3{font-family:Orbitron,sans-serif;font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:10px 18px;border-radius:9px;transition:all .25s}
+.btn.pink{background:linear-gradient(135deg,#ff6eb4,#ff9a9e);color:#fff}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.milestone{background:rgba(255,110,180,.05);border:1px solid rgba(255,110,180,.2);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.milestone h4{font-size:.84rem;font-weight:700;color:var(--pink);margin-bottom:4px}
+.milestone p{font-size:.78rem;color:var(--dim);line-height:1.5}
+.symptom-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.symptom-btn{background:rgba(255,110,180,.05);border:1px solid rgba(255,110,180,.2);border-radius:10px;color:var(--dim);font-family:Manrope,sans-serif;font-weight:600;font-size:.78rem;padding:8px 12px;cursor:pointer;transition:all .25s;text-align:left}
+.symptom-btn.selected{background:rgba(255,110,180,.15);border-color:var(--pink);color:var(--pink)}
+.kick-counter{display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 0}
+.kick-btn{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#ff6eb4,#ff9a9e);border:0;color:#fff;font-size:2rem;cursor:pointer;box-shadow:0 0 20px rgba(255,110,180,.4);transition:transform .1s}
+.kick-btn:active{transform:scale(.95)}
+.progress-bar{background:rgba(255,110,180,.1);border-radius:999px;height:8px;margin:8px 0}
+.progress-fill{background:linear-gradient(90deg,#ff6eb4,#ff9a9e);border-radius:999px;height:100%;transition:width .5s}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,320px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}
+.toast.ok{border-color:rgba(255,110,180,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="topbar">
+<a href="/" style="color:var(--pink);text-decoration:none;font-size:1.2rem">←</a>
+<h1>🤰 Pregnancy Tracker</h1>
+</div>
+<div class="shell">
+<div id="setupSection">
+<div class="card" style="text-align:center;padding:32px">
+<div style="font-size:3rem;margin-bottom:12px">🤰</div>
+<h2 style="font-family:Orbitron,sans-serif;font-size:1rem;color:var(--pink);margin-bottom:8px">Pregnancy Tracker</h2>
+<p style="color:var(--dim);font-size:.84rem;margin-bottom:20px">Enter your last menstrual period date to start tracking</p>
+<div class="field"><label>Last Menstrual Period (LMP)</label><input id="lmpDate" type="date"/></div>
+<div class="field"><label>Your Name (optional)</label><input id="momName" type="text" placeholder="Mama's name"/></div>
+<button class="btn pink full" onclick="startTracking()">🌸 Start Tracking</button>
+</div>
+</div>
+<div id="trackerSection" style="display:none">
+<div class="hero">
+<div class="week-circle">
+<div class="week-num" id="currentWeek">0</div>
+<div class="week-label">WEEKS</div>
+</div>
+<div style="font-size:1.1rem;font-weight:800;margin-bottom:4px" id="trimesterLabel">First Trimester</div>
+<div style="color:var(--dim);font-size:.82rem" id="dueDateLabel">Due date: --</div>
+<div style="margin-top:12px">
+<div style="font-size:.75rem;color:var(--dim);margin-bottom:4px" id="progressLabel">0% complete</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+</div>
+<div class="card">
+<h3>📋 This Week</h3>
+<div id="weekInfo"><div style="color:var(--dim);font-size:.84rem">Loading week information...</div></div>
+</div>
+<div class="card">
+<h3>👶 Kick Counter</h3>
+<div class="kick-counter">
+<div style="font-size:.82rem;color:var(--dim)">Tap every time baby kicks</div>
+<button class="kick-btn" onclick="countKick()">👶</button>
+<div style="font-family:Orbitron,sans-serif;font-size:2rem;font-weight:800;color:var(--pink)" id="kickCount">0</div>
+<div style="font-size:.78rem;color:var(--dim)">kicks today</div>
+<button class="btn pink" onclick="resetKicks()" style="font-size:.76rem;padding:7px 14px">Reset</button>
+</div>
+</div>
+<div class="card">
+<h3>😊 Today Symptoms</h3>
+<div class="symptom-grid">
+<button class="symptom-btn" onclick="toggleSymptom(this)">🤢 Nausea</button>
+<button class="symptom-btn" onclick="toggleSymptom(this)">😴 Fatigue</button>
+<button class="symptom-btn" onclick="toggleSymptom(this)">💆 Headache</button>
+<button class="symptom-btn" onclick="toggleSymptom(this)">🔙 Back Pain</button>
+<button class="symptom-btn" onclick="toggleSymptom(this)">🦵 Leg Cramps</button>
+<button class="symptom-btn" onclick="toggleSymptom(this)">😤 Heartburn</button>
+<button class="symptom-btn" onclick="toggleSymptom(this)">💧 Swelling</button>
+<button class="symptom-btn" onclick="toggleSymptom(this)">😊 Feeling Good</button>
+</div>
+<div class="field"><label>Notes</label><textarea id="symptomNote" placeholder="Any additional notes..." style="min-height:60px"></textarea></div>
+<button class="btn pink full" onclick="saveSymptoms()">💾 Save Today</button>
+</div>
+<div class="card">
+<h3>🗓️ Upcoming Milestones</h3>
+<div id="milestoneList"></div>
+</div>
+<div class="card">
+<h3>⚕️ Appointments</h3>
+<div class="field"><label>Next Appointment</label><input id="nextAppt" type="date"/></div>
+<div class="field"><label>Doctor / Hospital</label><input id="apptDoc" type="text" placeholder="Dr. name or hospital"/></div>
+<button class="btn grad full" onclick="saveAppt()">Save Appointment</button>
+<div id="apptDisplay" style="margin-top:12px"></div>
+</div>
+<div style="text-align:center;margin-top:12px">
+<button class="btn pink" onclick="resetTracker()" style="font-size:.76rem;opacity:.7">Reset Tracker</button>
+</div>
+</div>
+</div>
+<script>
+const WEEKS=[
+{w:4,baby:'Size of a poppy seed (0.1cm)',mom:'Implantation complete. You may feel nothing yet.',tip:'Start folic acid if not already.'},
+{w:5,baby:'Size of a sesame seed (0.2cm)',mom:'HCG rising. Nausea may begin.',tip:'Avoid raw foods and alcohol.'},
+{w:6,baby:'Size of a lentil (0.6cm). Heart beating!',mom:'Morning sickness may peak.',tip:'Small frequent meals help nausea.'},
+{w:7,baby:'Size of a blueberry (1.3cm)',mom:'Frequent urination begins.',tip:'Stay hydrated.'},
+{w:8,baby:'Size of a kidney bean (1.6cm)',mom:'Fatigue is normal.',tip:'Rest as much as possible.'},
+{w:9,baby:'Size of a grape (2.3cm)',mom:'Mood swings are normal.',tip:'Talk to your partner about how you feel.'},
+{w:10,baby:'Size of a strawberry (3.1cm)',mom:'Morning sickness may ease soon.',tip:'First prenatal visit if not done.'},
+{w:11,baby:'Size of a fig (4.1cm)',mom:'Bump may start showing.',tip:'Comfortable clothing helps.'},
+{w:12,baby:'Size of a lime (5.4cm)',mom:'End of first trimester! Risk reduces.',tip:'Share your news if ready!'},
+{w:13,baby:'Size of a pea pod (7.4cm)',mom:'Energy may return.',tip:'Start pregnancy exercises.'},
+{w:14,baby:'Size of a lemon (8.7cm)',mom:'Second trimester begins!',tip:'Dental checkup recommended.'},
+{w:16,baby:'Size of an avocado (11.6cm)',mom:'You may feel baby move soon.',tip:'Sleep on your left side.'},
+{w:18,baby:'Size of a sweet potato (14.2cm)',mom:'Baby is very active!',tip:'Anomaly scan usually done now.'},
+{w:20,baby:'Size of a banana (25.6cm). Halfway there!',mom:'Anatomy scan this week.',tip:'Note baby movements daily.'},
+{w:24,baby:'Size of an ear of corn (30cm)',mom:'Baby can hear your voice!',tip:'Talk and sing to your baby.'},
+{w:28,baby:'Size of an eggplant (37.6cm)',mom:'Third trimester begins!',tip:'Start childbirth classes.'},
+{w:32,baby:'Size of a squash (42.4cm)',mom:'Baby gaining weight rapidly.',tip:'Pack hospital bag.'},
+{w:36,baby:'Size of a romaine lettuce (47.4cm)',mom:'Baby is almost ready!',tip:'Birth plan ready?'},
+{w:40,baby:'Full term! Size of a pumpkin (50.5cm)',mom:'Due date week!',tip:'Stay calm. Baby coming soon!'}
+];
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;document.getElementById('toaster').appendChild(t);setTimeout(()=>t.remove(),3000);}
+function getData(){try{return JSON.parse(localStorage.getItem('pregnancyData')||'null');}catch{return null;}}
+function saveData(d){localStorage.setItem('pregnancyData',JSON.stringify(d));}
+window.startTracking=function(){
+const lmp=document.getElementById('lmpDate').value;
+const name=document.getElementById('momName').value.trim();
+if(!lmp){toast('Please enter LMP date','err');return;}
+saveData({lmp,name,kicks:0,kickDate:'',symptoms:[],appt:'',apptDoc:''});
+showTracker();
+};
+function showTracker(){
+const data=getData();
+if(!data)return;
+document.getElementById('setupSection').style.display='none';
+document.getElementById('trackerSection').style.display='block';
+const lmp=new Date(data.lmp);
+const now=new Date();
+const days=Math.floor((now-lmp)/(1000*60*60*24));
+const weeks=Math.min(40,Math.floor(days/7));
+const dueDate=new Date(lmp.getTime()+280*24*60*60*1000);
+const pct=Math.min(100,Math.round((days/280)*100));
+document.getElementById('currentWeek').textContent=weeks;
+document.getElementById('progressFill').style.width=pct+'%';
+document.getElementById('progressLabel').textContent=pct+'% complete';
+document.getElementById('dueDateLabel').textContent='Due date: '+dueDate.toLocaleDateString();
+const trimester=weeks<=12?'First Trimester 🌱':weeks<=26?'Second Trimester 🌸':'Third Trimester 🌺';
+document.getElementById('trimesterLabel').textContent=trimester;
+const weekData=WEEKS.filter(w=>w.w<=weeks).pop()||WEEKS[0];
+document.getElementById('weekInfo').innerHTML='<div style="margin-bottom:10px"><div style="font-size:.78rem;font-weight:700;color:var(--pink);margin-bottom:4px">👶 Baby</div><div style="font-size:.84rem;color:var(--dim)">'+weekData.baby+'</div></div><div style="margin-bottom:10px"><div style="font-size:.78rem;font-weight:700;color:var(--cyan);margin-bottom:4px">🤰 Mama</div><div style="font-size:.84rem;color:var(--dim)">'+weekData.mom+'</div></div><div><div style="font-size:.78rem;font-weight:700;color:var(--green);margin-bottom:4px">💡 Tip</div><div style="font-size:.84rem;color:var(--dim)">'+weekData.tip+'</div></div>';
+const today=new Date().toDateString();
+if(data.kickDate!==today){data.kicks=0;data.kickDate=today;saveData(data);}
+document.getElementById('kickCount').textContent=data.kicks||0;
+const upcoming=WEEKS.filter(w=>w.w>weeks).slice(0,3);
+document.getElementById('milestoneList').innerHTML=upcoming.map(w=>'<div class="milestone"><h4>Week '+w.w+' — '+Math.max(0,w.w-weeks)+' weeks away</h4><p>'+w.baby+'</p></div>').join('');
+if(data.appt){document.getElementById('apptDisplay').innerHTML='<div style="background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:.84rem"><b>Next:</b> '+data.appt+' — '+( data.apptDoc||'Doctor')+'</div>';}
+}
+window.countKick=function(){
+const data=getData();
+if(!data)return;
+const today=new Date().toDateString();
+if(data.kickDate!==today){data.kicks=0;data.kickDate=today;}
+data.kicks=(data.kicks||0)+1;
+saveData(data);
+document.getElementById('kickCount').textContent=data.kicks;
+if(data.kicks===10)toast('10 kicks! Baby is active and healthy 🎉','ok');
+};
+window.resetKicks=function(){
+const data=getData();
+if(!data)return;
+data.kicks=0;data.kickDate='';
+saveData(data);
+document.getElementById('kickCount').textContent=0;
+toast('Kicks reset','ok');
+};
+window.toggleSymptom=function(btn){btn.classList.toggle('selected');};
+window.saveSymptoms=function(){
+const selected=Array.from(document.querySelectorAll('.symptom-btn.selected')).map(b=>b.textContent);
+const note=document.getElementById('symptomNote').value.trim();
+const data=getData();
+if(!data)return;
+if(!data.symptomLog)data.symptomLog=[];
+data.symptomLog.unshift({date:new Date().toISOString(),symptoms:selected,note});
+data.symptomLog=data.symptomLog.slice(0,50);
+saveData(data);
+toast('Symptoms saved!','ok');
+document.querySelectorAll('.symptom-btn').forEach(b=>b.classList.remove('selected'));
+document.getElementById('symptomNote').value='';
+};
+window.saveAppt=function(){
+const date=document.getElementById('nextAppt').value;
+const doc=document.getElementById('apptDoc').value.trim();
+if(!date){toast('Enter appointment date','err');return;}
+const data=getData();
+data.appt=date;data.apptDoc=doc;
+saveData(data);
+document.getElementById('apptDisplay').innerHTML='<div style="background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:.84rem"><b>Next:</b> '+date+' — '+(doc||'Doctor')+'</div>';
+toast('Appointment saved!','ok');
+};
+window.resetTracker=function(){
+if(!confirm('Reset all pregnancy data?'))return;
+localStorage.removeItem('pregnancyData');
+document.getElementById('setupSection').style.display='block';
+document.getElementById('trackerSection').style.display='none';
+toast('Reset done','ok');
+};
+const data=getData();
+if(data&&data.lmp)showTracker();
+</script>
+</body>
+</html>
