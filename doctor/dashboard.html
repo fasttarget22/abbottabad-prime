@@ -1,6 +1,7 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Doctor Dashboard</title><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/><style>:root{--bg:#0b0f19;--surface:#121826;--surface2:rgba(18,24,38,0.8);--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--red:#ff5d6c;--gold:#ffd700;}*{box-sizing:border-box;margin:0;padding:0}body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--line);padding:18px 0;z-index:50;overflow-y:auto;transition:transform .3s}.brand{padding:0 18px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}.brand h2{font-family:Orbitron,sans-serif;font-size:.85rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}.nav-item{display:flex;align-items:center;gap:10px;padding:12px 18px;color:var(--dim);font-weight:600;font-size:.86rem;cursor:pointer;border:0;background:none;width:100%;text-align:left;font-family:inherit;transition:all .25s;border-left:3px solid transparent}.nav-item:hover,.nav-item.active{color:var(--cyan);background:rgba(0,242,254,.06);border-left-color:var(--cyan)}.main{margin-left:220px;padding:22px;min-height:100vh}.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}.topbar h2{font-family:Orbitron,sans-serif;font-size:1rem;font-weight:700;color:var(--cyan)}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}.stat-card{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}.sn{font-family:Orbitron,sans-serif;font-size:1.6rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}.sl{font-size:.76rem;color:var(--dim);margin-top:6px;font-weight:600}.panel{display:none}.panel.active{display:block}.card{background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}.card h3{font-family:Orbitron,sans-serif;font-size:.9rem;font-weight:700;color:var(--cyan);margin-bottom:14px}.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:8px 14px;border-radius:9px;text-decoration:none;transition:all .25s}.btn.grad{color:#04121f;background:var(--grad)}.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}.btn.ok{background:linear-gradient(120deg,#1aff8c,#08b85f);color:#04190d}.btn.danger{background:linear-gradient(120deg,#ff5d6c,#c81e3a);color:#fff}.btn.wa{background:linear-gradient(135deg,#25d366,#0fae53);color:#03190d}.btn.full{width:100%;justify-content:center;margin-top:8px}.btn.sm{padding:6px 10px;font-size:.76rem}.field{margin-bottom:14px}.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0;transition:border-color .25s}.field input:focus,.field select:focus{border-color:var(--cyan)}.appt-slot{background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}.appt-slot.booked{border-color:rgba(26,255,140,.3);background:rgba(26,255,140,.05)}.appt-slot.done{opacity:.6}.spinner{width:28px;height:28px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:20px auto;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:.9rem}.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}.modal-overlay.open{display:flex}.modal-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;position:relative}.modal-close{position:absolute;top:12px;right:12px;background:none;border:0;color:var(--faint);font-size:1.2rem;cursor:pointer}#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,340px)}.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}.toast.ok{border-color:rgba(26,255,140,.5)}.toast.err{border-color:rgba(255,93,108,.5)}.mobile-btn{display:none;position:fixed;bottom:18px;right:18px;z-index:60;width:46px;height:46px;border-radius:50%;background:var(--grad);border:0;color:#04121f;font-size:1.3rem;cursor:pointer}@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:14px}.stats-grid{grid-template-columns:repeat(2,1fr)}.mobile-btn{display:block}}</style></head><body><div id="toaster"></div><aside class="sidebar" id="sidebar"><div class="brand"><h2>Doctor Panel</h2><p id="docName">Loading...</p></div><button class="nav-item active" onclick="showPanel('overview')" id="nav-overview">Overview</button><button class="nav-item" onclick="showPanel('appointments')" id="nav-appointments">Appointments</button><button class="nav-item" onclick="showPanel('patients')" id="nav-patients">Patients</button><button class="nav-item" onclick="showPanel('prescription')" id="nav-prescription">Prescription</button><button class="nav-item" onclick="showPanel('schedule')" id="nav-schedule">Schedule</button><button class="nav-item" onclick="showPanel('analytics')" id="nav-analytics">Analytics</button>
 <button class="nav-item" onclick="showPanel('refer')" id="nav-refer">Refer Patient</button>
-<button class="nav-item" onclick="showPanel('reports')" id="nav-reports">Lab Reports</button><div style="padding:14px 18px;border-top:1px solid var(--line);margin-top:auto"><a href="/" class="btn ghost" style="width:100%;justify-content:center;margin-bottom:8px;font-size:.8rem">Main Site</a><button class="btn danger" onclick="doLogout()" style="width:100%;justify-content:center;font-size:.8rem">Logout</button></div></aside><main class="main"><div class="topbar"><h2 id="pageTitle">Overview</h2><div style="font-size:.8rem;color:var(--cyan)" id="todayDate"></div></div><div class="stats-grid"><div class="stat-card"><div class="sn" id="statToday">0</div><div class="sl">Today Patients</div></div><div class="stat-card"><div class="sn" id="statTotal">0</div><div class="sl">Total Patients</div></div><div class="stat-card"><div class="sn" id="statPending">0</div><div class="sl">Pending</div></div><div class="stat-card"><div class="sn" id="statRevenue">0</div><div class="sl">Revenue PKR</div></div></div><div class="panel active" id="panel-overview"><div class="card" style="background:linear-gradient(135deg,rgba(0,242,254,.08),rgba(43,111,255,.08));border:1px solid rgba(0,242,254,.3)">
+<button class="nav-item" onclick="showPanel('reports')" id="nav-reports">Lab Reports</button>
+<button class="nav-item" onclick="showPanel('vitals')" id="nav-vitals">Patient Vitals</button><div style="padding:14px 18px;border-top:1px solid var(--line);margin-top:auto"><a href="/" class="btn ghost" style="width:100%;justify-content:center;margin-bottom:8px;font-size:.8rem">Main Site</a><button class="btn danger" onclick="doLogout()" style="width:100%;justify-content:center;font-size:.8rem">Logout</button></div></aside><main class="main"><div class="topbar"><h2 id="pageTitle">Overview</h2><div style="font-size:.8rem;color:var(--cyan)" id="todayDate"></div></div><div class="stats-grid"><div class="stat-card"><div class="sn" id="statToday">0</div><div class="sl">Today Patients</div></div><div class="stat-card"><div class="sn" id="statTotal">0</div><div class="sl">Total Patients</div></div><div class="stat-card"><div class="sn" id="statPending">0</div><div class="sl">Pending</div></div><div class="stat-card"><div class="sn" id="statRevenue">0</div><div class="sl">Revenue PKR</div></div></div><div class="panel active" id="panel-overview"><div class="card" style="background:linear-gradient(135deg,rgba(0,242,254,.08),rgba(43,111,255,.08));border:1px solid rgba(0,242,254,.3)">
 <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
 <div id="docAvatar" style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#00f2fe,#2b6fff);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0">🩺</div>
 <div style="flex:1">
@@ -18,7 +19,14 @@
 <div id="docHours"></div>
 <div id="docExp"></div>
 </div>
-</div><div class="card"><h3>Today Appointments</h3><div id="todayAppointments"><div class="spinner"></div></div></div><div class="card"><h3>Quick Actions</h3><button class="btn grad full" onclick="showPanel('appointments')">Book Appointment</button><button class="btn ghost full" onclick="showPanel('prescription')" style="margin-top:8px">Write Prescription</button><button class="btn wa full" onclick="sendDailyReport()" style="margin-top:8px">Daily Report via WhatsApp</button></div></div><div class="panel" id="panel-appointments"><div class="card"><h3>Book Appointment</h3><div class="field"><label>Patient Phone</label><input id="apptPhone" type="tel" placeholder="03XX-XXXXXXX"/></div><div class="field"><label>Patient Name</label><input id="apptName" type="text" placeholder="Patient name"/></div><div class="field"><label>Date</label><input id="apptDate" type="date"/></div><div class="field"><label>Time Slot</label><select id="apptTime"><option value="09:00">9:00 AM</option><option value="09:30">9:30 AM</option><option value="10:00">10:00 AM</option><option value="10:30">10:30 AM</option><option value="11:00">11:00 AM</option><option value="11:30">11:30 AM</option><option value="12:00">12:00 PM</option><option value="14:00">2:00 PM</option><option value="14:30">2:30 PM</option><option value="15:00">3:00 PM</option><option value="15:30">3:30 PM</option><option value="16:00">4:00 PM</option><option value="17:00">5:00 PM</option><option value="18:00">6:00 PM</option></select></div><div class="field"><label>Complaint</label><input id="apptComplaint" type="text" placeholder="Chief complaint"/></div><div class="field"><label>Fee PKR</label><input id="apptFee" type="number" placeholder="500"/></div><button class="btn grad full" onclick="bookAppointment()">Book</button></div><div class="card"><h3>All Appointments</h3><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn ghost sm" onclick="filterAppts('all',this)">All</button><button class="btn ghost sm" onclick="filterAppts('pending',this)">Pending</button><button class="btn ghost sm" onclick="filterAppts('done',this)">Done</button><button class="btn ghost sm" onclick="filterAppts('cancelled',this)">Cancelled</button></div><div id="appointmentsList"><div class="spinner"></div></div></div></div><div class="panel" id="panel-patients"><div class="card"><h3>Search Patient</h3><div style="display:flex;gap:8px;margin-bottom:14px"><input id="patientSearch" type="tel" placeholder="Search by phone" style="flex:1;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px 13px;outline:0;font-family:inherit"/><button class="btn grad" onclick="searchPatient()">Search</button></div><div id="patientResult"></div></div><div class="card"><h3>Register Patient</h3><div class="field"><label>Full Name</label><input id="pName" type="text" placeholder="Patient name"/></div><div class="field"><label>Phone</label><input id="pPhone" type="tel" placeholder="03XX-XXXXXXX"/></div><div class="field"><label>Age</label><input id="pAge" type="number" placeholder="Age"/></div><div class="field"><label>Gender</label><select id="pGender"><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div><div class="field"><label>Blood Group</label><select id="pBlood"><option value="">Unknown</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="O+">O+</option><option value="O-">O-</option><option value="AB+">AB+</option><option value="AB-">AB-</option></select></div><div class="field"><label>Allergies</label><input id="pAllergy" type="text" placeholder="e.g. Penicillin"/></div><div class="field"><label>Chronic Conditions</label><input id="pChronic" type="text" placeholder="e.g. Diabetes"/></div><button class="btn grad full" onclick="registerPatient()">Save Patient</button></div></div><div class="panel" id="panel-prescription"><div class="card"><h3>Write Prescription</h3><div class="field"><label>Patient Phone</label><div style="display:flex;gap:8px"><input id="rxPhone" type="tel" placeholder="03XX-XXXXXXX" style="flex:1"/><button class="btn ghost sm" onclick="loadPatientForRx()">Load</button></div></div><div id="rxPatientInfo" style="display:none;background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:14px;font-size:.84rem"></div><div class="field"><label>Diagnosis</label><input id="rxDiagnosis" type="text" placeholder="e.g. URTI"/></div><div class="field"><label>Complaint</label><input id="rxComplaint" type="text" placeholder="Chief complaint"/></div><div id="medicineList"><div class="medicine-row" style="background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px"><div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px"><input class="med-name" type="text" placeholder="Medicine" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/><input class="med-dose" type="text" placeholder="Dose" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/><input class="med-dur" type="text" placeholder="Duration" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/></div><input class="med-inst" type="text" placeholder="Instructions e.g. After meal" style="width:100%;margin-top:6px;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/></div></div><button class="btn ghost full" onclick="addMedicineRow()" style="margin-bottom:10px">Add Medicine</button><div class="field"><label>Doctor Notes</label><textarea id="rxNotes" placeholder="Additional instructions" style="min-height:60px"></textarea></div><div class="field"><label>Follow-up After</label><select id="rxFollowup"><option value="">No follow-up</option><option value="3">3 days</option><option value="5">5 days</option><option value="7">1 week</option><option value="14">2 weeks</option><option value="30">1 month</option></select></div><div class="field" style="margin-top:10px"><label>Upload Prescription Image (optional)</label><input type="file" id="rxImageFile" accept="image/*" style="width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-family:inherit;font-size:.84rem;outline:0"/><div id="rxImagePreview" style="margin-top:8px;display:none"><img id="rxImageThumb" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:1px solid var(--line)"/><div style="font-size:.74rem;color:var(--green);margin-top:4px">Image ready</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px"><button class="btn grad" onclick="sendPrescription()">Send via WhatsApp</button><button class="btn ok" onclick="savePrescription()">Save Record</button></div><button class="btn ghost full" onclick="uploadAndSendRxImage()" style="margin-top:8px;border-color:var(--cyan);color:var(--cyan)">Upload and Send Image via WhatsApp</button></div></div><div class="panel" id="panel-schedule"><div class="card"><h3>My Schedule</h3><div class="field"><label>Consultation Fee PKR</label><input id="schedFee" type="number" placeholder="500"/></div><div class="field"><label>Morning Hours</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="schedMornStart" type="time" value="09:00"/><input id="schedMornEnd" type="time" value="13:00"/></div></div><div class="field"><label>Evening Hours</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="schedEveStart" type="time" value="17:00"/><input id="schedEveEnd" type="time" value="21:00"/></div></div><div class="field"><label>Off Days</label><div style="display:flex;gap:8px;flex-wrap:wrap" id="offDays"><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Sunday"/> Sun</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Monday"/> Mon</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Tuesday"/> Tue</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Wednesday"/> Wed</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Thursday"/> Thu</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Friday"/> Fri</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Saturday"/> Sat</label></div></div><button class="btn grad full" onclick="saveSchedule()">Save Schedule</button></div></div><div class="panel" id="panel-analytics"><div class="card"><h3>Analytics</h3><div id="analyticsContent"><div class="spinner"></div></div></div></div><div class="panel" id="panel-refer">
+</div><div class="card"><h3>Today Appointments</h3><div id="todayAppointments"><div class="spinner"></div></div></div><div class="card">
+<h3>Follow-up Due Today</h3>
+<div id="followupList"><div class="spinner"></div></div>
+</div>
+<div class="card"><h3>Quick Actions</h3><button class="btn grad full" onclick="showPanel('appointments')">Book Appointment</button><button class="btn ghost full" onclick="showPanel('prescription')" style="margin-top:8px">Write Prescription</button><button class="btn wa full" onclick="sendDailyReport()" style="margin-top:8px">Daily Report via WhatsApp</button></div></div><div class="panel" id="panel-appointments"><div class="card"><h3>Book Appointment</h3><div class="field"><label>Patient Phone</label><input id="apptPhone" type="tel" placeholder="03XX-XXXXXXX"/></div><div class="field"><label>Patient Name</label><input id="apptName" type="text" placeholder="Patient name"/></div><div class="field"><label>Date</label><input id="apptDate" type="date"/></div><div class="field"><label>Time Slot</label><select id="apptTime"><option value="09:00">9:00 AM</option><option value="09:30">9:30 AM</option><option value="10:00">10:00 AM</option><option value="10:30">10:30 AM</option><option value="11:00">11:00 AM</option><option value="11:30">11:30 AM</option><option value="12:00">12:00 PM</option><option value="14:00">2:00 PM</option><option value="14:30">2:30 PM</option><option value="15:00">3:00 PM</option><option value="15:30">3:30 PM</option><option value="16:00">4:00 PM</option><option value="17:00">5:00 PM</option><option value="18:00">6:00 PM</option></select></div><div class="field"><label>Complaint</label><input id="apptComplaint" type="text" placeholder="Chief complaint"/></div><div class="field"><label>Fee PKR</label><input id="apptFee" type="number" placeholder="500"/></div><button class="btn grad full" onclick="bookAppointment()">Book</button></div><div class="card"><h3>All Appointments</h3><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn ghost sm" onclick="filterAppts('all',this)">All</button><button class="btn ghost sm" onclick="filterAppts('pending',this)">Pending</button><button class="btn ghost sm" onclick="filterAppts('done',this)">Done</button><button class="btn ghost sm" onclick="filterAppts('cancelled',this)">Cancelled</button></div><div id="appointmentsList"><div class="spinner"></div></div></div></div><div class="panel" id="panel-patients"><div class="card"><h3>Search Patient</h3><div style="display:flex;gap:8px;margin-bottom:14px"><input id="patientSearch" type="tel" placeholder="Search by phone" style="flex:1;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px 13px;outline:0;font-family:inherit"/><button class="btn grad" onclick="searchPatient()">Search</button></div><div id="patientResult"></div></div><div class="card"><h3>Register Patient</h3><div class="field"><label>Full Name</label><input id="pName" type="text" placeholder="Patient name"/></div><div class="field"><label>Phone</label><input id="pPhone" type="tel" placeholder="03XX-XXXXXXX"/></div><div class="field"><label>Age</label><input id="pAge" type="number" placeholder="Age"/></div><div class="field"><label>Gender</label><select id="pGender"><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div><div class="field"><label>Blood Group</label><select id="pBlood"><option value="">Unknown</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="O+">O+</option><option value="O-">O-</option><option value="AB+">AB+</option><option value="AB-">AB-</option></select></div><div class="field"><label>Allergies</label><input id="pAllergy" type="text" placeholder="e.g. Penicillin"/></div><div class="field"><label>Chronic Conditions</label><input id="pChronic" type="text" placeholder="e.g. Diabetes"/></div><button class="btn grad full" onclick="registerPatient()">Save Patient</button></div></div><div class="panel" id="panel-prescription"><div class="card"><h3>Write Prescription</h3><div class="field"><label>Patient Phone</label><div style="display:flex;gap:8px"><input id="rxPhone" type="tel" placeholder="03XX-XXXXXXX" style="flex:1"/><button class="btn ghost sm" onclick="loadPatientForRx()">Load</button></div></div><div id="rxPatientInfo" style="display:none;background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:14px;font-size:.84rem"></div><div class="field"><label>Diagnosis</label><input id="rxDiagnosis" type="text" placeholder="e.g. URTI"/></div><div class="field"><label>Complaint</label><input id="rxComplaint" type="text" placeholder="Chief complaint"/></div><div id="medicineList"><div class="medicine-row" style="background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px"><div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px"><input class="med-name" type="text" placeholder="Medicine" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/><input class="med-dose" type="text" placeholder="Dose" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/><input class="med-dur" type="text" placeholder="Duration" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/></div><input class="med-inst" type="text" placeholder="Instructions e.g. After meal" style="width:100%;margin-top:6px;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/></div></div><button class="btn ghost full" onclick="addMedicineRow()" style="margin-bottom:10px">Add Medicine</button>
+<button class="btn ghost full" onclick="showTemplates()" style="margin-bottom:10px;border-color:#ffd700;color:#ffd700">Load Template</button>
+<button class="btn ghost full" onclick="saveAsTemplate()" style="margin-bottom:10px;border-color:var(--green);color:var(--green)">Save as Template</button><div class="field"><label>Doctor Notes</label><textarea id="rxNotes" placeholder="Additional instructions" style="min-height:60px"></textarea></div><div class="field"><label>Follow-up After</label><select id="rxFollowup"><option value="">No follow-up</option><option value="3">3 days</option><option value="5">5 days</option><option value="7">1 week</option><option value="14">2 weeks</option><option value="30">1 month</option></select></div><div class="field" style="margin-top:10px"><label>Upload Prescription Image (optional)</label><input type="file" id="rxImageFile" accept="image/*" style="width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-family:inherit;font-size:.84rem;outline:0"/><div id="rxImagePreview" style="margin-top:8px;display:none"><img id="rxImageThumb" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:1px solid var(--line)"/><div style="font-size:.74rem;color:var(--green);margin-top:4px">Image ready</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px"><button class="btn grad" onclick="sendPrescription()">Send via WhatsApp</button><button class="btn ok" onclick="savePrescription()">Save Record</button></div><button class="btn ghost full" onclick="uploadAndSendRxImage()" style="margin-top:8px;border-color:var(--cyan);color:var(--cyan)">Upload and Send Image via WhatsApp</button>
+<button class="btn ghost full" onclick="sendMedReminder()" style="margin-top:8px;border-color:#ffd700;color:#ffd700">Send Medicine Reminder via WhatsApp</button></div></div><div class="panel" id="panel-schedule"><div class="card"><h3>My Schedule</h3><div class="field"><label>Consultation Fee PKR</label><input id="schedFee" type="number" placeholder="500"/></div><div class="field"><label>Morning Hours</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="schedMornStart" type="time" value="09:00"/><input id="schedMornEnd" type="time" value="13:00"/></div></div><div class="field"><label>Evening Hours</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="schedEveStart" type="time" value="17:00"/><input id="schedEveEnd" type="time" value="21:00"/></div></div><div class="field"><label>Off Days</label><div style="display:flex;gap:8px;flex-wrap:wrap" id="offDays"><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Sunday"/> Sun</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Monday"/> Mon</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Tuesday"/> Tue</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Wednesday"/> Wed</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Thursday"/> Thu</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Friday"/> Fri</label><label style="display:flex;align-items:center;gap:4px;font-size:.82rem"><input type="checkbox" value="Saturday"/> Sat</label></div></div><button class="btn grad full" onclick="saveSchedule()">Save Schedule</button></div></div><div class="panel" id="panel-analytics"><div class="card"><h3>Analytics</h3><div id="analyticsContent"><div class="spinner"></div></div></div></div><div class="panel" id="panel-refer">
 <div class="card"><h3>Refer Patient</h3>
 <div class="field"><label>Patient Phone</label><input id="refPatientPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
 <div class="field"><label>Refer To</label><select id="refType" style="width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-family:inherit;font-size:.84rem;outline:0"></select></div>
@@ -45,6 +53,27 @@
 </div>
 <div id="labReportsList"></div>
 </div>
+</div><div class="panel" id="panel-vitals">
+<div class="card"><h3>Record Patient Vitals</h3>
+<div class="field"><label>Patient Phone</label><input id="vitalPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div class="field"><label>Blood Pressure</label><input id="vitalBP" type="text" placeholder="e.g. 120/80"/></div>
+<div class="field"><label>Sugar Level (mg/dL)</label><input id="vitalSugar" type="number" placeholder="e.g. 110"/></div>
+<div class="field"><label>Weight (kg)</label><input id="vitalWeight" type="number" placeholder="e.g. 70"/></div>
+<div class="field"><label>Temperature (F)</label><input id="vitalTemp" type="number" placeholder="e.g. 98.6"/></div>
+<div class="field"><label>Pulse (bpm)</label><input id="vitalPulse" type="number" placeholder="e.g. 72"/></div>
+<div class="field"><label>Oxygen (SpO2%)</label><input id="vitalO2" type="number" placeholder="e.g. 98"/></div>
+</div>
+<div class="field"><label>Notes</label><textarea id="vitalNotes" placeholder="Additional observations..." style="min-height:60px"></textarea></div>
+<button class="btn grad full" onclick="saveVitals()">Save Vitals</button>
+</div>
+<div class="card"><h3>Vitals History</h3>
+<div style="display:flex;gap:8px;margin-bottom:12px">
+<input id="vitalSearchPhone" type="tel" placeholder="Patient phone" style="flex:1;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px 13px;outline:0;font-family:inherit"/>
+<button class="btn grad" onclick="loadVitals()">Search</button>
+</div>
+<div id="vitalsList"></div>
+</div>
 </div></main><button class="mobile-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">Menu</button><script type="module">import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getFirestore,collection,getDocs,doc,updateDoc,addDoc,query,where,deleteDoc}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});const db=getFirestore(app);window.db=db;window.fbCol=collection;window.fbGet=getDocs;window.fbDoc=doc;window.fbUpdate=updateDoc;window.fbAdd=addDoc;window.fbQ=query;window.fbWhere=where;window.fbDelete=deleteDoc;</script><script>
 function getCookie(n){const v=document.cookie.match("(^|;) ?"+n+"=([^;]*)(;|$)");return v?decodeURIComponent(v[2]):null;}
 const doctorEmail=localStorage.getItem("vendorEmail")||getCookie("vendorEmail");
@@ -67,7 +96,7 @@ if(doctorData.city)document.getElementById("docCity").textContent="📍 "+doctor
 if(doctorData.fee)document.getElementById("docFeeDisplay").textContent="💰 PKR "+doctorData.fee+"/visit";
 if(doctorData.hours)document.getElementById("docHours").textContent="⏰ "+doctorData.hours;
 if(doctorData.experience)document.getElementById("docExp").textContent="🎓 "+doctorData.experience+" yrs exp";
-    loadAppointments();loadPatients();loadSchedule();loadAnalytics();
+    loadAppointments();loadPatients();loadSchedule();loadAnalytics();loadFollowups();
   }catch(e){toast("Could not load.","err");}
 }
 init();
@@ -285,7 +314,7 @@ function showPanel(name){
   document.querySelectorAll(".nav-item").forEach(function(n){n.classList.remove("active");});
   document.getElementById("panel-"+name).classList.add("active");
   document.getElementById("nav-"+name).classList.add("active");
-  const titles={overview:"Overview",appointments:"Appointments",patients:"Patients",prescription:"Prescription",schedule:"Schedule",analytics:"Analytics",refer:"Refer Patient",reports:"Lab Reports"};
+  const titles={overview:"Overview",appointments:"Appointments",patients:"Patients",prescription:"Prescription",schedule:"Schedule",analytics:"Analytics",refer:"Refer Patient",reports:"Lab Reports",vitals:"Patient Vitals"};
   document.getElementById("pageTitle").textContent=titles[name]||name;
   document.getElementById("sidebar").classList.remove("open");
 }
@@ -407,6 +436,176 @@ async function searchLabReports(){
       +'</div>';
     }).join('');
   }catch(e){el.innerHTML='<div class="empty">Error loading.</div>';}
+}
+
+
+async function saveVitals(){
+  const phone=document.getElementById('vitalPhone').value.trim();
+  if(!phone){toast('Enter patient phone.','err');return;}
+  const vitals={
+    doctorPhone:doctorData.phone,
+    patientPhone:phone,
+    bp:document.getElementById('vitalBP').value.trim(),
+    sugar:document.getElementById('vitalSugar').value,
+    weight:document.getElementById('vitalWeight').value,
+    temp:document.getElementById('vitalTemp').value,
+    pulse:document.getElementById('vitalPulse').value,
+    o2:document.getElementById('vitalO2').value,
+    notes:document.getElementById('vitalNotes').value.trim(),
+    createdAt:new Date().toISOString()
+  };
+  try{
+    await window.fbAdd(window.fbCol(window.db,'vitals'),vitals);
+    toast('Vitals saved!','ok');
+    ['vitalPhone','vitalBP','vitalSugar','vitalWeight','vitalTemp','vitalPulse','vitalO2','vitalNotes'].forEach(function(id){document.getElementById(id).value='';});
+  }catch(e){toast('Could not save.','err');}
+}
+
+async function loadVitals(){
+  const phone=document.getElementById('vitalSearchPhone').value.trim();
+  if(!phone){toast('Enter phone.','err');return;}
+  const el=document.getElementById('vitalsList');
+  el.innerHTML='<div class="spinner"></div>';
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'vitals'),window.fbWhere('patientPhone','==',phone),window.fbWhere('doctorPhone','==',doctorData.phone)));
+    const vitals=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    vitals.sort(function(a,b){return new Date(b.createdAt||0)-new Date(a.createdAt||0);});
+    if(!vitals.length){el.innerHTML='<div class="empty">No vitals recorded.</div>';return;}
+    el.innerHTML=vitals.map(function(v){
+      return '<div style="background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px">'
+      +'<div style="font-weight:700;font-size:.82rem;margin-bottom:8px">'+new Date(v.createdAt).toLocaleDateString()+'</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:.78rem">'
+      +(v.bp?'<div style="background:rgba(255,93,108,.1);border-radius:8px;padding:6px;text-align:center"><div style="color:var(--red);font-weight:700">'+v.bp+'</div><div style="color:var(--faint)">BP</div></div>':'')
+      +(v.sugar?'<div style="background:rgba(255,210,77,.1);border-radius:8px;padding:6px;text-align:center"><div style="color:#ffd24d;font-weight:700">'+v.sugar+'</div><div style="color:var(--faint)">Sugar</div></div>':'')
+      +(v.weight?'<div style="background:rgba(0,242,254,.1);border-radius:8px;padding:6px;text-align:center"><div style="color:var(--cyan);font-weight:700">'+v.weight+'kg</div><div style="color:var(--faint)">Weight</div></div>':'')
+      +(v.temp?'<div style="background:rgba(255,150,0,.1);border-radius:8px;padding:6px;text-align:center"><div style="color:#ff9600;font-weight:700">'+v.temp+'F</div><div style="color:var(--faint)">Temp</div></div>':'')
+      +(v.pulse?'<div style="background:rgba(26,255,140,.1);border-radius:8px;padding:6px;text-align:center"><div style="color:var(--green);font-weight:700">'+v.pulse+'</div><div style="color:var(--faint)">Pulse</div></div>':'')
+      +(v.o2?'<div style="background:rgba(43,111,255,.1);border-radius:8px;padding:6px;text-align:center"><div style="color:#2b6fff;font-weight:700">'+v.o2+'%</div><div style="color:var(--faint)">SpO2</div></div>':'')
+      +'</div>'
+      +(v.notes?'<div style="font-size:.76rem;color:var(--dim);margin-top:6px">'+v.notes+'</div>':'')
+      +'</div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div class="empty">Error loading.</div>';}
+}
+
+
+async function saveAsTemplate(){
+  const diagnosis=document.getElementById('rxDiagnosis').value.trim();
+  const meds=getMedicines();
+  const notes=document.getElementById('rxNotes').value.trim();
+  if(!diagnosis||!meds.length){toast('Add diagnosis and medicines first.','err');return;}
+  const name=prompt('Template name (e.g. Fever, Cold, BP):');
+  if(!name)return;
+  try{
+    await window.fbAdd(window.fbCol(window.db,'rxTemplates'),{
+      doctorPhone:doctorData.phone,
+      name:name,
+      diagnosis:diagnosis,
+      medicines:meds,
+      notes:notes,
+      createdAt:new Date().toISOString()
+    });
+    toast('Template saved!','ok');
+  }catch(e){toast('Could not save.','err');}
+}
+
+async function showTemplates(){
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'rxTemplates'),window.fbWhere('doctorPhone','==',doctorData.phone)));
+    const templates=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    if(!templates.length){toast('No templates saved yet.','err');return;}
+    const modal=document.createElement('div');
+    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px';
+    modal.innerHTML='<div style="background:#121826;border:1px solid rgba(0,242,254,.2);border-radius:20px;padding:24px;width:100%;max-width:400px;max-height:80vh;overflow-y:auto">'
+    +'<h3 style="font-family:Orbitron,sans-serif;font-size:.9rem;color:var(--cyan);margin-bottom:14px">Prescription Templates</h3>'
+    +templates.map(function(t){
+      return '<div style="background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">'
+      +'<div><div style="font-weight:700;font-size:.86rem">'+t.name+'</div>'
+      +'<div style="font-size:.74rem;color:var(--dim)">'+t.diagnosis+'</div></div>'
+      +'<button onclick="loadTemplate(''+t.id+'')" style="background:var(--grad);border:0;border-radius:8px;padding:6px 12px;color:#04121f;font-weight:700;cursor:pointer;font-size:.76rem">Load</button>'
+      +'</div>';
+    }).join('')
+    +'<button onclick="this.closest('div').parentElement.remove()" style="width:100%;background:transparent;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:inherit;font-weight:700;cursor:pointer;margin-top:8px">Close</button>'
+    +'</div>';
+    document.body.appendChild(modal);
+    window._templates=templates;
+  }catch(e){toast('Could not load templates.','err');}
+}
+
+async function loadTemplate(id){
+  const templates=window._templates||[];
+  const t=templates.find(function(t){return t.id===id;});
+  if(!t)return;
+  document.getElementById('rxDiagnosis').value=t.diagnosis||'';
+  document.getElementById('rxNotes').value=t.notes||'';
+  const list=document.getElementById('medicineList');
+  list.innerHTML='';
+  (t.medicines||[]).forEach(function(m){
+    const div=document.createElement('div');
+    div.className='medicine-row';
+    div.style.cssText='background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px';
+    div.innerHTML='<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">'
+    +'<input class="med-name" type="text" value="'+m.name+'" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/>'
+    +'<input class="med-dose" type="text" value="'+m.dose+'" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/>'
+    +'<input class="med-dur" type="text" value="'+m.duration+'" style="background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/>'
+    +'</div><input class="med-inst" type="text" value="'+(m.instructions||'')+'" style="width:100%;margin-top:6px;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-family:inherit;outline:0"/>';
+    list.appendChild(div);
+  });
+  document.querySelectorAll('.modal-overlay,.fixed').forEach(function(m){m.remove();});
+  document.body.lastElementChild.remove();
+  toast('Template loaded!','ok');
+}
+
+
+async function loadFollowups(){
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'prescriptions'),window.fbWhere('doctorPhone','==',doctorData.phone)));
+    const prescriptions=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    const today=new Date();
+    const due=prescriptions.filter(function(p){
+      if(!p.followupDays||!p.createdAt)return false;
+      const followupDate=new Date(p.createdAt);
+      followupDate.setDate(followupDate.getDate()+parseInt(p.followupDays));
+      const diff=Math.floor((followupDate-today)/(1000*60*60*24));
+      return diff<=0&&diff>=-1;
+    });
+    const el=document.getElementById('followupList');
+    if(!due.length){el.innerHTML='<div class="empty">No follow-ups due today.</div>';return;}
+    el.innerHTML=due.map(function(p){
+      return '<div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">'
+      +'<div><div style="font-weight:700;font-size:.86rem;color:#ffd700">'+p.patientPhone+'</div>'
+      +'<div style="font-size:.74rem;color:var(--dim)">'+p.diagnosis+'</div></div>'
+      +'<a href="https://wa.me/92'+p.patientPhone.replace(/^0/,"").replace(/[^0-9]/g,"")+'?text='+encodeURIComponent('Follow-up Reminder\nDear Patient,\nYour follow-up with Dr.'+doctorData.name+' is due today.\nPlease visit or call to book appointment.\nPakistan Prime Portal')+'" target="_blank" class="btn wa sm">Remind</a>'
+      +'</div>';
+    }).join('');
+  }catch(e){}
+}
+
+
+async function sendMedicineReminder(phone,patientName,medicines){
+  if(!phone)return;
+  const waNum='92'+phone.replace(/^0/,'').replace(/[^0-9]/g,'');
+  let msg='Medicine Reminder\nDear '+patientName+',\n\nTime to take your medicines:\n\n';
+  medicines.forEach(function(m,i){
+    msg+=(i+1)+'. '+m.name;
+    if(m.dose)msg+=' - '+m.dose;
+    if(m.instructions)msg+=' ('+m.instructions+')';
+    msg+='\n';
+  });
+  msg+='\nFrom Dr.'+doctorData.name+'\nPakistan Prime Portal';
+  window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+
+async function sendMedReminder(){
+  const phone=document.getElementById('rxPhone').value.trim();
+  if(!phone){toast('Enter patient phone first.','err');return;}
+  const meds=getMedicines();
+  if(!meds.length){toast('Add medicines first.','err');return;}
+  const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,'patients'),window.fbWhere('phone','==',phone)));
+  const pName=snap.empty?'Patient':snap.docs[0].data().name;
+  sendMedicineReminder(phone,pName,meds);
+  toast('Medicine reminder sent!','ok');
 }
 
 function doLogout(){localStorage.removeItem("vendorEmail");localStorage.removeItem("vendorPhone");document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.href="/vendor/login.html";}

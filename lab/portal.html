@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lab Portal — Pakistan Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--red:#ff5d6c;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px;width:100%;max-width:480px}
+h2{font-family:Orbitron,sans-serif;font-size:1rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0}
+.field input:focus{border-color:var(--cyan)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.86rem;padding:12px 20px;border-radius:10px;width:100%;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);margin-top:8px}
+.btn.wa{background:linear-gradient(135deg,#25d366,#0fae53);color:#03190d;margin-top:8px}
+.spinner{width:28px;height:28px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:20px auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast-wrap{position:fixed;top:16px;right:16px;z-index:200;width:min(90vw,320px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600;margin-bottom:8px}
+.toast.ok{border-color:rgba(26,255,140,.5)}.toast.err{border-color:rgba(255,93,108,.5)}
+.preview{width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:1px solid var(--line);margin-top:8px;display:none}
+.report-card{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="toast-wrap" id="toaster"></div>
+<div class="card">
+<h2>🔬 Lab Portal</h2>
+<p style="font-size:.82rem;color:var(--dim);margin-bottom:20px">Pakistan Prime — Upload Patient Reports</p>
+<div id="loginSection">
+<div class="field"><label>Lab Email</label><input id="labEmail" type="email" placeholder="lab@email.com"/></div>
+<div class="field"><label>Password</label><input id="labPass" type="password" placeholder="••••••••"/></div>
+<button class="btn grad" onclick="labLogin()">Login to Lab Portal</button>
+<a href="/" class="btn ghost">Back to Main Site</a>
+</div>
+<div id="uploadSection" style="display:none">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+<div id="labName" style="font-weight:700;color:var(--cyan)"></div>
+<button onclick="labLogout()" style="background:none;border:0;color:var(--red);cursor:pointer;font-size:.82rem;font-weight:700">Logout</button>
+</div>
+<div class="field"><label>Patient Phone</label><input id="upPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+<div class="field"><label>Test Name</label><input id="upTest" type="text" placeholder="e.g. CBC, MRI Brain, Blood Sugar"/></div>
+<div class="field"><label>Report Image</label>
+<input type="file" id="upFile" accept="image/*" onchange="previewReport(this)"/>
+<img id="upPreview" class="preview"/>
+</div>
+<div class="field"><label>Notes (optional)</label><textarea id="upNotes" placeholder="Any important notes..." style="min-height:60px"></textarea></div>
+<button class="btn grad" onclick="uploadReport()">Upload & Notify Patient</button>
+<div class="field" style="margin-top:16px"><label>Search Patient Reports</label>
+<div style="display:flex;gap:8px">
+<input id="srPhone" type="tel" placeholder="Patient phone" style="flex:1;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px 13px;outline:0;font-family:inherit"/>
+<button onclick="searchReports()" style="background:var(--grad);border:0;border-radius:10px;padding:10px 16px;color:#04121f;font-weight:700;cursor:pointer">Search</button>
+</div></div>
+<div id="reportsList"></div>
+</div>
+</div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import{getFirestore,collection,getDocs,doc,addDoc,query,where}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);
+window.db=db;window.fbCol=collection;window.fbGet=getDocs;window.fbDoc=doc;window.fbAdd=addDoc;window.fbQ=query;window.fbWhere=where;
+</script>
+<script>
+let labData=null;
+function toast(msg,type){const el=document.createElement("div");el.className="toast "+(type||"");el.textContent=msg;document.getElementById("toaster").appendChild(el);setTimeout(function(){el.remove();},4500);}
+
+async function labLogin(){
+  const email=document.getElementById("labEmail").value.trim();
+  const pass=document.getElementById("labPass").value.trim();
+  if(!email||!pass){toast("Enter email and password.","err");return;}
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,"vendors"),window.fbWhere("email","==",email)));
+    if(snap.empty){toast("Lab not found.","err");return;}
+    const lab=Object.assign({id:snap.docs[0].id},snap.docs[0].data());
+    if(lab.password!==pass){toast("Wrong password.","err");return;}
+    if(!lab.category||(!lab.category.includes("Lab")||!lab.category.includes("Diagnostic")||!lab.category.includes("Medical"))){
+      labData=lab;
+    }else{labData=lab;}
+    document.getElementById("loginSection").style.display="none";
+    document.getElementById("uploadSection").style.display="block";
+    document.getElementById("labName").textContent=lab.name;
+    toast("Welcome "+lab.name+"!","ok");
+  }catch(e){toast("Login failed.","err");}
+}
+
+function labLogout(){
+  labData=null;
+  document.getElementById("loginSection").style.display="block";
+  document.getElementById("uploadSection").style.display="none";
+}
+
+function previewReport(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){const img=document.getElementById("upPreview");img.src=e.target.result;img.style.display="block";};
+  reader.readAsDataURL(file);
+}
+
+async function uploadReport(){
+  const phone=document.getElementById("upPhone").value.trim();
+  const test=document.getElementById("upTest").value.trim();
+  const file=document.getElementById("upFile").files[0];
+  const notes=document.getElementById("upNotes").value.trim();
+  if(!phone||!test){toast("Patient phone and test name required.","err");return;}
+  if(!file){toast("Select report image.","err");return;}
+  toast("Uploading...","ok");
+  try{
+    const formData=new FormData();formData.append("image",file);
+    const res=await fetch("https://api.imgbb.com/1/upload?key=06ca0498b7cee7caaf0189aacc66151d",{method:"POST",body:formData});
+    const data=await res.json();
+    if(!data.success){toast("Upload failed.","err");return;}
+    const url=data.data.url;
+    await window.fbAdd(window.fbCol(window.db,"labReports"),{
+      labId:labData.id,labName:labData.name,
+      patientPhone:phone,testName:test,
+      reportUrl:url,notes:notes,
+      createdAt:new Date().toISOString()
+    });
+    const msg="Lab Report Ready!\nDear Patient,\n\nYour "+test+" report from "+labData.name+" is ready.\n\nView Report:\n"+url+(notes?"\n\nNotes: "+notes:"")+"\n\nPakistan Prime Portal";
+    window.open("https://wa.me/92"+phone.replace(/^0/,"").replace(/[^0-9]/g,"")+"?text="+encodeURIComponent(msg),"_blank");
+    toast("Report uploaded and patient notified!","ok");
+    ["upPhone","upTest","upNotes"].forEach(function(id){document.getElementById(id).value="";});
+    document.getElementById("upPreview").style.display="none";
+    document.getElementById("upFile").value="";
+  }catch(e){toast("Error: "+e.message,"err");}
+}
+
+async function searchReports(){
+  const phone=document.getElementById("srPhone").value.trim();
+  if(!phone){toast("Enter phone.","err");return;}
+  const el=document.getElementById("reportsList");
+  el.innerHTML="<div class=\"spinner\"></div>";
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,"labReports"),window.fbWhere("patientPhone","==",phone)));
+    const reports=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    reports.sort(function(a,b){return new Date(b.createdAt||0)-new Date(a.createdAt||0);});
+    if(!reports.length){el.innerHTML="<div style=\"text-align:center;padding:20px;color:var(--faint)\">No reports found.</div>";return;}
+    el.innerHTML=reports.map(function(r){
+      return "<div class=\"report-card\">"
+      +"<div style=\"display:flex;justify-content:space-between;align-items:center\">"
+      +"<div><div style=\"font-weight:700;font-size:.86rem\">"+r.testName+"</div>"
+      +"<div style=\"font-size:.74rem;color:var(--dim)\">"+r.labName+" | "+new Date(r.createdAt).toLocaleDateString()+"</div></div>"
+      +"<a href=\""+r.reportUrl+"\" target=\"_blank\" style=\"background:var(--grad);border:0;border-radius:8px;padding:6px 12px;color:#04121f;font-weight:700;cursor:pointer;text-decoration:none;font-size:.76rem\">View</a>"
+      +"</div>"
+      +(r.notes?"<div style=\"font-size:.76rem;color:var(--dim);margin-top:6px\">"+r.notes+"</div>":"")
+      +"</div>";
+    }).join("");
+  }catch(e){el.innerHTML="<div style=\"text-align:center;padding:20px;color:var(--faint)\">Error loading.</div>";}
+}
+</script>
+</body>
+</html>
