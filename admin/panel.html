@@ -128,7 +128,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--txt);min-
 <div class="field"><label>Admin Password</label><input id="adminPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"/></div>
 <button class="btn grad full" onclick="var p=document.getElementById('adminPass').value;if(p==='admin123'){document.getElementById('loginWrap').style.display='none';document.getElementById('dashWrap').style.display='block';document.getElementById('loginWrap').style.display='none';
 document.getElementById('dashWrap').style.display='block';
-var _t=setInterval(function(){if(window.db||window._dbReady){clearInterval(_t);loadAllData();}},300);}else{alert('Wrong password! Try admin123');}">🔓 Unlock Admin Panel</button>
+var _t=setInterval(function(){if(window.db||window._dbReady){clearInterval(_t);loadAllData();}},300);}else{alert('Wrong password!');}">🔓 Unlock Admin Panel</button>
 <p style="margin-top:14px;font-size:.78rem;color:var(--faint)"><a href="/" style="color:var(--cyan)">← Back to main site</a></p>
 </div>
 </div>
