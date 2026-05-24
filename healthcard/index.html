@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Digital Health Card — Pakistan Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--red:#ff5d6c;--gold:#ffd700;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.topbar h1{font-family:Orbitron,sans-serif;font-size:.95rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.shell{max-width:700px;margin:0 auto;padding:20px 16px}
+.health-card{background:linear-gradient(135deg,#0b0f19,#121826);border:1px solid rgba(0,242,254,.3);border-radius:20px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden}
+.health-card::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,242,254,.1),transparent);border-radius:50%}
+.card-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.card-name{font-family:Orbitron,sans-serif;font-size:1rem;font-weight:800;color:var(--txt)}
+.card-id{font-size:.74rem;color:var(--cyan);margin-top:2px}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.card-field{background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.cf-label{font-size:.7rem;color:var(--faint);font-weight:700;text-transform:uppercase;margin-bottom:3px}
+.cf-value{font-size:.88rem;font-weight:700;color:var(--txt)}
+.emergency-banner{background:linear-gradient(135deg,rgba(255,93,108,.15),rgba(200,30,58,.1));border:1px solid rgba(255,93,108,.3);border-radius:12px;padding:12px;margin-top:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h3{font-family:Orbitron,sans-serif;font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0}
+.field textarea{min-height:70px}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:10px 18px;border-radius:9px;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.btn.danger{background:linear-gradient(120deg,#ff5d6c,#c81e3a);color:#fff}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.tab-bar{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:12px;flex-wrap:wrap}
+.tab-btn{background:none;border:none;color:var(--dim);font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:7px 12px;cursor:pointer;border-radius:8px;transition:all .25s}
+.tab-btn.active{background:rgba(0,242,254,.1);color:var(--cyan)}
+.tag{display:inline-block;background:rgba(0,242,254,.1);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.74rem;font-weight:700;color:var(--cyan);margin:2px}
+.tag.red{background:rgba(255,93,108,.1);border-color:rgba(255,93,108,.3);color:var(--red)}
+.tag.green{background:rgba(26,255,140,.1);border-color:rgba(26,255,140,.3);color:var(--green)}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,320px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="topbar">
+<a href="/" style="color:var(--cyan);text-decoration:none;font-size:1.2rem">←</a>
+<h1>🪪 Digital Health Card</h1>
+</div>
+<div class="shell">
+<div id="setupSection">
+<div class="card" style="text-align:center;padding:32px">
+<div style="font-size:3rem;margin-bottom:12px">🪪</div>
+<h2 style="font-family:Orbitron,sans-serif;font-size:1rem;color:var(--cyan);margin-bottom:8px">Create Your Health Card</h2>
+<p style="color:var(--dim);font-size:.84rem;margin-bottom:20px">Your personal digital health record — stored securely on your device</p>
+<button class="btn grad full" onclick="showSetup()">➕ Create Health Card</button>
+</div>
+</div>
+<div id="setupForm" style="display:none">
+<div class="card">
+<h3>👤 Personal Info</h3>
+<div class="field"><label>Full Name</label><input id="hName" type="text" placeholder="Your full name"/></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="field"><label>Date of Birth</label><input id="hDob" type="date"/></div>
+<div class="field"><label>Gender</label><select id="hGender"><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="field"><label>Blood Group</label><select id="hBlood"><option value="">Unknown</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="O+">O+</option><option value="O-">O-</option><option value="AB+">AB+</option><option value="AB-">AB-</option></select></div>
+<div class="field"><label>Phone</label><input id="hPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+</div>
+<div class="field"><label>Address</label><input id="hAddress" type="text" placeholder="Your address"/></div>
+</div>
+<div class="card">
+<h3>🚨 Emergency Contact</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="field"><label>Name</label><input id="eContactName" type="text" placeholder="Emergency contact name"/></div>
+<div class="field"><label>Phone</label><input id="eContactPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+</div>
+<div class="field"><label>Relation</label><input id="eContactRel" type="text" placeholder="e.g. Wife, Father, Son"/></div>
+</div>
+<div class="card">
+<h3>🏥 Medical Info</h3>
+<div class="field"><label>Chronic Conditions</label><input id="hConditions" type="text" placeholder="e.g. Diabetes, Hypertension, Asthma"/></div>
+<div class="field"><label>Allergies</label><input id="hAllergies" type="text" placeholder="e.g. Penicillin, Aspirin, Nuts"/></div>
+<div class="field"><label>Current Medicines</label><textarea id="hMedicines" placeholder="e.g. Metformin 500mg daily, Lisinopril 10mg"></textarea></div>
+<div class="field"><label>Past Surgeries</label><input id="hSurgeries" type="text" placeholder="e.g. Appendectomy 2018"/></div>
+<div class="field"><label>Doctor Name</label><input id="hDoctor" type="text" placeholder="Your regular doctor"/></div>
+<div class="field"><label>Hospital</label><input id="hHospital" type="text" placeholder="Your regular hospital"/></div>
+</div>
+<button class="btn grad full" onclick="saveCard()">💾 Save Health Card</button>
+</div>
+<div id="cardSection" style="display:none">
+<div class="health-card" id="healthCardDisplay"></div>
+<div class="tab-bar">
+<button class="tab-btn active" onclick="showTab('overview',this)">📋 Overview</button>
+<button class="tab-btn" onclick="showTab('medical',this)">🏥 Medical</button>
+<button class="tab-btn" onclick="showTab('emergency',this)">🚨 Emergency</button>
+</div>
+<div id="tab-overview"></div>
+<div id="tab-medical" style="display:none"></div>
+<div id="tab-emergency" style="display:none"></div>
+<div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+<button class="btn ghost" onclick="editCard()" style="flex:1">✏️ Edit</button>
+<button class="btn danger" onclick="deleteCard()" style="flex:1">🗑️ Delete</button>
+</div>
+</div>
+</div>
+<script>
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;document.getElementById('toaster').appendChild(t);setTimeout(()=>t.remove(),3000);}
+function getCard(){try{return JSON.parse(localStorage.getItem('healthCard')||'null');}catch{return null;}}
+function saveCardData(d){localStorage.setItem('healthCard',JSON.stringify(d));}
+window.showSetup=function(){document.getElementById('setupSection').style.display='none';document.getElementById('setupForm').style.display='block';};
+window.saveCard=function(){
+const name=document.getElementById('hName').value.trim();
+if(!name){toast('Enter your name','err');return;}
+const card={
+name,dob:document.getElementById('hDob').value,
+gender:document.getElementById('hGender').value,
+blood:document.getElementById('hBlood').value,
+phone:document.getElementById('hPhone').value.trim(),
+address:document.getElementById('hAddress').value.trim(),
+eContactName:document.getElementById('eContactName').value.trim(),
+eContactPhone:document.getElementById('eContactPhone').value.trim(),
+eContactRel:document.getElementById('eContactRel').value.trim(),
+conditions:document.getElementById('hConditions').value.trim(),
+allergies:document.getElementById('hAllergies').value.trim(),
+medicines:document.getElementById('hMedicines').value.trim(),
+surgeries:document.getElementById('hSurgeries').value.trim(),
+doctor:document.getElementById('hDoctor').value.trim(),
+hospital:document.getElementById('hHospital').value.trim(),
+id:'PKP-'+Date.now().toString(36).toUpperCase(),
+created:new Date().toISOString()
+};
+saveCardData(card);
+document.getElementById('setupForm').style.display='none';
+showCard(card);
+toast('Health card saved!','ok');
+};
+function showCard(card){
+document.getElementById('cardSection').style.display='block';
+const age=card.dob?Math.floor((new Date()-new Date(card.dob))/31557600000):'--';
+document.getElementById('healthCardDisplay').innerHTML='<div class="card-header"><div class="avatar">👤</div><div><div class="card-name">'+card.name+'</div><div class="card-id">'+card.id+'</div><div style="font-size:.74rem;color:var(--dim);margin-top:2px">'+card.gender+' | Age: '+age+'</div></div></div><div class="card-grid"><div class="card-field"><div class="cf-label">Blood Group</div><div class="cf-value" style="color:var(--red);font-size:1.1rem">'+(card.blood||'Unknown')+'</div></div><div class="card-field"><div class="cf-label">Phone</div><div class="cf-value">'+(card.phone||'--')+'</div></div><div class="card-field"><div class="cf-label">Doctor</div><div class="cf-value">'+(card.doctor||'--')+'</div></div><div class="card-field"><div class="cf-label">Hospital</div><div class="cf-value">'+(card.hospital||'--')+'</div></div></div>'+(card.allergies?'<div class="emergency-banner"><div style="font-size:.76rem;font-weight:700;color:var(--red);margin-bottom:4px">⚠️ ALLERGIES</div><div style="font-size:.84rem;color:var(--txt)">'+card.allergies+'</div></div>':'');
+document.getElementById('tab-overview').innerHTML='<div class="card"><h3>📋 Personal Details</h3><div style="display:grid;gap:8px;font-size:.85rem"><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--dim)">Full Name</span><span style="font-weight:700">'+card.name+'</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--dim)">Date of Birth</span><span style="font-weight:700">'+(card.dob||'--')+'</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--dim)">Gender</span><span style="font-weight:700">'+card.gender+'</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--dim)">Blood Group</span><span style="font-weight:700;color:var(--red)">'+(card.blood||'Unknown')+'</span></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--dim)">Address</span><span style="font-weight:700">'+(card.address||'--')+'</span></div></div></div>';
+document.getElementById('tab-medical').innerHTML='<div class="card"><h3>🏥 Medical History</h3>'+(card.conditions?'<div style="margin-bottom:12px"><div style="font-size:.78rem;font-weight:700;color:var(--dim);margin-bottom:6px">Chronic Conditions</div>'+card.conditions.split(',').map(c=>'<span class="tag red">'+c.trim()+'</span>').join('')+'</div>':'')+(card.allergies?'<div style="margin-bottom:12px"><div style="font-size:.78rem;font-weight:700;color:var(--dim);margin-bottom:6px">Allergies</div>'+card.allergies.split(',').map(a=>'<span class="tag red">⚠️ '+a.trim()+'</span>').join('')+'</div>':'')+(card.medicines?'<div style="margin-bottom:12px"><div style="font-size:.78rem;font-weight:700;color:var(--dim);margin-bottom:6px">Current Medicines</div><div style="font-size:.84rem;color:var(--txt);background:rgba(0,242,254,.04);border:1px solid var(--line);border-radius:10px;padding:10px">'+card.medicines+'</div></div>':'')+(card.surgeries?'<div><div style="font-size:.78rem;font-weight:700;color:var(--dim);margin-bottom:6px">Past Surgeries</div><div style="font-size:.84rem;color:var(--txt)">'+card.surgeries+'</div></div>':'')+'</div>';
+document.getElementById('tab-emergency').innerHTML='<div class="card" style="background:linear-gradient(135deg,rgba(255,93,108,.08),rgba(200,30,58,.05));border-color:rgba(255,93,108,.3)"><h3 style="color:var(--red)">🚨 Emergency Contact</h3><div style="font-size:1rem;font-weight:800;margin-bottom:4px">'+(card.eContactName||'Not set')+'</div><div style="color:var(--dim);font-size:.84rem;margin-bottom:8px">'+(card.eContactRel||'')+'</div>'+(card.eContactPhone?'<a href="tel:'+card.eContactPhone+'" class="btn danger full" style="text-decoration:none">📞 Call '+card.eContactPhone+'</a>':'<div style="color:var(--faint);font-size:.84rem">No emergency contact set</div>')+'</div><div class="card"><h3>🏥 Medical Team</h3><div style="font-size:.85rem;display:grid;gap:8px"><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--dim)">Doctor</span><span style="font-weight:700">'+(card.doctor||'--')+'</span></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--dim)">Hospital</span><span style="font-weight:700">'+(card.hospital||'--')+'</span></div></div></div>';
+}
+window.showTab=function(tab,btn){
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+['overview','medical','emergency'].forEach(t=>document.getElementById('tab-'+t).style.display=t===tab?'block':'none');
+};
+window.editCard=function(){
+const card=getCard();
+if(!card)return;
+document.getElementById('cardSection').style.display='none';
+document.getElementById('setupForm').style.display='block';
+document.getElementById('hName').value=card.name||'';
+document.getElementById('hDob').value=card.dob||'';
+document.getElementById('hGender').value=card.gender||'Male';
+document.getElementById('hBlood').value=card.blood||'';
+document.getElementById('hPhone').value=card.phone||'';
+document.getElementById('hAddress').value=card.address||'';
+document.getElementById('eContactName').value=card.eContactName||'';
+document.getElementById('eContactPhone').value=card.eContactPhone||'';
+document.getElementById('eContactRel').value=card.eContactRel||'';
+document.getElementById('hConditions').value=card.conditions||'';
+document.getElementById('hAllergies').value=card.allergies||'';
+document.getElementById('hMedicines').value=card.medicines||'';
+document.getElementById('hSurgeries').value=card.surgeries||'';
+document.getElementById('hDoctor').value=card.doctor||'';
+document.getElementById('hHospital').value=card.hospital||'';
+};
+window.deleteCard=function(){
+if(!confirm('Delete your health card?'))return;
+localStorage.removeItem('healthCard');
+document.getElementById('cardSection').style.display='none';
+document.getElementById('setupSection').style.display='block';
+toast('Card deleted','ok');
+};
+const card=getCard();
+if(card){document.getElementById('setupSection').style.display='none';showCard(card);}
+</script>
+</body>
+</html>

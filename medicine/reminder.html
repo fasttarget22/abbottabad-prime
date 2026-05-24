@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Medicine Reminder — Pakistan Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--red:#ff5d6c;--gold:#ffd700;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.topbar h1{font-family:Orbitron,sans-serif;font-size:.95rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.shell{max-width:700px;margin:0 auto;padding:20px 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h3{font-family:Orbitron,sans-serif;font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input,.field select{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:10px 18px;border-radius:9px;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.btn.danger{background:linear-gradient(120deg,#ff5d6c,#c81e3a);color:#fff}
+.btn.ok{background:linear-gradient(120deg,#1aff8c,#08b85f);color:#04190d}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.btn.sm{padding:6px 10px;font-size:.76rem}
+.med-item{background:rgba(0,242,254,.04);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.med-item.taken{border-color:rgba(26,255,140,.3);background:rgba(26,255,140,.04);opacity:.7}
+.time-slots{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.time-slot{background:rgba(0,242,254,.08);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:.76rem;font-weight:700;color:var(--cyan)}
+.freq-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.freq-btn{background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;color:var(--dim);font-family:Manrope,sans-serif;font-weight:700;font-size:.78rem;padding:10px 8px;cursor:pointer;text-align:center;transition:all .25s}
+.freq-btn.active{background:rgba(0,242,254,.15);border-color:var(--cyan);color:var(--cyan)}
+.notify-banner{background:linear-gradient(135deg,rgba(0,242,254,.1),rgba(43,111,255,.1));border:1px solid rgba(0,242,254,.3);border-radius:14px;padding:16px;margin-bottom:16px;text-align:center}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,320px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="topbar">
+<a href="/" style="color:var(--cyan);text-decoration:none;font-size:1.2rem">←</a>
+<h1>💊 Medicine Reminder</h1>
+</div>
+<div class="shell">
+<div class="notify-banner" id="notifyBanner">
+<div style="font-size:1.5rem;margin-bottom:6px">🔔</div>
+<div style="font-weight:700;font-size:.9rem;margin-bottom:6px">Enable Notifications</div>
+<div style="color:var(--dim);font-size:.8rem;margin-bottom:10px">Get reminded when it's time to take your medicine</div>
+<button class="btn grad" onclick="enableNotifications()">Enable Reminders</button>
+</div>
+<div class="card">
+<h3>➕ Add Medicine</h3>
+<div class="field"><label>Medicine Name</label><input id="medName" type="text" placeholder="e.g. Panadol 500mg"/></div>
+<div class="field"><label>Dose</label><input id="medDose" type="text" placeholder="e.g. 1 tablet, 5ml"/></div>
+<div class="field"><label>Frequency</label>
+<div class="freq-grid">
+<div class="freq-btn active" onclick="setFreq(this,'once')">Once Daily</div>
+<div class="freq-btn" onclick="setFreq(this,'twice')">Twice Daily</div>
+<div class="freq-btn" onclick="setFreq(this,'thrice')">3x Daily</div>
+<div class="freq-btn" onclick="setFreq(this,'four')">4x Daily</div>
+<div class="freq-btn" onclick="setFreq(this,'weekly')">Weekly</div>
+<div class="freq-btn" onclick="setFreq(this,'custom')">Custom</div>
+</div></div>
+<div class="field"><label>Time(s)</label><input id="medTime" type="time" value="08:00"/></div>
+<div class="field" id="time2Field" style="display:none"><label>Second Time</label><input id="medTime2" type="time" value="20:00"/></div>
+<div class="field" id="time3Field" style="display:none"><label>Third Time</label><input id="medTime3" type="time" value="14:00"/></div>
+<div class="field"><label>Duration (days)</label><input id="medDays" type="number" placeholder="e.g. 7, 14, 30" value="7"/></div>
+<div class="field"><label>Instructions</label><input id="medInstr" type="text" placeholder="e.g. After meal, Before sleep"/></div>
+<div class="field"><label>Prescribed by</label><input id="medDoc" type="text" placeholder="Doctor name (optional)"/></div>
+<button class="btn grad full" onclick="addMedicine()">💊 Add Medicine</button>
+</div>
+<div class="card">
+<h3>📋 Today's Medicines</h3>
+<div id="todayList"></div>
+</div>
+<div class="card">
+<h3>💊 All Medicines</h3>
+<div id="allMedsList"></div>
+</div>
+</div>
+<script>
+let currentFreq='once';
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;document.getElementById('toaster').appendChild(t);setTimeout(()=>t.remove(),3000);}
+function getMeds(){try{return JSON.parse(localStorage.getItem('medicines')||'[]');}catch{return[];}}
+function saveMeds(m){localStorage.setItem('medicines',JSON.stringify(m));}
+function getTaken(){try{return JSON.parse(localStorage.getItem('takenToday')||'{}');}catch{return{};}}
+function saveTaken(t){localStorage.setItem('takenToday',JSON.stringify(t));}
+window.setFreq=function(btn,freq){
+document.querySelectorAll('.freq-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+currentFreq=freq;
+document.getElementById('time2Field').style.display=freq==='twice'||freq==='thrice'||freq==='four'?'block':'none';
+document.getElementById('time3Field').style.display=freq==='thrice'||freq==='four'?'block':'none';
+};
+window.enableNotifications=async function(){
+if(!('Notification'in window)){toast('Notifications not supported','err');return;}
+const perm=await Notification.requestPermission();
+if(perm==='granted'){
+document.getElementById('notifyBanner').style.display='none';
+toast('Notifications enabled!','ok');
+startNotificationCheck();
+}else{toast('Please allow notifications in browser settings','err');}
+};
+function startNotificationCheck(){
+setInterval(function(){
+const now=new Date();
+const hhmm=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+const meds=getMeds();
+meds.forEach(m=>{
+if(m.times&&m.times.includes(hhmm)){
+new Notification('💊 Medicine Reminder',{body:'Time to take '+m.name+' — '+m.dose,icon:'/favicon.ico'});
+}
+});
+},60000);
+}
+window.addMedicine=function(){
+const name=document.getElementById('medName').value.trim();
+const dose=document.getElementById('medDose').value.trim();
+const time=document.getElementById('medTime').value;
+const days=parseInt(document.getElementById('medDays').value)||7;
+const instr=document.getElementById('medInstr').value.trim();
+const doc=document.getElementById('medDoc').value.trim();
+if(!name||!dose){toast('Enter medicine name and dose','err');return;}
+const times=[time];
+if(currentFreq==='twice'||currentFreq==='thrice'||currentFreq==='four')times.push(document.getElementById('medTime2').value);
+if(currentFreq==='thrice'||currentFreq==='four')times.push(document.getElementById('medTime3').value);
+const meds=getMeds();
+meds.push({id:Date.now(),name,dose,freq:currentFreq,times,days,instr,doc,startDate:new Date().toISOString(),active:true});
+saveMeds(meds);
+document.getElementById('medName').value='';
+document.getElementById('medDose').value='';
+document.getElementById('medInstr').value='';
+toast('Medicine added!','ok');
+renderAll();
+};
+function renderToday(){
+const meds=getMeds().filter(m=>m.active);
+const taken=getTaken();
+const today=new Date().toDateString();
+if(taken._date!==today){saveTaken({_date:today});return renderToday();}
+const div=document.getElementById('todayList');
+if(!meds.length){div.innerHTML='<div style="text-align:center;padding:20px;color:var(--faint)">No medicines added yet.</div>';return;}
+div.innerHTML=meds.map(m=>{
+const isTaken=taken[m.id];
+return'<div class="med-item'+(isTaken?' taken':'')+'"><div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-weight:800;font-size:.92rem">'+m.name+'</div><div style="font-size:.78rem;color:var(--dim);margin-top:2px">'+m.dose+(m.instr?' — '+m.instr:'')+'</div>'+(m.doc?'<div style="font-size:.74rem;color:var(--faint);margin-top:2px">Dr. '+m.doc+'</div>':'')+'<div class="time-slots">'+m.times.map(t=>'<span class="time-slot">⏰ '+t+'</span>').join('')+'</div></div>'+(isTaken?'<span style="color:var(--green);font-weight:700;font-size:.8rem">✅ Taken</span>':'<button class="btn ok sm" onclick="markTaken('+m.id+')">✅ Taken</button>')+'</div></div>';
+}).join('');
+}
+function renderAllMeds(){
+const meds=getMeds();
+const div=document.getElementById('allMedsList');
+if(!meds.length){div.innerHTML='<div style="text-align:center;padding:20px;color:var(--faint)">No medicines added.</div>';return;}
+div.innerHTML=meds.map(m=>'<div class="med-item"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:800;font-size:.88rem">'+m.name+'</div><div style="font-size:.76rem;color:var(--dim)">'+m.dose+' | '+m.freq+' | '+m.days+' days</div></div><button class="btn danger sm" onclick="deleteMed('+m.id+')">🗑️</button></div></div>').join('');
+}
+window.markTaken=function(id){
+const taken=getTaken();
+const today=new Date().toDateString();
+taken._date=today;
+taken[id]=true;
+saveTaken(taken);
+toast('Marked as taken!','ok');
+renderToday();
+};
+window.deleteMed=function(id){
+saveMeds(getMeds().filter(m=>m.id!==id));
+toast('Deleted','ok');
+renderAll();
+};
+function renderAll(){renderToday();renderAllMeds();}
+renderAll();
+if(Notification.permission==='granted'){
+document.getElementById('notifyBanner').style.display='none';
+startNotificationCheck();
+}
+</script>
+</body>
+</html>

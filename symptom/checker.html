@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Symptom Checker — Pakistan Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--red:#ff5d6c;--gold:#ffd700;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.topbar h1{font-family:Orbitron,sans-serif;font-size:.95rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.shell{max-width:700px;margin:0 auto;padding:20px 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h3{font-family:Orbitron,sans-serif;font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:14px}
+.symptom-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.sym-btn{background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;color:var(--dim);font-family:Manrope,sans-serif;font-weight:600;font-size:.8rem;padding:10px 12px;cursor:pointer;text-align:left;transition:all .25s}
+.sym-btn.selected{background:rgba(0,242,254,.15);border-color:var(--cyan);color:var(--cyan)}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:10px 18px;border-radius:9px;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.result-card{border-radius:14px;padding:16px;margin-bottom:10px}
+.result-card.low{background:rgba(26,255,140,.06);border:1px solid rgba(26,255,140,.2)}
+.result-card.medium{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2)}
+.result-card.high{background:rgba(255,93,108,.06);border:1px solid rgba(255,93,108,.2)}
+.severity-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;margin-bottom:8px}
+.severity-badge.low{background:rgba(26,255,140,.15);color:var(--green)}
+.severity-badge.medium{background:rgba(255,215,0,.15);color:var(--gold)}
+.severity-badge.high{background:rgba(255,93,108,.15);color:var(--red)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field select{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0}
+.disclaimer{background:rgba(255,93,108,.06);border:1px solid rgba(255,93,108,.2);border-radius:12px;padding:12px;font-size:.76rem;color:var(--dim);margin-top:16px;line-height:1.6}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,320px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="topbar">
+<a href="/" style="color:var(--cyan);text-decoration:none;font-size:1.2rem">←</a>
+<h1>🩺 Symptom Checker</h1>
+</div>
+<div class="shell">
+<div style="text-align:center;margin-bottom:20px">
+<div style="font-size:2.5rem;margin-bottom:8px">🩺</div>
+<h2 style="font-family:Orbitron,sans-serif;font-size:1rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Check Your Symptoms</h2>
+<p style="color:var(--dim);font-size:.82rem;margin-top:6px">Select your symptoms to get possible conditions</p>
+</div>
+<div class="card">
+<h3>👤 Basic Info</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="field"><label>Age</label>
+<select id="patAge">
+<option value="child">Child (0-12)</option>
+<option value="teen">Teen (13-17)</option>
+<option value="adult" selected>Adult (18-60)</option>
+<option value="senior">Senior (60+)</option>
+</select></div>
+<div class="field"><label>Gender</label>
+<select id="patGender">
+<option value="male">Male</option>
+<option value="female">Female</option>
+</select></div>
+</div>
+</div>
+<div class="card">
+<h3>🤒 Select Symptoms</h3>
+<div class="symptom-grid">
+<button class="sym-btn" onclick="toggle(this)">🌡️ Fever</button>
+<button class="sym-btn" onclick="toggle(this)">🤧 Cold & Runny Nose</button>
+<button class="sym-btn" onclick="toggle(this)">😤 Cough</button>
+<button class="sym-btn" onclick="toggle(this)">😮‍💨 Shortness of Breath</button>
+<button class="sym-btn" onclick="toggle(this)">💆 Headache</button>
+<button class="sym-btn" onclick="toggle(this)">🤢 Nausea</button>
+<button class="sym-btn" onclick="toggle(this)">🤮 Vomiting</button>
+<button class="sym-btn" onclick="toggle(this)">🫃 Stomach Pain</button>
+<button class="sym-btn" onclick="toggle(this)">💩 Diarrhea</button>
+<button class="sym-btn" onclick="toggle(this)">🔙 Back Pain</button>
+<button class="sym-btn" onclick="toggle(this)">🦵 Joint Pain</button>
+<button class="sym-btn" onclick="toggle(this)">😴 Fatigue</button>
+<button class="sym-btn" onclick="toggle(this)">😵 Dizziness</button>
+<button class="sym-btn" onclick="toggle(this)">👁️ Eye Pain</button>
+<button class="sym-btn" onclick="toggle(this)">👂 Ear Pain</button>
+<button class="sym-btn" onclick="toggle(this)">🦷 Toothache</button>
+<button class="sym-btn" onclick="toggle(this)">❤️ Chest Pain</button>
+<button class="sym-btn" onclick="toggle(this)">💧 Excessive Thirst</button>
+<button class="sym-btn" onclick="toggle(this)">🏃 Frequent Urination</button>
+<button class="sym-btn" onclick="toggle(this)">🧴 Skin Rash</button>
+<button class="sym-btn" onclick="toggle(this)">😰 Sweating</button>
+<button class="sym-btn" onclick="toggle(this)">🥶 Chills</button>
+<button class="sym-btn" onclick="toggle(this)">😶 Loss of Appetite</button>
+<button class="sym-btn" onclick="toggle(this)">🫀 Palpitations</button>
+</div>
+<button class="btn grad full" onclick="checkSymptoms()">🔍 Check Symptoms</button>
+<button class="btn ghost full" onclick="clearAll()">Clear All</button>
+</div>
+<div id="resultsSection" style="display:none">
+<div class="card">
+<h3>📋 Possible Conditions</h3>
+<div id="resultsList"></div>
+<div class="disclaimer">⚠️ <b>Disclaimer:</b> This tool is for general information only and is NOT a substitute for professional medical advice. Always consult a qualified doctor for diagnosis and treatment. In case of emergency, call 1122 or visit nearest hospital immediately.</div>
+<a href="/doctor/booking.html" class="btn grad full" style="margin-top:14px;text-decoration:none">🩺 Book a Doctor Now</a>
+</div>
+</div>
+</div>
+<script>
+const CONDITIONS=[
+{name:'Common Cold',symptoms:['Cold & Runny Nose','Cough','Fever','Headache','Fatigue'],severity:'low',specialist:'General Physician',advice:'Rest, fluids, paracetamol for fever. Usually resolves in 7 days.'},
+{name:'Flu (Influenza)',symptoms:['Fever','Cough','Fatigue','Headache','Chills','Sweating','Joint Pain'],severity:'medium',specialist:'General Physician',advice:'Rest, fluids, antiviral if early. Avoid contact with others.'},
+{name:'COVID-19',symptoms:['Fever','Cough','Fatigue','Shortness of Breath','Loss of Appetite'],severity:'high',specialist:'General Physician',advice:'Get tested immediately. Isolate and consult doctor.'},
+{name:'Gastroenteritis',symptoms:['Nausea','Vomiting','Diarrhea','Stomach Pain','Fever'],severity:'medium',specialist:'Gastroenterologist',advice:'Stay hydrated with ORS. Avoid solid food initially.'},
+{name:'Typhoid',symptoms:['Fever','Fatigue','Loss of Appetite','Stomach Pain','Headache'],severity:'high',specialist:'General Physician',advice:'Get blood test (Widal). Requires antibiotics.'},
+{name:'Diabetes',symptoms:['Excessive Thirst','Frequent Urination','Fatigue','Dizziness'],severity:'high',specialist:'General Physician',advice:'Get blood sugar test immediately. Lifestyle changes needed.'},
+{name:'Hypertension',symptoms:['Headache','Dizziness','Palpitations','Chest Pain'],severity:'high',specialist:'Cardiologist',advice:'Check BP immediately. Reduce salt intake.'},
+{name:'Migraine',symptoms:['Headache','Nausea','Dizziness','Eye Pain'],severity:'medium',specialist:'Neurologist',advice:'Rest in dark quiet room. Pain relievers may help.'},
+{name:'Urinary Tract Infection',symptoms:['Frequent Urination','Stomach Pain','Fever'],severity:'medium',specialist:'Urologist',advice:'Drink lots of water. Requires antibiotics.'},
+{name:'Dengue Fever',symptoms:['Fever','Joint Pain','Headache','Fatigue','Skin Rash','Chills'],severity:'high',specialist:'General Physician',advice:'Get CBC blood test urgently. Monitor platelet count.'},
+{name:'Malaria',symptoms:['Fever','Chills','Sweating','Headache','Fatigue','Nausea'],severity:'high',specialist:'General Physician',advice:'Get malaria test immediately. Requires antimalarial drugs.'},
+{name:'Pneumonia',symptoms:['Cough','Fever','Shortness of Breath','Chest Pain','Fatigue'],severity:'high',specialist:'Pulmonologist',advice:'Get chest X-ray. May require hospitalization.'},
+{name:'Asthma',symptoms:['Shortness of Breath','Cough','Chest Pain'],severity:'medium',specialist:'Pulmonologist',advice:'Use inhaler if prescribed. Avoid triggers.'},
+{name:'Ear Infection',symptoms:['Ear Pain','Fever','Headache'],severity:'medium',specialist:'ENT Specialist',advice:'Warm compress may help. May need antibiotics.'},
+{name:'Conjunctivitis',symptoms:['Eye Pain','Fever'],severity:'low',specialist:'Eye Specialist',advice:'Eye drops prescribed by doctor. Avoid touching eyes.'},
+{name:'Arthritis',symptoms:['Joint Pain','Fatigue','Back Pain'],severity:'medium',specialist:'Orthopedic Surgeon',advice:'Pain relievers and physiotherapy may help.'},
+{name:'Anxiety/Stress',symptoms:['Palpitations','Headache','Fatigue','Dizziness','Sweating'],severity:'low',specialist:'Psychiatrist',advice:'Breathing exercises, reduce caffeine. Consider counseling.'},
+{name:'Skin Allergy',symptoms:['Skin Rash','Fever','Fatigue'],severity:'low',specialist:'Dermatologist',advice:'Antihistamines may help. Avoid allergens.'},
+];
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;document.getElementById('toaster').appendChild(t);setTimeout(()=>t.remove(),3000);}
+window.toggle=function(btn){btn.classList.toggle('selected');};
+window.clearAll=function(){document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('selected'));document.getElementById('resultsSection').style.display='none';};
+window.checkSymptoms=function(){
+const selected=Array.from(document.querySelectorAll('.sym-btn.selected')).map(b=>b.textContent.replace(/^[^\s]+\s/,'').trim());
+if(!selected.length){toast('Select at least one symptom','err');return;}
+const scored=CONDITIONS.map(c=>{
+const matches=c.symptoms.filter(s=>selected.some(sel=>sel.toLowerCase().includes(s.toLowerCase())||s.toLowerCase().includes(sel.toLowerCase())));
+return{...c,score:matches.length,matches};
+}).filter(c=>c.score>0).sort((a,b)=>b.score-a.score).slice(0,5);
+if(!scored.length){document.getElementById('resultsList').innerHTML='<div style="text-align:center;padding:20px;color:var(--faint)">No conditions matched. Please consult a doctor.</div>';document.getElementById('resultsSection').style.display='block';return;}
+document.getElementById('resultsList').innerHTML=scored.map(c=>'<div class="result-card '+c.severity+'"><span class="severity-badge '+c.severity+'">'+(c.severity==='low'?'Mild':c.severity==='medium'?'Moderate':'Serious')+'</span><div style="font-weight:800;font-size:.95rem;margin-bottom:6px">'+c.name+'</div><div style="font-size:.78rem;color:var(--dim);margin-bottom:6px">Matched: '+c.matches.join(', ')+'</div><div style="font-size:.8rem;color:var(--dim);margin-bottom:8px">💡 '+c.advice+'</div><div style="font-size:.78rem;font-weight:700;color:var(--cyan)">👨‍⚕️ See: '+c.specialist+'</div></div>').join('');
+document.getElementById('resultsSection').style.display='block';
+document.getElementById('resultsSection').scrollIntoView({behavior:'smooth'});
+};
+</script>
+</body>
+</html>
