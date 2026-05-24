@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Doctor Dashboard</title><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/><style>:root{--bg:#0b0f19;--surface:#121826;--surface2:rgba(18,24,38,0.8);--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--red:#ff5d6c;--gold:#ffd700;}*{box-sizing:border-box;margin:0;padding:0}body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--line);padding:18px 0;z-index:50;overflow-y:auto;transition:transform .3s}.brand{padding:0 18px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}.brand h2{font-family:Orbitron,sans-serif;font-size:.85rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}.nav-item{display:flex;align-items:center;gap:10px;padding:12px 18px;color:var(--dim);font-weight:600;font-size:.86rem;cursor:pointer;border:0;background:none;width:100%;text-align:left;font-family:inherit;transition:all .25s;border-left:3px solid transparent}.nav-item:hover,.nav-item.active{color:var(--cyan);background:rgba(0,242,254,.06);border-left-color:var(--cyan)}.main{margin-left:220px;padding:22px;min-height:100vh}.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}.topbar h2{font-family:Orbitron,sans-serif;font-size:1rem;font-weight:700;color:var(--cyan)}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}.stat-card{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}.sn{font-family:Orbitron,sans-serif;font-size:1.6rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}.sl{font-size:.76rem;color:var(--dim);margin-top:6px;font-weight:600}.panel{display:none}.panel.active{display:block}.card{background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}.card h3{font-family:Orbitron,sans-serif;font-size:.9rem;font-weight:700;color:var(--cyan);margin-bottom:14px}.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:8px 14px;border-radius:9px;text-decoration:none;transition:all .25s}.btn.grad{color:#04121f;background:var(--grad)}.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}.btn.ok{background:linear-gradient(120deg,#1aff8c,#08b85f);color:#04190d}.btn.danger{background:linear-gradient(120deg,#ff5d6c,#c81e3a);color:#fff}.btn.wa{background:linear-gradient(135deg,#25d366,#0fae53);color:#03190d}.btn.full{width:100%;justify-content:center;margin-top:8px}.btn.sm{padding:6px 10px;font-size:.76rem}.field{margin-bottom:14px}.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0;transition:border-color .25s}.field input:focus,.field select:focus{border-color:var(--cyan)}.appt-slot{background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}.appt-slot.booked{border-color:rgba(26,255,140,.3);background:rgba(26,255,140,.05)}.appt-slot.done{opacity:.6}.spinner{width:28px;height:28px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:20px auto;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:.9rem}.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}.modal-overlay.open{display:flex}.modal-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;position:relative}.modal-close{position:absolute;top:12px;right:12px;background:none;border:0;color:var(--faint);font-size:1.2rem;cursor:pointer}#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,340px)}.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}.toast.ok{border-color:rgba(26,255,140,.5)}.toast.err{border-color:rgba(255,93,108,.5)}.mobile-btn{display:none;position:fixed;bottom:18px;right:18px;z-index:60;width:46px;height:46px;border-radius:50%;background:var(--grad);border:0;color:#04121f;font-size:1.3rem;cursor:pointer}@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:14px}.stats-grid{grid-template-columns:repeat(2,1fr)}.mobile-btn{display:block}}</style></head><body><div id="toaster"></div><aside class="sidebar" id="sidebar"><div class="brand"><h2>Doctor Panel</h2><p id="docName">Loading...</p></div><button class="nav-item active" onclick="showPanel('overview')" id="nav-overview">Overview</button><button class="nav-item" onclick="showPanel('appointments')" id="nav-appointments">Appointments</button><button class="nav-item" onclick="showPanel('patients')" id="nav-patients">Patients</button><button class="nav-item" onclick="showPanel('prescription')" id="nav-prescription">Prescription</button><button class="nav-item" onclick="showPanel('schedule')" id="nav-schedule">Schedule</button><button class="nav-item" onclick="showPanel('analytics')" id="nav-analytics">Analytics</button>
-<button class="nav-item" onclick="showPanel('refer')" id="nav-refer">Refer Patient</button>
+<button class="nav-item" onclick="showPanel('queue')" id="nav-queue">🏥 Queue</button><button class="nav-item" onclick="showPanel('refer')" id="nav-refer">Refer Patient</button>
 <button class="nav-item" onclick="showPanel('reports')" id="nav-reports">Lab Reports</button>
 <button class="nav-item" onclick="showPanel('vitals')" id="nav-vitals">Patient Vitals</button><div style="padding:14px 18px;border-top:1px solid var(--line);margin-top:auto"><a href="/" class="btn ghost" style="width:100%;justify-content:center;margin-bottom:8px;font-size:.8rem">Main Site</a><button class="btn danger" onclick="doLogout()" style="width:100%;justify-content:center;font-size:.8rem">Logout</button></div></aside><main class="main"><div class="topbar"><h2 id="pageTitle">Overview</h2><div style="font-size:.8rem;color:var(--cyan)" id="todayDate"></div></div><div class="stats-grid"><div class="stat-card"><div class="sn" id="statToday">0</div><div class="sl">Today Patients</div></div><div class="stat-card"><div class="sn" id="statTotal">0</div><div class="sl">Total Patients</div></div><div class="stat-card"><div class="sn" id="statPending">0</div><div class="sl">Pending</div></div><div class="stat-card"><div class="sn" id="statRevenue">0</div><div class="sl">Revenue PKR</div></div></div><div class="panel active" id="panel-overview"><div class="card" style="background:linear-gradient(135deg,rgba(0,242,254,.08),rgba(43,111,255,.08));border:1px solid rgba(0,242,254,.3)">
 <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
@@ -74,7 +74,32 @@
 </div>
 <div id="vitalsList"></div>
 </div>
-</div></main><button class="mobile-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">Menu</button><script type="module">import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getFirestore,collection,getDocs,doc,updateDoc,addDoc,query,where,deleteDoc}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});const db=getFirestore(app);window.db=db;window.fbCol=collection;window.fbGet=getDocs;window.fbDoc=doc;window.fbUpdate=updateDoc;window.fbAdd=addDoc;window.fbQ=query;window.fbWhere=where;window.fbDelete=deleteDoc;</script><script>
+</div><div class="panel" id="panel-queue">
+<div class="card" style="background:linear-gradient(135deg,rgba(26,255,140,.08),rgba(0,242,254,.08));border:1px solid rgba(26,255,140,.3)">
+<h3>🏥 Patient Queue</h3>
+<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+<button class="btn grad" onclick="callNextPatient()">📢 Call Next Patient</button>
+<button class="btn ghost" onclick="loadQueue()">🔄 Refresh</button>
+</div>
+<div id="queueStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+<div style="background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:10px;padding:10px;text-align:center">
+<div id="qWaiting" style="font-size:1.4rem;font-weight:800;color:#ffd700">0</div>
+<div style="font-size:.74rem;color:var(--dim)">Waiting</div></div>
+<div style="background:rgba(0,242,254,.1);border:1px solid rgba(0,242,254,.3);border-radius:10px;padding:10px;text-align:center">
+<div id="qInProgress" style="font-size:1.4rem;font-weight:800;color:var(--cyan)">0</div>
+<div style="font-size:.74rem;color:var(--dim)">In Progress</div></div>
+<div style="background:rgba(26,255,140,.1);border:1px solid rgba(26,255,140,.3);border-radius:10px;padding:10px;text-align:center">
+<div id="qDone" style="font-size:1.4rem;font-weight:800;color:var(--green)">0</div>
+<div style="font-size:.74rem;color:var(--dim)">Done Today</div></div>
+</div>
+<div id="queueList"><div class="spinner"></div></div>
+</div>
+<div class="card"><h3>Add Walk-in Patient</h3>
+<div class="field"><label>Patient Name</label><input id="qName" type="text" placeholder="Patient name"/></div>
+<div class="field"><label>Phone</label><input id="qPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+<div class="field"><label>Complaint</label><input id="qComplaint" type="text" placeholder="Chief complaint"/></div>
+<button class="btn grad full" onclick="addToQueue()">Add to Queue</button>
+</div></div></main><button class="mobile-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">Menu</button><script type="module">import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getFirestore,collection,getDocs,doc,updateDoc,addDoc,query,where,deleteDoc}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});const db=getFirestore(app);window.db=db;window.fbCol=collection;window.fbGet=getDocs;window.fbDoc=doc;window.fbUpdate=updateDoc;window.fbAdd=addDoc;window.fbQ=query;window.fbWhere=where;window.fbDelete=deleteDoc;</script><script>
 function getCookie(n){const v=document.cookie.match("(^|;) ?"+n+"=([^;]*)(;|$)");return v?decodeURIComponent(v[2]):null;}
 const doctorEmail=localStorage.getItem("vendorEmail")||getCookie("vendorEmail");
 if(!doctorEmail){window.location.href="/vendor/login.html";}
@@ -314,7 +339,7 @@ function showPanel(name){
   document.querySelectorAll(".nav-item").forEach(function(n){n.classList.remove("active");});
   document.getElementById("panel-"+name).classList.add("active");
   document.getElementById("nav-"+name).classList.add("active");
-  const titles={overview:"Overview",appointments:"Appointments",patients:"Patients",prescription:"Prescription",schedule:"Schedule",analytics:"Analytics",refer:"Refer Patient",reports:"Lab Reports",vitals:"Patient Vitals"};
+  const titles={overview:"Overview",queue:"Patient Queue",appointments:"Appointments",patients:"Patients",prescription:"Prescription",schedule:"Schedule",analytics:"Analytics",refer:"Refer Patient",reports:"Lab Reports",vitals:"Patient Vitals"};
   document.getElementById("pageTitle").textContent=titles[name]||name;
   document.getElementById("sidebar").classList.remove("open");
 }
@@ -606,6 +631,88 @@ async function sendMedReminder(){
   const pName=snap.empty?'Patient':snap.docs[0].data().name;
   sendMedicineReminder(phone,pName,meds);
   toast('Medicine reminder sent!','ok');
+}
+
+
+async function loadQueue(){
+  if(!doctorData)return;
+  const today=new Date().toISOString().split("T")[0];
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,"queue"),window.fbWhere("doctorPhone","==",doctorData.phone),window.fbWhere("date","==",today)));
+    const queue=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    queue.sort(function(a,b){return a.token-b.token;});
+    const waiting=queue.filter(function(q){return q.status==="waiting";});
+    const inProgress=queue.filter(function(q){return q.status==="inprogress";});
+    const done=queue.filter(function(q){return q.status==="done";});
+    document.getElementById("qWaiting").textContent=waiting.length;
+    document.getElementById("qInProgress").textContent=inProgress.length;
+    document.getElementById("qDone").textContent=done.length;
+    const el=document.getElementById("queueList");
+    if(!queue.length){el.innerHTML="<div class=\"empty\">No patients in queue today.</div>";return;}
+    el.innerHTML=queue.map(function(q){
+      const colors={waiting:"rgba(255,215,0,.15)",inprogress:"rgba(0,242,254,.15)",done:"rgba(26,255,140,.1)"};
+      const borders={waiting:"rgba(255,215,0,.4)",inprogress:"rgba(0,242,254,.4)",done:"rgba(26,255,140,.3)"};
+      const labels={waiting:"⏳ Waiting",inprogress:"🔵 In Progress",done:"✅ Done"};
+      return "<div style=\"background:"+colors[q.status]+";border:1px solid "+borders[q.status]+";border-radius:12px;padding:12px;margin-bottom:8px\">"
+      +"<div style=\"display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px\">"
+      +"<div style=\"display:flex;align-items:center;gap:10px\">"
+      +"<div style=\"width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:800;color:#04121f\">"+q.token+"</div>"
+      +"<div><div style=\"font-weight:700;font-size:.88rem\">"+q.patientName+"</div>"
+      +"<div style=\"font-size:.74rem;color:var(--dim)\">"+q.complaint+"</div></div></div>"
+      +"<div style=\"display:flex;gap:6px;flex-wrap:wrap\">"
+      +(q.status==="waiting"?"<button class=\"btn grad sm\" onclick=\"setQueueStatus('"+q.id+"','inprogress')\">▶ Call In</button>":"")
+      +(q.status==="inprogress"?"<button class=\"btn ok sm\" onclick=\"setQueueStatus('"+q.id+"','done')\">✅ Done</button>":"")
+      +(q.status!=="done"?"<button class=\"btn danger sm\" onclick=\"setQueueStatus('"+q.id+"','done')\">Skip</button>":"")
+      +"<a href=\"tel:"+q.patientPhone+"\" class=\"btn ghost sm\">Call</a>"
+      +"</div></div>"
+      +"<div style=\"margin-top:6px;font-size:.72rem;color:var(--dim)\">"+labels[q.status]+" | Token #"+q.token+"</div>"
+      +"</div>";
+    }).join("");
+  }catch(e){}
+}
+
+async function addToQueue(){
+  const name=document.getElementById("qName").value.trim();
+  const phone=document.getElementById("qPhone").value.trim();
+  const complaint=document.getElementById("qComplaint").value.trim();
+  if(!name){toast("Enter patient name.","err");return;}
+  const today=new Date().toISOString().split("T")[0];
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,"queue"),window.fbWhere("doctorPhone","==",doctorData.phone),window.fbWhere("date","==",today)));
+    const token=snap.docs.length+1;
+    await window.fbAdd(window.fbCol(window.db,"queue"),{
+      doctorPhone:doctorData.phone,
+      patientName:name,patientPhone:phone||"",
+      complaint:complaint||"General",
+      status:"waiting",token:token,date:today,
+      createdAt:new Date().toISOString()
+    });
+    toast("Token #"+token+" added to queue!","ok");
+    ["qName","qPhone","qComplaint"].forEach(function(id){document.getElementById(id).value="";});
+    loadQueue();
+  }catch(e){toast("Could not add.","err");}
+}
+
+async function setQueueStatus(id,status){
+  try{
+    await window.fbUpdate(window.fbDoc(window.db,"queue",id),{status:status,updatedAt:new Date().toISOString()});
+    toast(status==="inprogress"?"Patient called in!":"Status updated!","ok");
+    loadQueue();
+  }catch(e){toast("Could not update.","err");}
+}
+
+async function callNextPatient(){
+  const today=new Date().toISOString().split("T")[0];
+  try{
+    const snap=await window.fbGet(window.fbQ(window.fbCol(window.db,"queue"),window.fbWhere("doctorPhone","==",doctorData.phone),window.fbWhere("date","==",today),window.fbWhere("status","==","waiting")));
+    if(snap.empty){toast("No patients waiting!","err");return;}
+    const queue=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    queue.sort(function(a,b){return a.token-b.token;});
+    const next=queue[0];
+    await window.fbUpdate(window.fbDoc(window.db,"queue",next.id),{status:"inprogress",calledAt:new Date().toISOString()});
+    toast("Calling Token #"+next.token+" - "+next.patientName,"ok");
+    loadQueue();
+  }catch(e){toast("Could not call next.","err");}
 }
 
 function doLogout(){localStorage.removeItem("vendorEmail");localStorage.removeItem("vendorPhone");document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.href="/vendor/login.html";}

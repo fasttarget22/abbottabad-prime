@@ -1,0 +1,21 @@
+{
+  "rewrites": [
+    {"source": "/admin", "destination": "/admin/panel.html"},
+    {"source": "/doctor", "destination": "/doctor/booking.html"},
+    {"source": "/doctor/dashboard", "destination": "/doctor/dashboard.html"},
+    {"source": "/vendor/login", "destination": "/vendor/login.html"},
+    {"source": "/vendor/dashboard", "destination": "/vendor/dashboard.html"},
+    {"source": "/lab", "destination": "/lab/portal.html"},
+    {"source": "/diagnostics", "destination": "/diagnostics/portal.html"},
+    {"source": "/health", "destination": "/health/log.html"},
+    {"source": "/healthcard", "destination": "/healthcard/index.html"},
+    {"source": "/medicine", "destination": "/medicine/reminder.html"},
+    {"source": "/pharmacy", "destination": "/pharmacy/portal.html"},
+    {"source": "/patient", "destination": "/patient/portal.html"},
+    {"source": "/transport", "destination": "/transport/dashboard.html"},
+    {"source": "/transport/login", "destination": "/transport/login.html"},
+    {"source": "/transport/register", "destination": "/transport/register.html"},
+    {"source": "/symptom", "destination": "/symptom/checker.html"},
+    {"source": "/pregnancy", "destination": "/pregnancy/tracker.html"}
+  ]
+}
