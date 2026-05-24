@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Patient Portal — Pakistan Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--red:#ff5d6c;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.topbar h1{font-family:Orbitron,sans-serif;font-size:.95rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.shell{max-width:700px;margin:0 auto;padding:20px 16px}
+.login-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px;margin-top:40px;text-align:center}
+.login-card h2{font-family:Orbitron,sans-serif;font-size:1rem;font-weight:800;color:var(--cyan);margin-bottom:8px}
+.login-card p{color:var(--dim);font-size:.84rem;margin-bottom:20px}
+.field{margin-bottom:14px;text-align:left}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0;transition:border-color .25s}
+.field input:focus{border-color:var(--cyan)}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:10px 18px;border-radius:9px;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.btn.full{width:100%;justify-content:center}
+.tab-bar{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.tab-btn{background:none;border:none;color:var(--dim);font-family:Manrope,sans-serif;font-weight:700;font-size:.84rem;padding:8px 14px;cursor:pointer;border-radius:8px;transition:all .25s}
+.tab-btn.active{background:rgba(0,242,254,.1);color:var(--cyan)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h3{font-family:Orbitron,sans-serif;font-size:.82rem;font-weight:700;color:var(--cyan);margin-bottom:12px}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700}
+.badge.pending{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.3)}
+.badge.done{background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3)}
+.badge.cancelled{background:rgba(255,93,108,.15);color:var(--red);border:1px solid rgba(255,93,108,.3)}
+.spinner{width:28px;height:28px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:30px auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:.88rem}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,320px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="topbar">
+<a href="/" style="color:var(--cyan);text-decoration:none;font-size:1.2rem">←</a>
+<h1>🏥 Patient Portal</h1>
+</div>
+<div class="shell">
+<div id="loginSection">
+<div class="login-card">
+<div style="font-size:3rem;margin-bottom:12px">🏥</div>
+<h2>Patient Portal</h2>
+<p>Enter your phone number to view your appointments, prescriptions and lab reports</p>
+<div class="field"><label>Your Phone Number</label><input id="loginPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+<button class="btn grad full" onclick="loadPatientData()">View My Records</button>
+<a href="/doctor/booking.html" class="btn ghost full" style="margin-top:10px">🩺 Book a Doctor</a>
+</div>
+</div>
+<div id="portalSection" style="display:none">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+<div>
+<div style="font-weight:800;font-size:1rem" id="patientNameDisplay">Patient</div>
+<div style="color:var(--dim);font-size:.8rem" id="patientPhoneDisplay"></div>
+</div>
+<button class="btn ghost" onclick="logout()" style="font-size:.76rem">Logout</button>
+</div>
+<div class="tab-bar">
+<button class="tab-btn active" onclick="showTab('appointments',this)">📅 Appointments</button>
+<button class="tab-btn" onclick="showTab('prescriptions',this)">💊 Prescriptions</button>
+<button class="tab-btn" onclick="showTab('reports',this)">🔬 Lab Reports</button>
+</div>
+<div id="tab-appointments"><div class="spinner"></div></div>
+<div id="tab-prescriptions" style="display:none"><div class="spinner"></div></div>
+<div id="tab-reports" style="display:none"><div class="spinner"></div></div>
+</div>
+</div>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,getDocs,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+const app=initializeApp({apiKey:'AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0',authDomain:'abbottabad-prime.firebaseapp.com',projectId:'abbottabad-prime'});
+const db=getFirestore(app);
+let patientPhone='';
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;document.getElementById('toaster').appendChild(t);setTimeout(()=>t.remove(),3000);}
+window.loadPatientData=async function(){
+const phone=document.getElementById('loginPhone').value.trim();
+if(!phone){toast('Enter your phone number','err');return;}
+patientPhone=phone;
+document.getElementById('loginSection').style.display='none';
+document.getElementById('portalSection').style.display='block';
+document.getElementById('patientPhoneDisplay').textContent=phone;
+loadAppointments();
+loadPrescriptions();
+loadReports();
+};
+async function loadAppointments(){
+const div=document.getElementById('tab-appointments');
+try{
+const snap=await getDocs(query(collection(db,'appointments'),where('patientPhone','==',patientPhone)));
+const items=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>new Date(b.bookedAt)-new Date(a.bookedAt));
+if(!items.length){div.innerHTML='<div class="empty">No appointments found.</div>';return;}
+div.innerHTML=items.map(a=>'<div class="card"><h3>📅 '+a.date+' at '+a.time+'</h3><div style="font-size:.84rem;margin-bottom:8px"><b>Doctor:</b> '+a.doctorName+'</div><div style="font-size:.84rem;margin-bottom:8px"><b>Specialty:</b> '+(a.specialty||'N/A')+'</div><div style="font-size:.84rem;margin-bottom:8px"><b>Complaint:</b> '+(a.complaint||'N/A')+'</div><div style="font-size:.84rem;margin-bottom:8px"><b>Fee:</b> PKR '+(a.fee||'N/A')+'</div><span class="badge '+(a.status||'pending')+'">'+( a.status||'pending').toUpperCase()+'</span></div>').join('');
+document.getElementById('patientNameDisplay').textContent=items[0].patientName||'Patient';
+}catch(e){div.innerHTML='<div class="empty">Could not load appointments.</div>';}
+}
+async function loadPrescriptions(){
+const div=document.getElementById('tab-prescriptions');
+try{
+const snap=await getDocs(query(collection(db,'prescriptions'),where('patientPhone','==',patientPhone)));
+const items=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+if(!items.length){div.innerHTML='<div class="empty">No prescriptions found.</div>';return;}
+div.innerHTML=items.map(p=>'<div class="card"><h3>💊 '+new Date(p.createdAt).toLocaleDateString()+'</h3><div style="font-size:.84rem;margin-bottom:6px"><b>Doctor:</b> '+(p.doctorName||'N/A')+'</div><div style="font-size:.84rem;margin-bottom:6px"><b>Diagnosis:</b> '+(p.diagnosis||'N/A')+'</div><div style="font-size:.84rem;margin-bottom:6px"><b>Medicines:</b> '+((p.medicines||[]).map(m=>m.name+' '+m.dose+' '+m.duration).join(', ')||'N/A')+'</div>'+(p.notes?'<div style="font-size:.82rem;color:var(--dim);margin-top:6px">Notes: '+p.notes+'</div>':'')+(p.image?'<a href="'+p.image+'" target="_blank" class="btn ghost" style="margin-top:10px;font-size:.76rem">View Image</a>':'')+'</div>').join('');
+}catch(e){div.innerHTML='<div class="empty">No prescriptions found.</div>';}
+}
+async function loadReports(){
+const div=document.getElementById('tab-reports');
+try{
+const snap=await getDocs(query(collection(db,'labReports'),where('patientPhone','==',patientPhone)));
+const items=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>new Date(b.uploadedAt)-new Date(a.uploadedAt));
+if(!items.length){div.innerHTML='<div class="empty">No lab reports found.</div>';return;}
+div.innerHTML=items.map(r=>'<div class="card"><h3>🔬 '+( r.testName||'Lab Report')+'</h3><div style="font-size:.84rem;margin-bottom:6px"><b>Date:</b> '+new Date(r.uploadedAt).toLocaleDateString()+'</div>'+(r.notes?'<div style="font-size:.84rem;margin-bottom:6px"><b>Notes:</b> '+r.notes+'</div>':'')+(r.reportUrl?'<a href="'+r.reportUrl+'" target="_blank" class="btn grad" style="margin-top:10px;font-size:.76rem">View Report</a>':'')+'</div>').join('');
+}catch(e){div.innerHTML='<div class="empty">No reports found.</div>';}
+}
+window.showTab=function(tab,btn){
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+['appointments','prescriptions','reports'].forEach(t=>document.getElementById('tab-'+t).style.display=t===tab?'block':'none');
+};
+window.logout=function(){
+patientPhone='';
+document.getElementById('loginSection').style.display='block';
+document.getElementById('portalSection').style.display='none';
+document.getElementById('loginPhone').value='';
+};
+</script>
+</body>
+</html>
