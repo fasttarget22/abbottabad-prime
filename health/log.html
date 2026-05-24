@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Health Log — Pakistan Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);--red:#ff5d6c;--gold:#ffd700;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.topbar h1{font-family:Orbitron,sans-serif;font-size:.95rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.shell{max-width:700px;margin:0 auto;padding:20px 16px}
+.tab-bar{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.tab-btn{background:none;border:none;color:var(--dim);font-family:Manrope,sans-serif;font-weight:700;font-size:.84rem;padding:8px 14px;cursor:pointer;border-radius:8px;transition:all .25s}
+.tab-btn.active{background:rgba(0,242,254,.1);color:var(--cyan)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h3{font-family:Orbitron,sans-serif;font-size:.85rem;font-weight:700;color:var(--cyan);margin-bottom:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input,.field select{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:10px 18px;border-radius:9px;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.btn.danger{background:linear-gradient(120deg,#ff5d6c,#c81e3a);color:#fff}
+.reading-item{background:rgba(0,242,254,.04);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.status-normal{color:var(--green);font-weight:700;font-size:.78rem}
+.status-high{color:var(--red);font-weight:700;font-size:.78rem}
+.status-low{color:var(--gold);font-weight:700;font-size:.78rem}
+.big-num{font-family:Orbitron,sans-serif;font-size:1.8rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.stat-box{background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.spinner{width:28px;height:28px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:30px auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:.88rem}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,320px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="topbar">
+<a href="/" style="color:var(--cyan);text-decoration:none;font-size:1.2rem">←</a>
+<h1>❤️ Health Log</h1>
+</div>
+<div class="shell">
+<div class="tab-bar">
+<button class="tab-btn active" onclick="showTab('sugar',this)">🩸 Sugar</button>
+<button class="tab-btn" onclick="showTab('bp',this)">💓 Blood Pressure</button>
+<button class="tab-btn" onclick="showTab('weight',this)">⚖️ Weight</button>
+</div>
+<div id="tab-sugar">
+<div class="card">
+<h3>🩸 Log Blood Sugar</h3>
+<div class="field"><label>Reading (mg/dL)</label><input id="sugarVal" type="number" placeholder="e.g. 120"/></div>
+<div class="field"><label>When Taken</label>
+<select id="sugarTime">
+<option value="fasting">Fasting (before meal)</option>
+<option value="after_meal">After Meal (2hrs)</option>
+<option value="random">Random</option>
+<option value="bedtime">Bedtime</option>
+</select></div>
+<div class="field"><label>Notes</label><input id="sugarNote" type="text" placeholder="Optional notes"/></div>
+<button class="btn grad full" onclick="logSugar()">💾 Save Reading</button>
+</div>
+<div class="card">
+<h3>📊 Sugar History</h3>
+<div class="stats-row" id="sugarStats">
+<div class="stat-box"><div class="big-num" id="sugarAvg">--</div><div style="font-size:.72rem;color:var(--dim);margin-top:4px">Average</div></div>
+<div class="stat-box"><div class="big-num" id="sugarHigh" style="background:var(--red);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">--</div><div style="font-size:.72rem;color:var(--dim);margin-top:4px">Highest</div></div>
+<div class="stat-box"><div class="big-num" id="sugarLow" style="background:var(--green);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">--</div><div style="font-size:.72rem;color:var(--dim);margin-top:4px">Lowest</div></div>
+</div>
+<div id="sugarList"><div class="empty">No readings yet. Add your first reading above!</div></div>
+</div>
+</div>
+<div id="tab-bp" style="display:none">
+<div class="card">
+<h3>💓 Log Blood Pressure</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="field"><label>Systolic (upper)</label><input id="bpSys" type="number" placeholder="e.g. 120"/></div>
+<div class="field"><label>Diastolic (lower)</label><input id="bpDia" type="number" placeholder="e.g. 80"/></div>
+</div>
+<div class="field"><label>Pulse (bpm)</label><input id="bpPulse" type="number" placeholder="e.g. 72"/></div>
+<div class="field"><label>Notes</label><input id="bpNote" type="text" placeholder="Optional notes"/></div>
+<button class="btn grad full" onclick="logBP()">💾 Save Reading</button>
+</div>
+<div class="card">
+<h3>📊 BP History</h3>
+<div id="bpList"><div class="empty">No readings yet. Add your first reading above!</div></div>
+</div>
+</div>
+<div id="tab-weight" style="display:none">
+<div class="card">
+<h3>⚖️ Log Weight</h3>
+<div class="field"><label>Weight (kg)</label><input id="weightVal" type="number" placeholder="e.g. 70" step="0.1"/></div>
+<div class="field"><label>Height (cm) — for BMI</label><input id="heightVal" type="number" placeholder="e.g. 170"/></div>
+<div class="field"><label>Notes</label><input id="weightNote" type="text" placeholder="Optional notes"/></div>
+<button class="btn grad full" onclick="logWeight()">💾 Save Reading</button>
+</div>
+<div class="card">
+<h3>📊 Weight History</h3>
+<div id="weightList"><div class="empty">No readings yet.</div></div>
+</div>
+</div>
+</div>
+<script>
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;document.getElementById('toaster').appendChild(t);setTimeout(()=>t.remove(),3000);}
+window.showTab=function(tab,btn){
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+['sugar','bp','weight'].forEach(t=>document.getElementById('tab-'+t).style.display=t===tab?'block':'none');
+};
+function getRecords(key){try{return JSON.parse(localStorage.getItem(key)||'[]');}catch{return[];}}
+function saveRecords(key,data){localStorage.setItem(key,JSON.stringify(data));}
+function sugarStatus(v){if(v<70)return['Low','status-low'];if(v<=140)return['Normal','status-normal'];if(v<=200)return['High','status-high'];return['Very High','status-high'];}
+function bpStatus(s,d){if(s<90||d<60)return['Low','status-low'];if(s<=120&&d<=80)return['Normal','status-normal'];if(s<=140&&d<=90)return['Elevated','status-low'];return['High','status-high'];}
+window.logSugar=function(){
+const v=parseInt(document.getElementById('sugarVal').value);
+const time=document.getElementById('sugarTime').value;
+const note=document.getElementById('sugarNote').value.trim();
+if(!v){toast('Enter a reading','err');return;}
+const records=getRecords('sugarLog');
+records.unshift({v,time,note,date:new Date().toISOString()});
+saveRecords('sugarLog',records.slice(0,100));
+document.getElementById('sugarVal').value='';
+document.getElementById('sugarNote').value='';
+toast('Reading saved!','ok');
+renderSugar();
+};
+function renderSugar(){
+const records=getRecords('sugarLog');
+if(!records.length){document.getElementById('sugarList').innerHTML='<div class="empty">No readings yet.</div>';return;}
+const vals=records.map(r=>r.v);
+document.getElementById('sugarAvg').textContent=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+document.getElementById('sugarHigh').textContent=Math.max(...vals);
+document.getElementById('sugarLow').textContent=Math.min(...vals);
+document.getElementById('sugarList').innerHTML=records.map(r=>{const[s,c]=sugarStatus(r.v);return'<div class="reading-item"><div><div style="font-weight:700">'+r.v+' mg/dL</div><div style="font-size:.75rem;color:var(--faint)">'+r.time.replace('_',' ')+' — '+new Date(r.date).toLocaleDateString()+'</div>'+(r.note?'<div style="font-size:.74rem;color:var(--dim)">'+r.note+'</div>':'')+'</div><span class="'+c+'">'+s+'</span></div>';}).join('');
+}
+window.logBP=function(){
+const s=parseInt(document.getElementById('bpSys').value);
+const d=parseInt(document.getElementById('bpDia').value);
+const p=parseInt(document.getElementById('bpPulse').value)||0;
+const note=document.getElementById('bpNote').value.trim();
+if(!s||!d){toast('Enter systolic and diastolic','err');return;}
+const records=getRecords('bpLog');
+records.unshift({s,d,p,note,date:new Date().toISOString()});
+saveRecords('bpLog',records.slice(0,100));
+document.getElementById('bpSys').value='';
+document.getElementById('bpDia').value='';
+document.getElementById('bpPulse').value='';
+toast('Reading saved!','ok');
+renderBP();
+};
+function renderBP(){
+const records=getRecords('bpLog');
+if(!records.length){document.getElementById('bpList').innerHTML='<div class="empty">No readings yet.</div>';return;}
+document.getElementById('bpList').innerHTML=records.map(r=>{const[s,c]=bpStatus(r.s,r.d);return'<div class="reading-item"><div><div style="font-weight:700">'+r.s+'/'+r.d+' mmHg'+(r.p?' | Pulse: '+r.p:'')+'</div><div style="font-size:.75rem;color:var(--faint)">'+new Date(r.date).toLocaleDateString()+'</div>'+(r.note?'<div style="font-size:.74rem;color:var(--dim)">'+r.note+'</div>':'')+'</div><span class="'+c+'">'+s+'</span></div>';}).join('');
+}
+window.logWeight=function(){
+const w=parseFloat(document.getElementById('weightVal').value);
+const h=parseFloat(document.getElementById('heightVal').value);
+const note=document.getElementById('weightNote').value.trim();
+if(!w){toast('Enter weight','err');return;}
+const bmi=h?parseFloat((w/((h/100)*(h/100))).toFixed(1)):null;
+const records=getRecords('weightLog');
+records.unshift({w,h,bmi,note,date:new Date().toISOString()});
+saveRecords('weightLog',records.slice(0,100));
+document.getElementById('weightVal').value='';
+toast('Weight saved!'+(bmi?' BMI: '+bmi:''),'ok');
+renderWeight();
+};
+function renderWeight(){
+const records=getRecords('weightLog');
+if(!records.length){document.getElementById('weightList').innerHTML='<div class="empty">No readings yet.</div>';return;}
+document.getElementById('weightList').innerHTML=records.map(r=>'<div class="reading-item"><div><div style="font-weight:700">'+r.w+' kg'+(r.bmi?' | BMI: '+r.bmi:'')+'</div><div style="font-size:.75rem;color:var(--faint)">'+new Date(r.date).toLocaleDateString()+'</div>'+(r.note?'<div style="font-size:.74rem;color:var(--dim)">'+r.note+'</div>':'')+'</div></div>').join('');
+}
+renderSugar();renderBP();renderWeight();
+</script>
+</body>
+</html>
