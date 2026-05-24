@@ -71,7 +71,7 @@ body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-he
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 <div class="field"><label>Blood Group</label><select id="hBlood"><option value="">Unknown</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="O+">O+</option><option value="O-">O-</option><option value="AB+">AB+</option><option value="AB-">AB-</option></select></div>
-<div class="field"><label>Phone</label><input id="hPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+<div class="field"><label>Phone</label><div style="display:flex;gap:8px"><input id="hPhone" type="tel" placeholder="03XX-XXXXXXX" style="flex:1"/><button class="btn grad" onclick="fetchFromPortal()" type="button" style="white-space:nowrap">📋 Auto Fill</button></div></div>
 </div>
 <div class="field"><label>Address</label><input id="hAddress" type="text" placeholder="Your address"/></div>
 </div>
@@ -115,6 +115,23 @@ function toast(msg,type){const t=document.createElement('div');t.className='toas
 function getCard(){try{return JSON.parse(localStorage.getItem('healthCard')||'null');}catch{return null;}}
 function saveCardData(d){localStorage.setItem('healthCard',JSON.stringify(d));}
 window.showSetup=function(){document.getElementById('setupSection').style.display='none';document.getElementById('setupForm').style.display='block';};
+window.fetchFromPortal=async function(){
+const phone=document.getElementById('hPhone').value.trim();
+if(!phone){toast('Enter phone number first','err');return;}
+try{
+const{getFirestore,collection,getDocs,query,where}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+const app=document.querySelector('script[type="module"]').__app;
+const db=getFirestore(app);
+const snap=await getDocs(query(collection(db,'appointments'),where('patientPhone','==',phone)));
+const appts=snap.docs.map(d=>d.data()).sort((a,b)=>new Date(b.bookedAt)-new Date(a.bookedAt));
+if(appts.length){
+const last=appts[0];
+if(last.patientName)document.getElementById('hName').value=last.patientName;
+if(last.doctorName)document.getElementById('hDoctor').value=last.doctorName;
+toast('Data loaded from portal!','ok');
+}else{toast('No records found for this phone','err');}
+}catch(e){toast('Could not fetch: '+e.message,'err');}
+};
 window.saveCard=function(){
 const name=document.getElementById('hName').value.trim();
 if(!name){toast('Enter your name','err');return;}
