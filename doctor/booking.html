@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Book a Doctor</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0f19;--surface:#121826;--line:rgba(0,242,254,0.15);--cyan:#00f2fe;--green:#1aff8c;--txt:#eaf2ff;--dim:#9fb0cc;--faint:#6b7a99;--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.topbar h1{font-family:Orbitron,sans-serif;font-size:.95rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.shell{max-width:900px;margin:0 auto;padding:20px 16px}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter-btn{background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:20px;color:var(--dim);font-family:Manrope,sans-serif;font-weight:700;font-size:.78rem;padding:7px 14px;cursor:pointer;transition:all .25s}
+.filter-btn.active{background:rgba(0,242,254,.15);border-color:var(--cyan);color:var(--cyan)}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.doc-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;cursor:pointer;transition:all .3s}
+.doc-card:hover{border-color:var(--cyan);transform:translateY(-4px)}
+.btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:0;font-family:Manrope,sans-serif;font-weight:700;font-size:.82rem;padding:8px 14px;border-radius:9px;transition:all .25s}
+.btn.grad{color:#04121f;background:var(--grad)}
+.btn.full{width:100%;justify-content:center;margin-top:8px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:12px;right:12px;background:none;border:0;color:var(--faint);font-size:1.2rem;cursor:pointer}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:var(--dim);margin-bottom:6px}
+.field input,.field select{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:0}
+.spinner{width:28px;height:28px;border:3px solid rgba(0,242,254,.2);border-top-color:var(--cyan);border-radius:50%;margin:40px auto;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:60px 20px;color:var(--faint)}
+#toaster{position:fixed;top:16px;right:16px;z-index:200;display:flex;flex-direction:column;gap:8px;width:min(90vw,320px)}
+.toast{padding:11px 14px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.84rem;font-weight:600}
+.toast.ok{border-color:rgba(26,255,140,.5)}
+.toast.err{border-color:rgba(255,93,108,.5)}
+</style>
+</head>
+<body>
+<div id="toaster"></div>
+<div class="topbar">
+<a href="/" style="color:var(--cyan);text-decoration:none;font-size:1.2rem">←</a>
+<h1>🩺 Book a Doctor</h1>
+</div>
+<div class="shell">
+<div class="filter-bar">
+<button class="filter-btn active" onclick="filterDocs('all',this)">All</button>
+<button class="filter-btn" onclick="filterDocs('General Physician',this)">General</button>
+<button class="filter-btn" onclick="filterDocs('Cardiologist',this)">Heart</button>
+<button class="filter-btn" onclick="filterDocs('Pediatrician',this)">Child</button>
+<button class="filter-btn" onclick="filterDocs('Gynecologist',this)">Gynae</button>
+<button class="filter-btn" onclick="filterDocs('Dentist',this)">Dental</button>
+<button class="filter-btn" onclick="filterDocs('Eye Specialist',this)">Eye</button>
+<button class="filter-btn" onclick="filterDocs('Dermatologist',this)">Skin</button>
+</div>
+<div class="doc-grid" id="docGrid"><div class="spinner"></div></div>
+</div>
+<div class="modal-overlay" id="bookModal">
+<div class="modal-card">
+<button class="modal-close" onclick="closeModal()">✕</button>
+<div id="modalDocInfo" style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)"></div>
+<div class="field"><label>Your Name</label><input id="bName" type="text" placeholder="Your full name"/></div>
+<div class="field"><label>Your Phone</label><input id="bPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+<div class="field"><label>Date</label><input id="bDate" type="date"/></div>
+<div class="field"><label>Time Slot</label>
+<select id="bTime">
+<option value="09:00">9:00 AM</option>
+<option value="10:00">10:00 AM</option>
+<option value="11:00">11:00 AM</option>
+<option value="12:00">12:00 PM</option>
+<option value="14:00">2:00 PM</option>
+<option value="15:00">3:00 PM</option>
+<option value="16:00">4:00 PM</option>
+<option value="17:00">5:00 PM</option>
+</select></div>
+<div class="field"><label>Complaint</label><input id="bComplaint" type="text" placeholder="Brief complaint"/></div>
+<button class="btn grad full" onclick="confirmBooking()">📅 Book via WhatsApp</button>
+</div>
+</div>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,getDocs,addDoc}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+const app=initializeApp({apiKey:'AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0',authDomain:'abbottabad-prime.firebaseapp.com',projectId:'abbottabad-prime'});
+const db=getFirestore(app);
+let allDocs=[];
+let currentDoc=null;
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;document.getElementById('toaster').appendChild(t);setTimeout(()=>t.remove(),3000);}
+window.toast=toast;
+const medCats=['Physician','Cardiologist','Pediatrician','Gynecologist','Dentist','Eye','Dermatologist','ENT','Neurologist','Orthopedic','Psychiatrist','Radiologist','Pathologist','Urologist','Pulmonologist','Oncologist','Hematologist','Audiologist','Rheumatologist','Gastroenterologist','Neurosurgeon'];
+async function loadDoctors(){
+const grid=document.getElementById('docGrid');
+try{
+const snap=await getDocs(collection(db,'vendors'));
+allDocs=snap.docs.map(d=>({id:d.id,...d.data()})).filter(v=>v.adminApproved&&!v.blacklisted&&v.category&&medCats.some(c=>v.category.includes(c)));
+renderDocs(allDocs);
+}catch(e){grid.innerHTML='<div class="empty">Could not load doctors.</div>';}
+}
+function renderDocs(docs){
+const grid=document.getElementById('docGrid');
+if(!docs.length){grid.innerHTML='<div class="empty">No doctors found.</div>';return;}
+grid.innerHTML=docs.map(v=>'<div class="doc-card" onclick="openBooking(\''+v.id+'\')">'+(v.photo?'<img src="'+v.photo+'" style="width:56px;height:56px;border-radius:50%;object-fit:cover;margin-bottom:10px"/>':'<div style="font-size:2rem;margin-bottom:10px">🩺</div>')+'<div style="font-weight:800;font-size:.95rem">'+v.name+'</div><div style="color:var(--cyan);font-size:.78rem;margin:4px 0">'+v.category+'</div><div style="color:var(--green);font-size:.82rem;font-weight:700">PKR '+(v.fee||'500')+' / visit</div><div style="color:var(--faint);font-size:.75rem;margin-top:4px">📍 '+(v.city||v.address||'Abbottabad')+'</div></div>').join('');
+}
+window.filterDocs=function(spec,btn){
+document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+renderDocs(spec==='all'?allDocs:allDocs.filter(v=>v.category&&v.category.includes(spec)));
+};
+window.openBooking=function(id){
+currentDoc=allDocs.find(v=>v.id===id);
+if(!currentDoc)return;
+document.getElementById('modalDocInfo').innerHTML='<div style="font-weight:800;font-size:1rem">'+currentDoc.name+'</div><div style="color:var(--cyan);font-size:.82rem;margin-top:2px">'+currentDoc.category+'</div><div style="color:var(--green);font-size:.82rem;margin-top:4px;font-weight:700">Fee: PKR '+(currentDoc.fee||'500')+'</div>';
+document.getElementById('bDate').value=new Date().toISOString().split('T')[0];
+document.getElementById('bookModal').classList.add('open');
+};
+window.closeModal=function(){document.getElementById('bookModal').classList.remove('open');};
+window.confirmBooking=async function(){
+const name=document.getElementById('bName').value.trim();
+const phone=document.getElementById('bPhone').value.trim();
+const date=document.getElementById('bDate').value;
+const time=document.getElementById('bTime').value;
+const complaint=document.getElementById('bComplaint').value.trim();
+if(!name||!phone||!date){toast('Please fill Name, Phone and Date','err');return;}
+try{
+await addDoc(collection(db,'appointments'),{patientName:name,patientPhone:phone,date,time,complaint,doctorId:currentDoc.id,doctorName:currentDoc.name,specialty:currentDoc.category,fee:currentDoc.fee||500,status:'pending',bookedAt:new Date().toISOString()});
+const msg='🩺 *New Appointment*\n\n👤 Patient: '+name+'\n📞 Phone: '+phone+'\n📅 Date: '+date+'\n⏰ Time: '+time+'\n🤒 Complaint: '+(complaint||'Not specified')+'\n\nBooked via Pakistan Prime Portal';
+const docPhone='92'+(currentDoc.phone||'').replace(/^0/,'').replace(/[^0-9]/g,'');
+window.open('https://wa.me/'+docPhone+'?text='+encodeURIComponent(msg),'_blank');
+toast('Appointment booked!','ok');
+closeModal();
+}catch(e){toast('Could not book: '+e.message,'err');}
+};
+loadDoctors();
+</script>
+</body>
+</html>
