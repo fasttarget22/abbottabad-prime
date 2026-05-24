@@ -635,7 +635,47 @@ section{padding:44px 0}
 </div>
 <div class="field"><label>Service Category</label><select id="vCategory"></select></div>
 <div class="field"><label>Description</label><textarea id="vDesc" placeholder="Describe your services…"></textarea></div>
-<div class="field"><label>Working Hours</label><input id="vHours" type="text" placeholder="e.g. 9AM-9PM, Mon-Sat"/></div>
+<div class="field"><label>Working Hours</label>
+<div id="hoursSchedule" style="background:rgba(11,15,25,.8);border:1px solid rgba(0,242,254,.2);border-radius:12px;padding:12px">
+<div style="font-size:.76rem;color:var(--dim);margin-bottom:10px">Set your hours for each day:</div>
+<div style="display:grid;grid-template-columns:80px 1fr 1fr 40px;gap:6px;align-items:center;margin-bottom:8px">
+<label style="font-size:.78rem;color:var(--txt);font-weight:600">Monday</label>
+<input type="time" id="hMonStart" value="09:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<input type="time" id="hMonEnd" value="21:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<label style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--dim)"><input type="checkbox" id="hMonOff"/> Off</label>
+</div><div style="display:grid;grid-template-columns:80px 1fr 1fr 40px;gap:6px;align-items:center;margin-bottom:8px">
+<label style="font-size:.78rem;color:var(--txt);font-weight:600">Tuesday</label>
+<input type="time" id="hTueStart" value="09:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<input type="time" id="hTueEnd" value="21:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<label style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--dim)"><input type="checkbox" id="hTueOff"/> Off</label>
+</div><div style="display:grid;grid-template-columns:80px 1fr 1fr 40px;gap:6px;align-items:center;margin-bottom:8px">
+<label style="font-size:.78rem;color:var(--txt);font-weight:600">Wednesday</label>
+<input type="time" id="hWedStart" value="09:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<input type="time" id="hWedEnd" value="21:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<label style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--dim)"><input type="checkbox" id="hWedOff"/> Off</label>
+</div><div style="display:grid;grid-template-columns:80px 1fr 1fr 40px;gap:6px;align-items:center;margin-bottom:8px">
+<label style="font-size:.78rem;color:var(--txt);font-weight:600">Thursday</label>
+<input type="time" id="hThuStart" value="09:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<input type="time" id="hThuEnd" value="21:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<label style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--dim)"><input type="checkbox" id="hThuOff"/> Off</label>
+</div><div style="display:grid;grid-template-columns:80px 1fr 1fr 40px;gap:6px;align-items:center;margin-bottom:8px">
+<label style="font-size:.78rem;color:var(--txt);font-weight:600">Friday</label>
+<input type="time" id="hFriStart" value="09:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<input type="time" id="hFriEnd" value="21:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<label style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--dim)"><input type="checkbox" id="hFriOff"/> Off</label>
+</div><div style="display:grid;grid-template-columns:80px 1fr 1fr 40px;gap:6px;align-items:center;margin-bottom:8px">
+<label style="font-size:.78rem;color:var(--txt);font-weight:600">Saturday</label>
+<input type="time" id="hSatStart" value="09:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<input type="time" id="hSatEnd" value="21:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<label style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--dim)"><input type="checkbox" id="hSatOff"/> Off</label>
+</div><div style="display:grid;grid-template-columns:80px 1fr 1fr 40px;gap:6px;align-items:center;margin-bottom:8px">
+<label style="font-size:.78rem;color:var(--txt);font-weight:600">Sunday</label>
+<input type="time" id="hSunStart" value="09:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<input type="time" id="hSunEnd" value="21:00" style="background:rgba(11,15,25,.9);border:1px solid rgba(0,242,254,.2);border-radius:8px;color:var(--txt);padding:7px;font-family:inherit;outline:0;font-size:.8rem"/>
+<label style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--dim)"><input type="checkbox" id="hSunOff"/> Off</label>
+</div></div>
+<input type="hidden" id="vHours"/>
+</div>
 <div class="field"><label>📧 Email (for OTP + dashboard login)</label><input id="vEmail" type="email" placeholder="yourname@gmail.com"/></div>
 <div class="field"><label>🔑 Create Password (for dashboard)</label><input id="vPassword" type="password" placeholder="Min 6 characters"/></div>
 <div class="field" style="background:rgba(0,242,254,.05);border:1px solid var(--line);border-radius:12px;padding:12px">
