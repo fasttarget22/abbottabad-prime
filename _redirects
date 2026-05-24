@@ -1,1 +1,16 @@
-/* /index.html 404
+/admin/* /admin/:splat 200
+/vendor/* /vendor/:splat 200
+/transport/* /transport/:splat 200
+/doctor/* /doctor/:splat 200
+/patient/* /patient/:splat 200
+/lab/* /lab/:splat 200
+/diagnostics/* /diagnostics/:splat 200
+/pharmacy/* /pharmacy/:splat 200
+/health/* /health/:splat 200
+/pregnancy/* /pregnancy/:splat 200
+/medicine/* /medicine/:splat 200
+/symptom/* /symptom/:splat 200
+/healthcard/* /healthcard/:splat 200
+/netlify/* /netlify/:splat 200
+/api/* /api/:splat 200
+/ /index.html 200
