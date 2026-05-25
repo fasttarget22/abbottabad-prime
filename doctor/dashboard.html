@@ -222,9 +222,7 @@ const bookingId='#APT'+Date.now().toString().slice(-6);const city=document.getEl
 
 ⏰ Arrive early
 💰 Bring fee
-
-🌐 appabbottabad.com
-━━━━━━━━━━━━━━';
+\n🌐 appabbottabad.com\n━━━━━━━━━━━━━━';
 const ph=phone.replace(/[^0-9]/g,'');const finalPh=ph.startsWith('9292')?ph.slice(2):ph.startsWith('00')?ph.slice(2):ph.startsWith('0')?'92'+ph.slice(1):ph;
 window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 setTimeout(window.loadAppointments,1500);
