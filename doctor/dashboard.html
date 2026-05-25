@@ -311,7 +311,7 @@ snap.forEach(d=>docs.push({id:d.id,...d.data()}));
 docs.sort((a,b)=>new Date(b.bookedAt||0)-new Date(a.bookedAt||0));
 let html="";
 docs.forEach(a=>{
-total++;
+if(a.status==="done")total++;
 if(a.status==="pending"||!a.status)pending++;
 if(a.date===today&&(a.status==="confirmed"||a.status==="done"))todayC++;
 if(a.status==="done"&&a.fee&&parseInt(a.fee)>0)revenue+=parseInt(a.fee);
