@@ -124,7 +124,7 @@ if(!name||!phone||!date){toast('Please fill Name, Phone and Date','err');return;
 try{
 await addDoc(collection(db,'appointments'),{patientName:name,patientPhone:phone,date,time,complaint,doctorId:currentDoc.id,doctorName:currentDoc.name,specialty:currentDoc.category,fee:currentDoc.fee||500,status:'pending',bookedAt:new Date().toISOString()});
 const msg='🩺 *New Appointment*\n\n👤 Patient: '+name+'\n📞 Phone: '+phone+'\n📅 Date: '+date+'\n⏰ Time: '+time+'\n🤒 Complaint: '+(complaint||'Not specified')+'\n\nBooked via Pakistan Prime Portal';
-const docPhone='92'+(currentDoc.phone||'').replace(/^0/,'').replace(/[^0-9]/g,'');
+const rawPhone=(currentDoc.phone||'').replace(/[^0-9]/g,'');const docPhone=rawPhone.startsWith('0')?'92'+rawPhone.slice(1):rawPhone;
 window.open('https://wa.me/'+docPhone+'?text='+encodeURIComponent(msg),'_blank');
 toast('Appointment booked!','ok');
 closeModal();
