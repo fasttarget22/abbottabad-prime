@@ -88,7 +88,7 @@ localStorage.setItem('vendorEmail',email);localStorage.setItem('vendorCategory',
 
 const cat=data.category||'';
 if(medicalCats.includes(cat)){
-window.location.href='/doctor/dashboard.html';
+alert('Saving email: '+email);localStorage.setItem('doctorEmail',email);document.cookie='doctorEmail='+email+';path=/';window.location.href='/doctor/dashboard.html';
 }else if(cat==='Laboratory'){
 window.location.href='/lab/portal.html';
 }else if(cat==='Pharmacy'){
