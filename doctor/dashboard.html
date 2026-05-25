@@ -161,7 +161,7 @@ else{t.classList.remove("on");document.getElementById("onlineText").textContent=
 };
 loadProfile().then(()=>{console.log('Profile loaded');});
 
-async function loadAppointments(){
+window.loadAppointments=async function loadAppointments(){
 const list=document.getElementById('appointmentsList');
 if(!list)return;
 list.innerHTML='<div style="text-align:center;padding:20px;color:#9fb0cc">Loading...</div>';
