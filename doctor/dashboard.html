@@ -316,8 +316,16 @@ ${a.status==="confirmed"?`<button class="btn btn-done" onclick="doneAppt('${a.id
 </div>`;
 });
 list.innerHTML=html;
+const today=new Date().toISOString().split("T")[0];
+let todayCount=0,revenue=0;
+docs.forEach(a=>{
+if(a.date===today&&(a.status==="confirmed"||a.status==="done"))todayCount++;
+if(a.status==="done"&&a.fee&&parseInt(a.fee)>0)revenue+=parseInt(a.fee);
+});
+document.getElementById("s1").textContent=todayCount;
 document.getElementById("s2").textContent=total;
 document.getElementById("s3").textContent=pending;
+document.getElementById("s4").textContent=revenue>0?"PKR "+revenue:"0";
 }catch(e){list.innerHTML='<div class="empty">Error: '+e.message+"</div>";}
 };
 
