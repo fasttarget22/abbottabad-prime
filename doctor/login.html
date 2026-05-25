@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Doctor Login — Pakistan Prime Portal</title>
+<style>
+body{background:#0a0f1e;color:#fff;font-family:sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
+.box{background:#111827;padding:32px;border-radius:16px;width:90%;max-width:400px;border:1px solid #1e3a5f}
+h2{color:#00f2fe;text-align:center;margin-bottom:24px}
+input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #1e3a5f;background:#0a0f1e;color:#fff;box-sizing:border-box}
+button{width:100%;padding:14px;background:linear-gradient(135deg,#00f2fe,#2b6fff);border:none;border-radius:8px;color:#fff;font-size:1rem;cursor:pointer;margin-top:8px}
+.err{color:#ff4d4d;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>🩺 Doctor Login</h2>
+<input type="email" id="email" placeholder="Your Email"/>
+<input type="password" id="pass" placeholder="Your Password"/>
+<button onclick="doLogin()">Login</button>
+<div class="err" id="err"></div>
+</div>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,getDocs,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);
+window.doLogin=async function(){
+const email=document.getElementById('email').value.trim();
+const pass=document.getElementById('pass').value.trim();
+if(!email||!pass){document.getElementById('err').textContent='Please fill all fields';return;}
+const snap=await getDocs(query(collection(db,'vendors'),where('email','==',email),where('password','==',pass),where('type','==','doctor')));
+if(snap.empty){document.getElementById('err').textContent='Invalid email or password';return;}
+localStorage.setItem('doctorEmail',email);
+document.cookie='doctorEmail='+email+';path=/';
+window.location.href='/doctor/dashboard.html';
+};
+</script>
+</body>
+</html>
