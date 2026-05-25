@@ -123,7 +123,7 @@ let docData=null,docId=null;
 async function loadProfile(){
 try{
 const snap=await getDocs(query(collection(db,"vendors"),where("email","==",email)));
-if(snap.empty){doLogout();return;}
+if(snap.empty){document.getElementById('docName').textContent='Not Found: '+email;return;}
 snap.forEach(d=>{docData=d.data();docId=d.id;});
 const n=docData.name||"Doctor";
 document.getElementById("docName").textContent=n;
