@@ -121,7 +121,7 @@ const email=localStorage.getItem("doctorEmail")||getCookie("doctorEmail");
 if(!email){window.location.href="/doctor/login.html";}
 let docData=null,docId=null;
 async function loadProfile(){
-try{
+try{document.getElementById('docName').textContent='Connecting...';
 const snap=await getDocs(query(collection(db,"vendors"),where("email","==",email)));
 if(snap.empty){document.getElementById('docName').textContent='Not Found: '+email;return;}
 snap.forEach(d=>{docData=d.data();docId=d.id;});
@@ -148,7 +148,7 @@ if(docData.photo){document.getElementById("avatarDiv").innerHTML='<img src="'+do
 else{document.getElementById("avatarDiv").textContent=initials;}
 const isOnline=docData.status==="online";window._docIdReady=true;window._docName=docData.name;
 if(isOnline){document.getElementById("onlineToggle").classList.add("on");document.getElementById("onlineText").textContent="🟢 Online — Patients can find you";document.getElementById("onlineHint").textContent="Tap to go offline";}
-}catch(e){console.error(e);}
+}catch(e){document.getElementById('docName').textContent='Error: '+e.message;console.error(e);}
 }
 window.toggleOnline=async function(){
 if(!docId)return;
