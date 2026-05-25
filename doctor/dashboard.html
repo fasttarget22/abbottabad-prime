@@ -715,5 +715,5 @@ async function callNextPatient(){
   }catch(e){toast("Could not call next.","err");}
 }
 
-function doLogout(){localStorage.removeItem("vendorEmail");localStorage.removeItem("vendorPhone");document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.href="/vendor/login.html";}
+function doLogout(){localStorage.removeItem("doctorEmail");localStorage.removeItem("doctorId");localStorage.removeItem("vendorEmail");localStorage.removeItem("vendorPhone");document.cookie="doctorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.href="/";}
 </script></body></html>
