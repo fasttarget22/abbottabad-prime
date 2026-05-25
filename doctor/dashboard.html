@@ -4,475 +4,500 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Doctor Dashboard — Pakistan Prime Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0b0f19;--surface:#121826;--cyan:#00f2fe;--green:#1aff8c;--red:#ff5d6c;--txt:#eaf2ff;--dim:#9fb0cc;--line:rgba(0,242,254,0.15);--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c)}
-body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.topbar h1{font-family:Orbitron,sans-serif;font-size:.9rem;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.logout-btn{background:var(--red);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer}
-.container{padding:16px;max-width:800px;margin:0 auto}
-.profile-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:12px}
-.avatar{width:65px;height:65px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:#04121f;flex-shrink:0}
-.avatar img{width:65px;height:65px;border-radius:50%;object-fit:cover}
-.doc-name{font-size:1.1rem;font-weight:800;color:var(--cyan)}
-.doc-spec{font-size:.82rem;color:var(--dim);margin-top:2px}
-.doc-city{font-size:.82rem;color:var(--dim);margin-top:2px}
-.verified{display:inline-block;background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3);padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:700;margin-top:4px}
-.online-bar{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.toggle{width:44px;height:24px;background:#333;border-radius:12px;cursor:pointer;position:relative;transition:.3s;flex-shrink:0}
-.toggle.on{background:var(--green)}
-.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.3s}
-.toggle.on::after{left:22px}
-.online-txt{font-weight:700;font-size:.85rem;flex:1}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
-.stat-n{font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.stat-l{font-size:.65rem;color:var(--dim);margin-top:3px;font-weight:600}
-.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
-.tab{padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--dim);font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0}
-.tab.active{background:rgba(0,242,254,.1);color:var(--cyan);border-color:var(--cyan)}
+body{font-family:sans-serif;background:#0b0f19;color:#eaf2ff;min-height:100vh}
+.top{background:#121826;border-bottom:1px solid rgba(0,242,254,.15);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:99}
+.top h1{font-size:.9rem;color:#00f2fe;font-weight:800}
+.logout{background:#ff5d6c;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer}
+.box{padding:14px;max-width:700px;margin:0 auto}
+.card{background:#121826;border:1px solid rgba(0,242,254,.15);border-radius:14px;padding:16px;margin-bottom:12px}
+.profile{display:flex;align-items:center;gap:14px}
+.ava{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#00f2fe,#1aff8c);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#04121f;flex-shrink:0}
+.ava img{width:60px;height:60px;border-radius:50%;object-fit:cover}
+.dname{font-size:1.1rem;font-weight:800;color:#00f2fe}
+.dspec{font-size:.8rem;color:#9fb0cc;margin-top:2px}
+.vbadge{background:rgba(26,255,140,.15);color:#1aff8c;border:1px solid rgba(26,255,140,.3);padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:700;display:inline-block;margin-top:4px}
+.toggle-bar{display:flex;align-items:center;gap:10px}
+.tog{width:42px;height:22px;background:#333;border-radius:11px;cursor:pointer;position:relative;transition:.3s;flex-shrink:0}
+.tog.on{background:#1aff8c}
+.tog::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.3s}
+.tog.on::after{left:22px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{background:#121826;border:1px solid rgba(0,242,254,.15);border-radius:10px;padding:10px;text-align:center}
+.sn{font-size:1.3rem;font-weight:800;color:#00f2fe}
+.sl{font-size:.65rem;color:#9fb0cc;margin-top:2px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.tab{padding:7px 14px;border-radius:20px;border:1px solid rgba(0,242,254,.15);background:transparent;color:#9fb0cc;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.tab.on{background:rgba(0,242,254,.1);color:#00f2fe;border-color:#00f2fe}
 .panel{display:none}
-.panel.active{display:block}
-.section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
-.section-title{font-family:Orbitron,sans-serif;font-size:.8rem;color:var(--cyan);margin-bottom:12px;font-weight:700}
-.appt-card{background:rgba(0,242,254,.03);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
-.appt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.appt-name{font-weight:800;font-size:.9rem}
-.status-badge{padding:2px 10px;border-radius:20px;font-size:.7rem;font-weight:700}
-.status-pending{background:#ff5d6c;color:#fff}
-.status-confirmed{background:#1aff8c;color:#04121f}
-.status-done{background:#9fb0cc;color:#04121f}
-.status-rejected{background:#333;color:#9fb0cc}
-.appt-info{font-size:.78rem;color:var(--dim);margin-bottom:4px}
-.btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.btn{border:none;padding:6px 12px;border-radius:7px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:inherit}
-.btn-confirm{background:#1aff8c;color:#04121f}
-.btn-reject{background:#ff5d6c;color:#fff}
-.btn-done{background:#00f2fe;color:#04121f}
-.btn-wa{background:#25d366;color:#fff}
-.btn-rx{background:linear-gradient(110deg,#00f2fe,#2b6fff);color:#04121f}
-.refresh-btn{background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid var(--line);padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;margin-bottom:10px}
-.empty{text-align:center;padding:30px;color:var(--dim);font-size:.85rem}
-.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:.82rem}
-.info-row:last-child{border-bottom:none}
-.info-label{color:var(--dim);font-weight:600}
-.info-val{font-weight:700;text-align:right;max-width:60%}
-.field{margin-bottom:12px}
-.field label{display:block;font-size:.78rem;font-weight:700;color:var(--dim);margin-bottom:4px}
-.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:inherit;font-size:.85rem;padding:9px 11px;outline:0}
-.field input:focus,.field select:focus{border-color:var(--cyan)}
-.save-btn{width:100%;padding:12px;background:var(--grad);border:none;border-radius:10px;color:#04121f;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;margin-top:4px}
-.med-item{background:rgba(0,242,254,.03);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;position:relative}
-.remove-btn{position:absolute;top:8px;right:8px;background:var(--red);color:#fff;border:none;border-radius:4px;padding:2px 7px;font-size:.75rem;cursor:pointer}
-.add-btn{background:rgba(26,255,140,.1);color:var(--green);border:1px solid rgba(26,255,140,.3);padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;width:100%;margin-top:4px}
-.rx-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.toast-container{position:fixed;top:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:6px}
-.toast{background:var(--surface);border:1px solid var(--line);padding:10px 14px;border-radius:10px;font-size:.82rem;font-weight:600;animation:fadeIn .3s}
-.toast.ok{border-color:rgba(26,255,140,.5);color:var(--green)}
-.toast.err{border-color:rgba(255,93,108,.5);color:var(--red)}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:500px){.stats{grid-template-columns:repeat(2,1fr)}}
+.panel.on{display:block}
+.appt{background:rgba(0,242,254,.03);border:1px solid rgba(0,242,254,.15);border-radius:10px;padding:12px;margin-bottom:8px}
+.arow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.aname{font-weight:800}
+.sbadge{padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:700}
+.sp{background:#ff5d6c;color:#fff}
+.sc{background:#1aff8c;color:#04121f}
+.sd{background:#9fb0cc;color:#04121f}
+.sr{background:#333;color:#9fb0cc}
+.ainfo{font-size:.78rem;color:#9fb0cc;margin-bottom:3px}
+.brow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.btn{border:none;padding:6px 11px;border-radius:7px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:inherit}
+.bc{background:#1aff8c;color:#04121f}
+.br{background:#ff5d6c;color:#fff}
+.bd{background:#00f2fe;color:#04121f}
+.bw{background:#25d366;color:#fff}
+.bp{background:linear-gradient(135deg,#00f2fe,#2b6fff);color:#04121f}
+.rbtn{background:rgba(0,242,254,.1);color:#00f2fe;border:1px solid rgba(0,242,254,.15);padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;margin-bottom:10px;width:100%}
+.wbtn{background:#25d366;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;margin-bottom:6px;width:100%}
+.empty{text-align:center;padding:24px;color:#9fb0cc;font-size:.85rem}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:.78rem;font-weight:700;color:#9fb0cc;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid rgba(0,242,254,.15);border-radius:8px;color:#eaf2ff;font-family:inherit;font-size:.85rem;padding:9px 11px;outline:0}
+.sbtn{width:100%;padding:12px;background:linear-gradient(110deg,#00f2fe,#2b6fff);border:none;border-radius:10px;color:#04121f;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;margin-top:6px}
+.gbtn{width:100%;padding:12px;background:linear-gradient(110deg,#1aff8c,#08b85f);border:none;border-radius:10px;color:#04121f;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;margin-top:6px}
+.rbtn2{width:100%;padding:12px;background:linear-gradient(110deg,#ff5d6c,#c81e3a);border:none;border-radius:10px;color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;margin-top:6px}
+.med{background:rgba(0,242,254,.03);border:1px solid rgba(0,242,254,.15);border-radius:8px;padding:10px;margin-bottom:8px;position:relative}
+.xbtn{position:absolute;top:8px;right:8px;background:#ff5d6c;color:#fff;border:none;border-radius:4px;padding:2px 7px;font-size:.75rem;cursor:pointer}
+.abtn{background:rgba(26,255,140,.1);color:#1aff8c;border:1px solid rgba(26,255,140,.3);padding:8px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;width:100%;margin-top:4px}
+.irow{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,242,254,.1);font-size:.82rem}
+.irow:last-child{border-bottom:none}
+.il{color:#9fb0cc;font-weight:600}
+.iv{font-weight:700;text-align:right}
+.toast{position:fixed;top:16px;right:16px;background:#121826;border:1px solid rgba(26,255,140,.5);color:#1aff8c;padding:10px 16px;border-radius:10px;font-size:.82rem;font-weight:700;z-index:999;animation:fi .3s}
+@keyframes fi{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<div class="toast-container" id="toaster"></div>
-<div class="topbar">
+<div class="top">
 <h1>🩺 Doctor Panel</h1>
-<button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+<button class="logout" id="logoutBtn">🚪 Logout</button>
 </div>
-<div class="container">
-<div class="profile-card">
-<div class="avatar" id="avatarDiv">👨‍⚕️</div>
+<div class="box">
+<div class="card">
+<div class="profile">
+<div class="ava" id="ava">👨‍⚕️</div>
 <div>
-<div class="doc-name" id="docName">Loading...</div>
-<div class="doc-spec" id="docSpec">—</div>
-<div class="doc-city" id="docCity">—</div>
-<span class="verified" id="docBadge">Loading...</span>
+<div class="dname" id="dname">Loading...</div>
+<div class="dspec" id="dspec"></div>
+<div class="dspec" id="dcity"></div>
+<span class="vbadge" id="dbadge">...</span>
 </div>
 </div>
-<div class="online-bar">
-<div class="toggle" id="onlineToggle" onclick="toggleOnline()"></div>
-<span class="online-txt" id="onlineTxt">Offline</span>
 </div>
-<div class="stats">
-<div class="stat"><div class="stat-n" id="s1">0</div><div class="stat-l">Today</div></div>
-<div class="stat"><div class="stat-n" id="s2">0</div><div class="stat-l">Total</div></div>
-<div class="stat"><div class="stat-n" id="s3">0</div><div class="stat-l">Pending</div></div>
-<div class="stat"><div class="stat-n" id="s4">0</div><div class="stat-l">Revenue</div></div>
+<div class="card">
+<div class="toggle-bar">
+<div class="tog" id="tog"></div>
+<span id="otxt">Offline</span>
+</div>
+</div>
+<div class="stats card">
+<div class="stat"><div class="sn" id="s1">0</div><div class="sl">Today</div></div>
+<div class="stat"><div class="sn" id="s2">0</div><div class="sl">Total</div></div>
+<div class="stat"><div class="sn" id="s3">0</div><div class="sl">Pending</div></div>
+<div class="stat"><div class="sn" id="s4">PKR 0</div><div class="sl">Revenue</div></div>
 </div>
 <div class="tabs">
-<button class="tab active" onclick="showTab('appts',this)">📅 Appointments</button>
-<button class="tab" onclick="showTab('rx',this)">💊 Prescription</button>
-<button class="tab" onclick="showTab('profile',this)">👤 Profile</button>
-<button class="tab" onclick="showTab('schedule',this)">🕐 Schedule</button>
+<button class="tab on" onclick="sw('appt',this)">📅 Appointments</button>
+<button class="tab" onclick="sw('walkin',this)">➕ Walk-in</button>
+<button class="tab" onclick="sw('rx',this)">💊 Prescription</button>
+<button class="tab" onclick="sw('followup',this)">📅 Follow-ups</button>
+<button class="tab" onclick="sw('profile',this)">👤 Profile</button>
 </div>
-<div class="panel active" id="panel-appts">
-<div class="section">
-<div class="section-title">📅 Appointments</div>
-<button class="refresh-btn" onclick="loadAppts()">🔄 Refresh Appointments</button>
-<div id="apptsList"><div class="empty">Tap Refresh to load</div></div>
-</div>
-</div>
-<div class="panel" id="panel-rx">
-<div class="section">
-<div class="section-title">💊 Write Prescription</div>
-<div class="field">
-<label>Select Patient (Confirmed)</label>
-<select id="rxPatient"><option value="">-- Select Patient --</option></select>
-</div>
-<div class="field">
-<label>Diagnosis</label>
-<textarea id="rxDiag" rows="2" placeholder="Patient diagnosis..."></textarea>
-</div>
-<div class="section-title" style="margin-top:8px">💊 Medicines</div>
-<div id="medsList"></div>
-<button class="add-btn" onclick="addMed()">+ Add Medicine</button>
-<div class="section-title" style="margin-top:12px">🔬 Lab Tests</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab1" value="CBC"> CBC</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab2" value="Urine DR"> Urine DR</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab3" value="Blood Sugar"> Blood Sugar</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab4" value="HbA1c"> HbA1c</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab5" value="LFT"> LFT</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab6" value="KFT"> KFT</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab7" value="Lipid Profile"> Lipid Profile</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab8" value="TSH"> TSH</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab9" value="T3 T4"> T3 T4</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab10" value="Vitamin D"> Vitamin D</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab11" value="Vitamin B12"> Vitamin B12</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab12" value="Hepatitis B"> Hepatitis B</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab13" value="Hepatitis C"> Hepatitis C</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab14" value="HIV Test"> HIV Test</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab15" value="Pregnancy HCG"> Pregnancy HCG</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab16" value="ESR"> ESR</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab17" value="CRP"> CRP</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab18" value="Stool DR"> Stool DR</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab19" value="Culture Sensitivity"> Culture</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab20" value="X-Ray"> X-Ray</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab21" value="Ultrasound"> Ultrasound</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab22" value="MRI"> MRI</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab23" value="CT Scan"> CT Scan</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab24" value="Echo Heart"> Echo</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab25" value="ECG"> ECG</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab26" value="Mammography"> Mammography</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab27" value="Bone Density"> Bone Density</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab28" value="COVID Test"> COVID Test</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab29" value="PSA Prostate"> PSA</label>
-<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab30" value="Biopsy"> Biopsy</label>
-</div>
-<div class="field">
-<label>📝 Lab Test Details (MRI/CT/X-Ray body part, Blood Sugar type, etc)</label>
-<textarea id="labNotes" rows="2" placeholder="e.g. MRI Brain, X-Ray Chest, Blood Sugar Fasting, CT Scan Abdomen..."></textarea>
-</div>
-<div class="field">
-<label>Follow-up Date</label>
-<input type="date" id="rxFollowup"/>
-</div>
-<div class="field">
-<label>📸 Upload Handwritten Prescription (optional)</label>
-<input type="file" id="rxPhoto" accept="image/*"/>
-</div>
-<div class="rx-actions">
-<button class="save-btn" onclick="saveRx('patient')" style="background:var(--grad)">💾 Save & Send to Patient</button>
-<button class="save-btn" onclick="saveRx('lab')" style="background:linear-gradient(110deg,#1aff8c,#08b85f)">🔬 Send to Lab</button>
-<button class="save-btn" onclick="saveRx('pharmacy')" style="background:linear-gradient(110deg,#ff5d6c,#c81e3a);grid-column:span 2">💊 Send to Pharmacy</button>
-</div>
-</div>
-</div>
-<div class="panel" id="panel-profile">
-<div class="section">
-<div class="section-title">👤 My Profile</div>
-<div class="info-row"><span class="info-label">Name</span><span class="info-val" id="pName">—</span></div>
-<div class="info-row"><span class="info-label">Email</span><span class="info-val" id="pEmail">—</span></div>
-<div class="info-row"><span class="info-label">Phone</span><span class="info-val" id="pPhone">—</span></div>
-<div class="info-row"><span class="info-label">City</span><span class="info-val" id="pCity">—</span></div>
-<div class="info-row"><span class="info-label">Address</span><span class="info-val" id="pAddr">—</span></div>
-<div class="info-row"><span class="info-label">Fee</span><span class="info-val" id="pFee">—</span></div>
-<div class="info-row"><span class="info-label">Experience</span><span class="info-val" id="pExp">—</span></div>
-<div class="info-row"><span class="info-label">Hours</span><span class="info-val" id="pHours">—</span></div>
-<div class="info-row"><span class="info-label">Rating</span><span class="info-val" id="pRating">—</span></div>
-<div class="info-row"><span class="info-label">Subscription</span><span class="info-val" id="pSub">—</span></div>
-<div class="info-row"><span class="info-label">Trial Ends</span><span class="info-val" id="pTrial">—</span></div>
-</div>
-</div>
-<div class="panel" id="panel-schedule">
-<div class="section">
-<div class="section-title">🕐 My Schedule</div>
-<div class="field"><label>Morning Start</label><input type="time" id="sch1" value="09:00"/></div>
-<div class="field"><label>Morning End</label><input type="time" id="sch2" value="13:00"/></div>
-<div class="field"><label>Evening Start</label><input type="time" id="sch3" value="16:00"/></div>
-<div class="field"><label>Evening End</label><input type="time" id="sch4" value="20:00"/></div>
-<button class="save-btn" onclick="saveSchedule()">💾 Save Schedule</button>
-</div>
-</div>
-</div>
-<script>
-function getCookie(n){const v=document.cookie.match("(^|;) ?"+n+"=([^;]*)(;|$)");return v?decodeURIComponent(v[2]):null;}
-const EMAIL=localStorage.getItem("doctorEmail")||getCookie("doctorEmail")||localStorage.getItem("vendorEmail")||getCookie("vendorEmail");
-if(!EMAIL){window.location.href="/vendor/universal-login.html";}
-let DOCTOR=null,DOC_ID=null,DB=null,APP=null;
-let medicines=[{name:"",dosage:"1-0-1",days:"5",notes:""}];
 
-function toast(msg,type){
+<!-- APPOINTMENTS -->
+<div class="panel on" id="p-appt">
+<div class="card">
+<button class="rbtn" onclick="loadAppts()">🔄 Refresh Appointments</button>
+<div id="apptList"><div class="empty">Tap Refresh to load</div></div>
+</div>
+</div>
+
+<!-- WALK-IN -->
+<div class="panel" id="p-walkin">
+<div class="card">
+<h3 style="color:#00f2fe;font-size:.9rem;margin-bottom:12px">➕ Add Walk-in Patient</h3>
+<div class="field"><label>Patient Name *</label><input id="wName" placeholder="Full name"/></div>
+<div class="field"><label>Phone Number *</label><input id="wPhone" type="tel" placeholder="03XX-XXXXXXX"/></div>
+<div class="field"><label>Age</label><input id="wAge" type="number" placeholder="Age in years"/></div>
+<div class="field"><label>Complaint *</label><textarea id="wComplaint" rows="2" placeholder="Patient complaint..."></textarea></div>
+<div class="field"><label>Fee</label>
+<select id="wFee">
+<option value="500">PKR 500</option>
+<option value="300">PKR 300</option>
+<option value="200">PKR 200</option>
+<option value="0">Free (Charity)</option>
+<option value="custom">Custom...</option>
+</select>
+</div>
+<div class="field" id="customFeeDiv" style="display:none"><label>Custom Fee (PKR)</label><input id="wCustomFee" type="number" placeholder="Enter amount"/></div>
+<button class="sbtn" onclick="addWalkin()">✅ Register & Start Consultation</button>
+</div>
+</div>
+
+<!-- PRESCRIPTION -->
+<div class="panel" id="p-rx">
+<div class="card">
+<h3 style="color:#00f2fe;font-size:.9rem;margin-bottom:12px">💊 Write Prescription</h3>
+<div class="field"><label>Select Patient</label><select id="rxPat"><option value="">-- Select --</option></select></div>
+<div class="field"><label>Diagnosis *</label><textarea id="rxDiag" rows="2" placeholder="Diagnosis..."></textarea></div>
+<div style="color:#00f2fe;font-size:.82rem;font-weight:700;margin-bottom:8px">💊 Medicines</div>
+<div id="medList"></div>
+<button class="abtn" onclick="addMed()">+ Add Medicine</button>
+<div style="color:#00f2fe;font-size:.82rem;font-weight:700;margin:12px 0 8px">🔬 Lab Tests</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px" id="labGrid"></div>
+<div class="field"><label>📝 Test Details (body part etc)</label><textarea id="labNotes" rows="2" placeholder="e.g. MRI Brain, X-Ray Chest, Blood Sugar Fasting..."></textarea></div>
+<div class="field"><label>Follow-up Date</label><input type="date" id="rxFollowup"/></div>
+<div class="field"><label>📸 Upload Handwritten Prescription</label><input type="file" id="rxPhoto" accept="image/*"/></div>
+<button class="sbtn" onclick="saveRx('patient')">📱 Save & Send to Patient</button>
+<button class="gbtn" onclick="saveRx('lab')">🔬 Send to Lab</button>
+<button class="rbtn2" onclick="saveRx('pharmacy')">💊 Send to Pharmacy</button>
+</div>
+</div>
+
+<!-- FOLLOW-UPS -->
+<div class="panel" id="p-followup">
+<div class="card">
+<h3 style="color:#00f2fe;font-size:.9rem;margin-bottom:12px">📅 Follow-up Patients</h3>
+<button class="rbtn" onclick="loadFollowups()">🔄 Load Follow-ups</button>
+<div id="followupList"><div class="empty">Tap to load follow-ups</div></div>
+</div>
+</div>
+
+<!-- PROFILE -->
+<div class="panel" id="p-profile">
+<div class="card">
+<h3 style="color:#00f2fe;font-size:.9rem;margin-bottom:12px">👤 My Profile</h3>
+<div class="irow"><span class="il">Name</span><span class="iv" id="pName">—</span></div>
+<div class="irow"><span class="il">Email</span><span class="iv" id="pEmail">—</span></div>
+<div class="irow"><span class="il">Phone</span><span class="iv" id="pPhone">—</span></div>
+<div class="irow"><span class="il">City</span><span class="iv" id="pCity">—</span></div>
+<div class="irow"><span class="il">Address</span><span class="iv" id="pAddr">—</span></div>
+<div class="irow"><span class="il">Fee</span><span class="iv" id="pFee">—</span></div>
+<div class="irow"><span class="il">Experience</span><span class="iv" id="pExp">—</span></div>
+<div class="irow"><span class="il">Hours</span><span class="iv" id="pHours">—</span></div>
+<div class="irow"><span class="il">Rating</span><span class="iv" id="pRating">—</span></div>
+<div class="irow"><span class="il">Subscription</span><span class="iv" id="pSub">—</span></div>
+<div class="irow"><span class="il">Trial Ends</span><span class="iv" id="pTrial">—</span></div>
+</div>
+</div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import{getFirestore,collection,getDocs,addDoc,doc,updateDoc,query,where,orderBy}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const FC={apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253733",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"};
+const app=initializeApp(FC);
+const db=getFirestore(app);
+
+function gc(n){const v=document.cookie.match("(^|;) ?"+n+"=([^;]*)(;|$)");return v?decodeURIComponent(v[2]):null;}
+const EMAIL=localStorage.getItem("doctorEmail")||gc("doctorEmail")||localStorage.getItem("vendorEmail")||gc("vendorEmail");
+if(!EMAIL)window.location.href="/vendor/universal-login.html";
+
+let DOC=null,DID=null;
+let MEDS=[{name:"",dosage:"1-0-1",days:"5",notes:""}];
+
+const LABS=["CBC","Urine DR","Blood Sugar","HbA1c","LFT","KFT","Lipid Profile","TSH","T3 T4","Vitamin D","Vitamin B12","Hepatitis B","Hepatitis C","HIV Test","Pregnancy HCG","ESR","CRP","Stool DR","Culture","X-Ray","Ultrasound","MRI","CT Scan","Echo","ECG","Mammography","Bone Density","COVID Test","PSA","Biopsy"];
+
+function toast(m,c){
 const el=document.createElement("div");
-el.className="toast "+(type||"ok");
-el.textContent=msg;
-document.getElementById("toaster").appendChild(el);
+el.className="toast";
+el.style.borderColor=c==="err"?"rgba(255,93,108,.5)":"rgba(26,255,140,.5)";
+el.style.color=c==="err"?"#ff5d6c":"#1aff8c";
+el.textContent=m;
+document.body.appendChild(el);
 setTimeout(()=>el.remove(),3000);
 }
 
-function showTab(id,btn){
-document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-document.getElementById("panel-"+id).classList.add("active");
-if(btn)btn.classList.add("active");
-if(id==="rx")loadRxPatients();
+function wa(phone,msg){
+const ph=phone.replace(/[^0-9]/g,"");
+const f=ph.startsWith("9292")?ph.slice(2):ph.startsWith("00")?ph.slice(2):ph.startsWith("0")?"92"+ph.slice(1):ph;
+window.open("https://wa.me/"+f+"?text="+encodeURIComponent(msg),"_blank");
 }
 
-function doLogout(){
+// Load labs grid
+const lg=document.getElementById("labGrid");
+LABS.forEach((l,i)=>{
+const label=document.createElement("label");
+label.style.cssText="font-size:.78rem;display:flex;align-items:center;gap:5px";
+label.innerHTML=`<input type="checkbox" id="l${i}" value="${l}"> ${l}`;
+lg.appendChild(label);
+});
+
+// Render medicines
+function renderMeds(){
+const c=document.getElementById("medList");
+c.innerHTML=MEDS.map((m,i)=>`<div class="med">
+<button class="xbtn" onclick="window.rmMed(${i})">✕</button>
+<div class="field"><label>Medicine</label><input value="${m.name}" onchange="MEDS[${i}].name=this.value" placeholder="e.g. Panadol 500mg"/></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div class="field"><label>Dosage</label><select onchange="MEDS[${i}].dosage=this.value">
+${["1-0-1","1-1-1","0-0-1","1-0-0","0-1-0","SOS"].map(d=>`<option ${m.dosage===d?"selected":""}>${d}</option>`).join("")}
+</select></div>
+<div class="field"><label>Days</label><select onchange="MEDS[${i}].days=this.value">
+${["3","5","7","10","14","30"].map(d=>`<option ${m.days===d?"selected":""}>${d}</option>`).join("")}
+</select></div>
+</div>
+<div class="field"><label>Notes</label><input value="${m.notes}" onchange="MEDS[${i}].notes=this.value" placeholder="Special instructions..."/></div>
+</div>`).join("");
+}
+renderMeds();
+
+// Init profile
+async function init(){
+try{
+const snap=await getDocs(query(collection(db,"vendors"),where("email","==",EMAIL)));
+if(snap.empty){document.getElementById("dname").textContent="Not found: "+EMAIL;return;}
+snap.forEach(d=>{DOC=d.data();DID=d.id;});
+document.getElementById("dname").textContent=DOC.name||"Doctor";
+document.getElementById("dspec").textContent=DOC.category||"";
+document.getElementById("dcity").textContent="📍 "+(DOC.city||"");
+document.getElementById("dbadge").textContent=DOC.adminApproved?"✅ Verified":"⏳ Pending";
+document.getElementById("pName").textContent=DOC.name||"—";
+document.getElementById("pEmail").textContent=DOC.email||"—";
+document.getElementById("pPhone").textContent=DOC.phone||"—";
+document.getElementById("pCity").textContent=DOC.city||"—";
+document.getElementById("pAddr").textContent=DOC.address||"—";
+document.getElementById("pFee").textContent="PKR "+(DOC.fee||"500");
+document.getElementById("pExp").textContent=(DOC.experience||"0")+" years";
+document.getElementById("pHours").textContent=DOC.hours||"N/A";
+document.getElementById("pRating").textContent="⭐ "+(DOC.rating||"0");
+document.getElementById("pSub").textContent=DOC.subscription||"trial";
+document.getElementById("pTrial").textContent=DOC.trialEnd?DOC.trialEnd.split("T")[0]:"—";
+const init=(DOC.name||"D").charAt(0).toUpperCase();
+if(DOC.photo)document.getElementById("ava").innerHTML=`<img src="${DOC.photo}"/>`;
+else document.getElementById("ava").textContent=init;
+const isOn=DOC.status==="online";
+if(isOn){document.getElementById("tog").classList.add("on");document.getElementById("otxt").textContent="🟢 Online — Patients can find you";}
+else document.getElementById("otxt").textContent="⚫ Offline";
+}catch(e){document.getElementById("dname").textContent="Error: "+e.message;}
+}
+
+// Toggle online
+document.getElementById("tog").onclick=async function(){
+if(!DID)return;
+const t=this;
+const isOn=t.classList.contains("on");
+await updateDoc(doc(db,"vendors",DID),{status:isOn?"offline":"online"});
+if(!isOn){t.classList.add("on");document.getElementById("otxt").textContent="🟢 Online — Patients can find you";}
+else{t.classList.remove("on");document.getElementById("otxt").textContent="⚫ Offline";}
+toast(isOn?"Gone offline":"Now online!");
+};
+
+// Logout
+document.getElementById("logoutBtn").onclick=function(){
 localStorage.clear();
 sessionStorage.clear();
 document.cookie="doctorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
 document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
 window.location.href="/vendor/universal-login.html";
-}
-
-async function init(){
-const {initializeApp}=await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
-const {getFirestore,collection,getDocs,doc,updateDoc,addDoc,query,where}=await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-APP=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"},{name:"dash-"+Date.now()});
-DB=getFirestore(APP);
-window._col=collection;window._get=getDocs;window._doc=doc;window._upd=updateDoc;window._add=addDoc;window._q=query;window._w=where;
-try{
-const snap=await getDocs(query(collection(DB,"vendors"),where("email","==",EMAIL)));
-if(snap.empty){document.getElementById("docName").textContent="Not found: "+EMAIL;return;}
-snap.forEach(d=>{DOCTOR=d.data();DOC_ID=d.id;});
-document.getElementById("docName").textContent=DOCTOR.name||"Doctor";
-document.getElementById("docSpec").textContent=DOCTOR.category||"—";
-document.getElementById("docCity").textContent="📍 "+(DOCTOR.city||"—");
-document.getElementById("docBadge").textContent=DOCTOR.adminApproved?"✅ Verified":"⏳ Pending";
-document.getElementById("pName").textContent=DOCTOR.name||"—";
-document.getElementById("pEmail").textContent=DOCTOR.email||"—";
-document.getElementById("pPhone").textContent=DOCTOR.phone||"—";
-document.getElementById("pCity").textContent=DOCTOR.city||"—";
-document.getElementById("pAddr").textContent=DOCTOR.address||"—";
-document.getElementById("pFee").textContent="PKR "+(DOCTOR.fee||"500")+" / visit";
-document.getElementById("pExp").textContent=(DOCTOR.experience||"0")+" years";
-document.getElementById("pHours").textContent=DOCTOR.hours||"N/A";
-document.getElementById("pRating").textContent="⭐ "+(DOCTOR.rating||"0");
-document.getElementById("pSub").textContent=DOCTOR.subscription||"trial";
-document.getElementById("pTrial").textContent=DOCTOR.trialEnd?DOCTOR.trialEnd.split("T")[0]:"—";
-const initials=(DOCTOR.name||"D").charAt(0).toUpperCase();
-if(DOCTOR.photo){document.getElementById("avatarDiv").innerHTML='<img src="'+DOCTOR.photo+'" alt=""/>';}
-else{document.getElementById("avatarDiv").textContent=initials;}
-const isOn=DOCTOR.status==="online";
-if(isOn){document.getElementById("onlineToggle").classList.add("on");document.getElementById("onlineTxt").textContent="🟢 Online — Patients can find you";}
-else{document.getElementById("onlineTxt").textContent="⚫ Offline — Tap to go online";}
-}catch(e){document.getElementById("docName").textContent="Error: "+e.message;}
-}
-
-window.toggleOnline=async function(){
-if(!DOC_ID)return;
-const t=document.getElementById("onlineToggle");
-const isOn=t.classList.contains("on");
-const s=isOn?"offline":"online";
-await window._upd(window._doc(DB,"vendors",DOC_ID),{status:s});
-if(!isOn){t.classList.add("on");document.getElementById("onlineTxt").textContent="🟢 Online — Patients can find you";}
-else{t.classList.remove("on");document.getElementById("onlineTxt").textContent="⚫ Offline — Tap to go online";}
-toast(isOn?"Gone offline":"Now online!");
 };
 
+// Load appointments
 window.loadAppts=async function(){
-const list=document.getElementById("apptsList");
+const list=document.getElementById("apptList");
 list.innerHTML='<div class="empty">Loading...</div>';
+if(!DOC){await new Promise(r=>setTimeout(r,2000));}
+if(!DOC){list.innerHTML='<div class="empty">Please wait...</div>';return;}
 try{
-const snap=await window._get(window._q(window._col(DB,"appointments"),window._w("doctorName","==",DOCTOR?DOCTOR.name:"")));
+const snap=await getDocs(query(collection(db,"appointments"),where("doctorName","==",DOC.name)));
 if(snap.empty){list.innerHTML='<div class="empty">No appointments yet</div>';return;}
 const today=new Date().toISOString().split("T")[0];
-let pending=0,total=0;
-let html="";
+let todayC=0,total=0,pending=0,revenue=0;
 const docs=[];
 snap.forEach(d=>docs.push({id:d.id,...d.data()}));
 docs.sort((a,b)=>new Date(b.bookedAt||0)-new Date(a.bookedAt||0));
+let html="";
 docs.forEach(a=>{
 total++;
 if(a.status==="pending"||!a.status)pending++;
-const sc=a.status==="pending"||!a.status?"status-pending":a.status==="confirmed"?"status-confirmed":a.status==="done"?"status-done":"status-rejected";
-html+=`<div class="appt-card">
-<div class="appt-header">
-<span class="appt-name">${a.patientName||"Unknown"}</span>
-<span class="status-badge ${sc}">${(a.status||"pending").toUpperCase()}</span>
+if(a.date===today&&(a.status==="confirmed"||a.status==="done"))todayC++;
+if(a.status==="done"&&a.fee&&parseInt(a.fee)>0)revenue+=parseInt(a.fee);
+const sc=!a.status||a.status==="pending"?"sp":a.status==="confirmed"?"sc":a.status==="done"?"sd":"sr";
+html+=`<div class="appt">
+<div class="arow">
+<span class="aname">${a.patientName||"Unknown"}</span>
+<span class="sbadge ${sc}">${(a.status||"pending").toUpperCase()}</span>
 </div>
-<div class="appt-info">📱 ${a.patientPhone||""}</div>
-<div class="appt-info">📅 ${a.date||""} ${a.time?"⏰ "+a.time:""}</div>
-<div class="appt-info">🤒 ${a.complaint||"Not specified"}</div>
-<div class="btn-row">
-${a.status==="pending"||!a.status?`<button class="btn btn-confirm" onclick="confirmAppt('${a.id}','${a.patientPhone}','${a.patientName}','${a.date}','${a.time}')">✅ Confirm</button><button class="btn btn-reject" onclick="rejectAppt('${a.id}')">❌ Reject</button>`:""}
-${a.status==="confirmed"?`<button class="btn btn-done" onclick="doneAppt('${a.id}','${a.patientPhone}','${a.patientName}')">✅ Done</button><button class="btn btn-rx" onclick="showTab('rx',null)">💊 Prescribe</button>`:""}
-<button class="btn btn-wa" onclick="sendWA('${a.patientPhone}','${a.patientName}')">📱 WhatsApp</button>
+<div class="ainfo">📱 ${a.patientPhone||""}</div>
+<div class="ainfo">📅 ${a.date||""} ${a.time?"⏰ "+a.time:""}</div>
+<div class="ainfo">🤒 ${a.complaint||"Not specified"}</div>
+${a.fee?"<div class='ainfo'>💰 Fee: PKR "+a.fee+(a.fee=="0"?" (Free)":"")+"</div>":""}
+<div class="brow">
+${!a.status||a.status==="pending"?`<button class="btn bc" onclick="window.cfm('${a.id}','${a.patientPhone}','${a.patientName}','${a.date}','${a.time||""}')">✅ Confirm</button><button class="btn br" onclick="window.rjt('${a.id}')">❌ Reject</button>`:""}
+${a.status==="confirmed"?`<button class="btn bd" onclick="window.dne('${a.id}','${a.patientPhone}','${a.patientName}')">✅ Done</button>`:""}
+<button class="btn bw" onclick="window.wamsg('${a.patientPhone}','${a.patientName}')">📱 WhatsApp</button>
 </div>
 </div>`;
 });
 list.innerHTML=html;
-const today=new Date().toISOString().split("T")[0];
-let todayCount=0,revenue=0;
-docs.forEach(a=>{
-if(a.date===today&&(a.status==="confirmed"||a.status==="done"))todayCount++;
-if(a.status==="done"&&a.fee&&parseInt(a.fee)>0)revenue+=parseInt(a.fee);
-});
-document.getElementById("s1").textContent=todayCount;
+document.getElementById("s1").textContent=todayC;
 document.getElementById("s2").textContent=total;
 document.getElementById("s3").textContent=pending;
-document.getElementById("s4").textContent=revenue>0?"PKR "+revenue:"0";
+document.getElementById("s4").textContent="PKR "+revenue;
+// Load confirmed patients for prescription
+const sel=document.getElementById("rxPat");
+sel.innerHTML='<option value="">-- Select Patient --</option>';
+docs.filter(a=>a.status==="confirmed"||a.status==="done").forEach(a=>{
+const o=document.createElement("option");
+o.value=a.patientPhone||"";
+o.textContent=a.patientName+" ("+a.date+")";
+sel.appendChild(o);
+});
 }catch(e){list.innerHTML='<div class="empty">Error: '+e.message+"</div>";}
 };
 
-window.confirmAppt=async function(id,phone,name,date,time){
-await window._upd(window._doc(DB,"appointments",id),{status:"confirmed"});
-const city=(DOCTOR?DOCTOR.city:"");
-const addr=(DOCTOR?DOCTOR.address:"");
-const fee=(DOCTOR?DOCTOR.fee:"500");
+// Confirm appointment
+window.cfm=async function(id,phone,name,date,time){
+await updateDoc(doc(db,"appointments",id),{status:"confirmed"});
 const bid="#APT"+Date.now().toString().slice(-6);
-const msg="🏥 *Appointment CONFIRMED!*\n━━━━━━━━━━━━━━\n👋 Dear "+name+",\n\n✅ Your appointment is confirmed!\n\n👨‍⚕️ Dr. "+(DOCTOR?DOCTOR.name.replace("Dr. ","").replace("Dr.",""):"")+"\n🆔 "+bid+"\n📅 "+date+"\n⏰ "+time+"\n📍 "+city+"\n🏠 "+addr+"\n💰 Fee: PKR "+fee+"\n\n⏰ Please arrive 10 mins early\n\n🌐 appabbottabad.com\n━━━━━━━━━━━━━━";
-openWA(phone,msg);
-toast("Confirmed! WhatsApp opening...");
+const msg="🏥 *Appointment CONFIRMED!*\n━━━━━━━━━━━━━━\n👋 Dear "+name+",\n\n✅ Confirmed!\n\n👨‍⚕️ Dr. "+(DOC?DOC.name.replace("Dr. ","").replace("Dr.",""):"")+"\n🆔 "+bid+"\n📅 "+date+"\n⏰ "+time+"\n📍 "+(DOC?DOC.city:"")+"\n🏠 "+(DOC?DOC.address:"")+"\n💰 PKR "+(DOC?DOC.fee:"500")+"\n\n⏰ Arrive 10 mins early\n🌐 appabbottabad.com\n━━━━━━━━━━━━━━";
+wa(phone,msg);
+toast("Confirmed!");
 setTimeout(window.loadAppts,1500);
 };
 
-window.rejectAppt=async function(id){
-await window._upd(window._doc(DB,"appointments",id),{status:"rejected"});
-toast("Appointment rejected");
+// Reject
+window.rjt=async function(id){
+await updateDoc(doc(db,"appointments",id),{status:"rejected"});
+toast("Rejected");
 setTimeout(window.loadAppts,1000);
 };
 
-window.doneAppt=async function(id,phone,name){
-await window._upd(window._doc(DB,"appointments",id),{status:"done"});
-const msg="✅ *Consultation Done!*\n\nDear "+name+",\n\nThank you for visiting Dr. "+(DOCTOR?DOCTOR.name:"")+"\n\nRate your experience:\nappabbottabad.com\n\n🏥 Pakistan Prime Portal";
-openWA(phone,msg);
-toast("Marked as done!");
+// Done
+window.dne=async function(id,phone,name){
+await updateDoc(doc(db,"appointments",id),{status:"done"});
+const msg="✅ *Consultation Done!*\n\nDear "+name+",\nThank you for visiting Dr. "+(DOC?DOC.name:"")+"\n\nRate us: appabbottabad.com\n\n🏥 Pakistan Prime Portal";
+wa(phone,msg);
+toast("Marked done!");
 setTimeout(window.loadAppts,1000);
 };
 
-window.sendWA=function(phone,name){
-const msg="Hello "+name+", this is Dr. "+(DOCTOR?DOCTOR.name:"")+" from Pakistan Prime Portal. How can I help you?";
-openWA(phone,msg);
+// WhatsApp
+window.wamsg=function(phone,name){
+wa(phone,"Hello "+name+", this is Dr. "+(DOC?DOC.name:"")+" from Pakistan Prime Portal.");
 };
 
-function openWA(phone,msg){
-const ph=phone.replace(/[^0-9]/g,"");
-const final=ph.startsWith("9292")?ph.slice(2):ph.startsWith("00")?ph.slice(2):ph.startsWith("0")?"92"+ph.slice(1):ph;
-window.open("https://wa.me/"+final+"?text="+encodeURIComponent(msg),"_blank");
-}
+// Walk-in
+document.getElementById("wFee").onchange=function(){
+document.getElementById("customFeeDiv").style.display=this.value==="custom"?"block":"none";
+};
 
-function addMed(){
-medicines.push({name:"",dosage:"1-0-1",days:"5",notes:""});
-renderMeds();
-}
-
-function removeMed(i){
-medicines.splice(i,1);
-renderMeds();
-}
-
-function renderMeds(){
-const c=document.getElementById("medsList");
-c.innerHTML=medicines.map((m,i)=>`<div class="med-item">
-<button class="remove-btn" onclick="removeMed(${i})">✕</button>
-<div class="field"><label>Medicine Name</label><input value="${m.name}" onchange="medicines[${i}].name=this.value" placeholder="e.g. Panadol 500mg"/></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<div class="field"><label>Dosage</label><select onchange="medicines[${i}].dosage=this.value">
-<option ${m.dosage=="1-0-1"?"selected":""}>1-0-1</option>
-<option ${m.dosage=="1-1-1"?"selected":""}>1-1-1</option>
-<option ${m.dosage=="0-0-1"?"selected":""}>0-0-1</option>
-<option ${m.dosage=="1-0-0"?"selected":""}>1-0-0</option>
-<option ${m.dosage=="0-1-0"?"selected":""}>0-1-0</option>
-<option ${m.dosage=="SOS"?"selected":""}>SOS</option>
-</select></div>
-<div class="field"><label>Days</label><select onchange="medicines[${i}].days=this.value">
-<option ${m.days=="3"?"selected":""}>3</option>
-<option ${m.days=="5"?"selected":""}>5</option>
-<option ${m.days=="7"?"selected":""}>7</option>
-<option ${m.days=="10"?"selected":""}>10</option>
-<option ${m.days=="14"?"selected":""}>14</option>
-<option ${m.days=="30"?"selected":""}>30</option>
-</select></div>
-</div>
-<div class="field"><label>Notes</label><input value="${m.notes}" onchange="medicines[${i}].notes=this.value" placeholder="Special instructions..."/></div>
-</div>`).join("");
-}
-
-window.loadRxPatients=function(){
-const sel=document.getElementById("rxPatient");
-sel.innerHTML='<option value="">-- Select Patient --</option>';
-const list=document.getElementById("apptsList");
-const cards=list.querySelectorAll(".appt-card");
-cards.forEach(card=>{
-const name=card.querySelector(".appt-name").textContent;
-const badge=card.querySelector(".status-badge").textContent;
-if(badge.includes("CONFIRMED")){
-const opt=document.createElement("option");
-opt.value=name;
-opt.textContent=name;
-sel.appendChild(opt);
-}
+window.addWalkin=async function(){
+const name=document.getElementById("wName").value.trim();
+const phone=document.getElementById("wPhone").value.trim();
+const complaint=document.getElementById("wComplaint").value.trim();
+if(!name||!phone||!complaint){toast("Fill all required fields","err");return;}
+let fee=document.getElementById("wFee").value;
+if(fee==="custom")fee=document.getElementById("wCustomFee").value||"0";
+const today=new Date().toISOString().split("T")[0];
+const time=new Date().toLocaleTimeString("en-PK",{hour:"2-digit",minute:"2-digit"});
+await addDoc(collection(db,"appointments"),{
+patientName:name,patientPhone:phone,
+doctorName:DOC?DOC.name:"",doctorEmail:EMAIL,
+date:today,time,complaint,fee,
+status:"confirmed",type:"walkin",
+bookedAt:new Date().toISOString()
 });
+toast("Walk-in registered!");
+document.getElementById("wName").value="";
+document.getElementById("wPhone").value="";
+document.getElementById("wComplaint").value="";
+window.loadAppts();
 };
 
+// Medicine functions
+window.addMed=function(){MEDS.push({name:"",dosage:"1-0-1",days:"5",notes:""});renderMeds();};
+window.rmMed=function(i){MEDS.splice(i,1);renderMeds();};
+
+// Save prescription
 window.saveRx=async function(sendTo){
-const patient=document.getElementById("rxPatient").value;
-const diag=document.getElementById("rxDiag").value;
-if(!patient){toast("Please select a patient","err");return;}
-if(!diag){toast("Please enter diagnosis","err");return;}
-const labs=["lab1","lab2","lab3","lab4","lab5","lab6","lab7","lab8","lab9","lab10","lab11","lab12","lab13","lab14","lab15","lab16","lab17","lab18","lab19","lab20","lab21","lab22","lab23","lab24","lab25","lab26","lab27","lab28","lab29","lab30"].filter(id=>document.getElementById(id).checked).map(id=>document.getElementById(id).value);const labNotes=document.getElementById('labNotes').value;
+const patient=document.getElementById("rxPat").value;
+const patName=document.getElementById("rxPat").options[document.getElementById("rxPat").selectedIndex].text;
+const diag=document.getElementById("rxDiag").value.trim();
+if(!patient){toast("Select a patient","err");return;}
+if(!diag){toast("Enter diagnosis","err");return;}
+const labs=LABS.filter((_,i)=>document.getElementById("l"+i)?.checked);
+const labNotes=document.getElementById("labNotes").value;
 const followup=document.getElementById("rxFollowup").value;
 const rxId="#RX"+Date.now().toString().slice(-6);
-const medsText=medicines.filter(m=>m.name).map((m,i)=>`${i+1}. ${m.name} - ${m.dosage} - ${m.days} days${m.notes?" ("+m.notes+")":""}`).join("\n");
+const medsText=MEDS.filter(m=>m.name).map((m,i)=>`${i+1}. ${m.name} - ${m.dosage} - ${m.days} days${m.notes?" ("+m.notes+")":""}`).join("\n");
 let photoUrl="";
 const photoFile=document.getElementById("rxPhoto").files[0];
 if(photoFile){
-const formData=new FormData();
-formData.append("image",photoFile);
-try{
-const res=await fetch("https://api.imgbb.com/1/upload?key=06ca0498b7cee7caaf0189aacc66151d",{method:"POST",body:formData});
-const data=await res.json();
-photoUrl=data.data.url;
-}catch(e){toast("Photo upload failed","err");}
+const fd=new FormData();fd.append("image",photoFile);
+try{const r=await fetch("https://api.imgbb.com/1/upload?key=06ca0498b7cee7caaf0189aacc66151d",{method:"POST",body:fd});const d=await r.json();photoUrl=d.data.url;}
+catch(e){toast("Photo upload failed","err");}
 }
-await window._add(window._col(DB,"prescriptions"),{rxId,patientName:patient,doctorName:DOCTOR?DOCTOR.name:"",doctorEmail:EMAIL,diagnosis:diag,medicines:medicines.filter(m=>m.name),labTests:labs,followUpDate:followup,photoUrl,createdAt:new Date().toISOString()});
-const docCity=DOCTOR?DOCTOR.city:"";
-const docAddr=DOCTOR?DOCTOR.address:"";
+await addDoc(collection(db,"prescriptions"),{rxId,patientPhone:patient,patientName:patName,doctorName:DOC?DOC.name:"",doctorEmail:EMAIL,diagnosis:diag,medicines:MEDS.filter(m=>m.name),labTests:labs,labNotes,followUpDate:followup,photoUrl,createdAt:new Date().toISOString()});
+// Update appointment follow-up date
+if(followup){
+const snap=await getDocs(query(collection(db,"appointments"),where("patientPhone","==",patient),where("doctorName","==",DOC?DOC.name:"")));
+snap.forEach(async d=>{if(d.data().status==="confirmed"||d.data().status==="done")await updateDoc(doc(db,"appointments",d.id),{followUpDate:followup});});
+}
 let msg="";
+const dname=DOC?DOC.name.replace("Dr. ","").replace("Dr.",""):"";
 if(sendTo==="patient"){
-msg="💊 *Prescription Ready!*\n━━━━━━━━━━━━━━\n👋 Dear "+patient+",\n\n👨‍⚕️ Dr. "+(DOCTOR?DOCTOR.name.replace("Dr. ",""):"")+"\n🆔 "+rxId+"\n\n📋 Diagnosis: "+diag+"\n\n💊 Medicines:\n"+medsText+(labs.length?"\n\n🔬 Lab Tests:\n"+labs.map(l=>"• "+l).join("\n"):"")+(followup?"\n\n📅 Follow-up: "+followup:"")+"\n\n📍 View: appabbottabad.com/patient/portal.html\n━━━━━━━━━━━━━━";
+msg="💊 *Prescription Ready!*\n━━━━━━━━━━━━━━\nDear "+patName+",\n\n👨‍⚕️ Dr. "+dname+"\n🆔 "+rxId+"\n\n📋 Diagnosis: "+diag+"\n\n💊 Medicines:\n"+medsText+(labs.length?"\n\n🔬 Lab Tests:\n"+labs.map(l=>"• "+l).join("\n")+(labNotes?"\nDetails: "+labNotes:""):"")+  (followup?"\n\n📅 Follow-up: "+followup:"")+(photoUrl?"\n\n📸 Rx Photo: "+photoUrl:"")+"\n\n🌐 appabbottabad.com\n━━━━━━━━━━━━━━";
 }else if(sendTo==="lab"){
-msg="🔬 *Lab Referral*\n━━━━━━━━━━━━━━\nFrom: Dr. "+(DOCTOR?DOCTOR.name.replace("Dr. ",""):"")+"\nPatient: "+patient+"\n🆔 "+rxId+"\n\nTests needed:\n"+labs.map(l=>"✅ "+l).join("\n")+"\n\nPlease bring this message.\n━━━━━━━━━━━━━━";
-}else if(sendTo==="pharmacy"){
-msg="💊 *Pharmacy Order*\n━━━━━━━━━━━━━━\nFrom: Dr. "+(DOCTOR?DOCTOR.name.replace("Dr. ",""):"")+"\nPatient: "+patient+"\n🆔 "+rxId+"\n\nMedicines needed:\n"+medsText+(photoUrl?"\n\n📸 Prescription: "+photoUrl:"")+"\n\nPlease prepare.\n━━━━━━━━━━━━━━";
-}
-toast("Prescription saved! "+rxId);
-alert("📋 "+rxId+" saved!\n\nNow select WHO to send WhatsApp to\n(Patient/Lab/Pharmacy)");
-if(sendTo==="lab"){
-const labPhone=prompt("Enter Lab WhatsApp number:");
-if(labPhone)openWA(labPhone,msg);
-}else if(sendTo==="pharmacy"){
-const pharmPhone=prompt("Enter Pharmacy WhatsApp number:");
-if(pharmPhone)openWA(pharmPhone,msg);
+msg="🔬 *Lab Referral*\n━━━━━━━━━━━━━━\nFrom: Dr. "+dname+"\nPatient: "+patName+"\nPhone: "+patient+"\n🆔 "+rxId+"\n\nTests:\n"+labs.map(l=>"✅ "+l).join("\n")+(labNotes?"\n\nDetails: "+labNotes:"")+"\n\nPlease show this message.\n━━━━━━━━━━━━━━";
 }else{
-const patPhone=prompt("Enter Patient WhatsApp number:");
-if(patPhone)openWA(patPhone,msg);
+msg="💊 *Pharmacy Order*\n━━━━━━━━━━━━━━\nFrom: Dr. "+dname+"\nPatient: "+patName+"\n🆔 "+rxId+"\n\nMedicines:\n"+medsText+(photoUrl?"\n\n📸 Rx: "+photoUrl:"")+"\n━━━━━━━━━━━━━━";
 }
+toast(rxId+" saved!");
+const toPhone=prompt("Enter "+(sendTo==="patient"?"patient":sendTo==="lab"?"lab":"pharmacy")+" WhatsApp number:");
+if(toPhone)wa(toPhone,msg);
 };
 
-window.saveSchedule=async function(){
-if(!DOC_ID)return;
-const s=document.getElementById("sch1").value+"-"+document.getElementById("sch2").value+" / "+document.getElementById("sch3").value+"-"+document.getElementById("sch4").value;
-await window._upd(window._doc(DB,"vendors",DOC_ID),{hours:s});
-toast("Schedule saved!");
+// Follow-ups
+window.loadFollowups=async function(){
+const list=document.getElementById("followupList");
+list.innerHTML='<div class="empty">Loading...</div>';
+if(!DOC)return;
+try{
+const today=new Date().toISOString().split("T")[0];
+const snap=await getDocs(query(collection(db,"appointments"),where("doctorName","==",DOC.name)));
+const docs=[];
+snap.forEach(d=>{const a=d.data();if(a.followUpDate)docs.push({id:d.id,...a});});
+if(!docs.length){list.innerHTML='<div class="empty">No follow-ups scheduled</div>';return;}
+docs.sort((a,b)=>new Date(a.followUpDate)-new Date(b.followUpDate));
+let html="";
+docs.forEach(a=>{
+const isOverdue=a.followUpDate<today;
+const isToday=a.followUpDate===today;
+const color=isOverdue?"#ff5d6c":isToday?"#ffd700":"#1aff8c";
+html+=`<div class="appt" style="border-color:${color}40">
+<div class="arow">
+<span class="aname">${a.patientName}</span>
+<span style="color:${color};font-size:.75rem;font-weight:700">${isOverdue?"🔴 OVERDUE":isToday?"🟡 TODAY":"🟢 "+a.followUpDate}</span>
+</div>
+<div class="ainfo">📱 ${a.patientPhone}</div>
+<div class="ainfo">📅 Follow-up: ${a.followUpDate}</div>
+<div class="brow">
+<button class="btn bw" onclick="window.sendFollowup('${a.patientPhone}','${a.patientName}','${a.followUpDate}')">📱 Send Reminder</button>
+</div>
+</div>`;
+});
+list.innerHTML=html;
+}catch(e){list.innerHTML='<div class="empty">Error: '+e.message+"</div>";}
 };
 
-renderMeds();
+window.sendFollowup=function(phone,name,date){
+const msg="📅 *Follow-up Reminder*\n━━━━━━━━━━━━━━\n👋 Dear "+name+",\n\nYour follow-up appointment with Dr. "+(DOC?DOC.name.replace("Dr. ",""):"")+"\nis scheduled for: "+date+"\n\n📞 Please book your slot:\nappabbottabad.com/doctor/booking.html\n\n🏥 Pakistan Prime Portal\n━━━━━━━━━━━━━━";
+wa(phone,msg);
+toast("Reminder sent!");
+};
+
+// Tab switch
+window.sw=function(id,btn){
+document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));
+document.querySelectorAll(".tab").forEach(b=>b.classList.remove("on"));
+document.getElementById("p-"+id).classList.add("on");
+if(btn)btn.classList.add("on");
+};
+
 init();
 </script>
 </body>
