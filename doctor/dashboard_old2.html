@@ -145,7 +145,7 @@ document.getElementById("sTrial").textContent=docData.trialEnd?docData.trialEnd.
 const initials=n.charAt(0).toUpperCase();
 if(docData.photo){document.getElementById("avatarDiv").innerHTML='<img src="'+docData.photo+'" alt="photo"/>';}
 else{document.getElementById("avatarDiv").textContent=initials;}
-const isOnline=docData.status==="online";window._docIdReady=true;window._docName=docData.name;
+const isOnline=docData.status==="online";window._docIdReady=true;
 if(isOnline){document.getElementById("onlineToggle").classList.add("on");document.getElementById("onlineText").textContent="🟢 Online — Patients can find you";document.getElementById("onlineHint").textContent="Tap to go offline";}
 }catch(e){console.error(e);}
 }
@@ -158,7 +158,7 @@ await updateDoc(doc(db,"vendors",docId),{status:newStatus});
 if(!isOn){t.classList.add("on");document.getElementById("onlineText").textContent="🟢 Online — Patients can find you";document.getElementById("onlineHint").textContent="Tap to go offline";}
 else{t.classList.remove("on");document.getElementById("onlineText").textContent="⚫ Offline";document.getElementById("onlineHint").textContent="Tap to go online";}
 };
-loadProfile().then(()=>{console.log('Profile loaded');});
+loadProfile();
 
 async function loadAppointments(){
 const list=document.getElementById('appointmentsList');
@@ -228,7 +228,7 @@ window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 </script>
 <script>
 function doLogout(){localStorage.clear();sessionStorage.clear();document.cookie="doctorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.replace("/doctor/login.html");}
-function showTab(t){document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+t).classList.add("active");event.target.classList.add("active");if(t==="appointments"){const n=document.getElementById("docName").textContent;if(n&&n!=="Loading...")loadAppointments();else setTimeout(loadAppointments,2000);}}
+function showTab(t){document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+t).classList.add("active");event.target.classList.add("active");if(t==="appointments")setTimeout(loadAppointments,500);}
 </script>
 </body>
 </html>
