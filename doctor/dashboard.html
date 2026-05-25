@@ -159,7 +159,7 @@ await updateDoc(doc(db,"vendors",docId),{status:newStatus});
 if(!isOn){t.classList.add("on");document.getElementById("onlineText").textContent="🟢 Online — Patients can find you";document.getElementById("onlineHint").textContent="Tap to go offline";}
 else{t.classList.remove("on");document.getElementById("onlineText").textContent="⚫ Offline";document.getElementById("onlineHint").textContent="Tap to go online";}
 };
-loadProfile().then(()=>{console.log('Profile loaded');});
+loadProfile();
 
 window.loadAppointments=async function loadAppointments(){
 const list=document.getElementById('appointmentsList');
