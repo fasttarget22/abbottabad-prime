@@ -207,8 +207,7 @@ const db=getFirestore(getApps()[0]);
 await updateDoc(doc(db,'appointments',id),{status:'confirmed'});
 }catch(e){console.error(e);}
 const msg='✅ Appointment CONFIRMED!\n\nDr. '+docName+' will see you.\n\nPakistan Prime Portal';
-const ph=phone.replace(/[^0-9]/g,'');
-const finalPh=ph.startsWith('0')?'92'+ph.slice(1):ph;
+const ph=phone.replace(/[^0-9]/g,'');const finalPh=ph.startsWith('9292')?ph.slice(2):ph.startsWith('00')?ph.slice(2):ph.startsWith('0')?'92'+ph.slice(1):ph;
 window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 setTimeout(window.loadAppointments,1500);
 }
@@ -227,8 +226,7 @@ window.doneAppt=function doneAppt(id,phone,name){
 const docName=document.getElementById('docName').textContent;
 window.fbUpdate(window.fbDoc(window.db,'appointments',id),{status:'done'});
 const msg='✅ Consultation done!\n\nThank you for visiting Dr.'+docName+'\n\nPakistan Prime Portal';
-const ph=phone.replace(/[^0-9]/g,'');
-const finalPh=ph.startsWith('0')?'92'+ph.slice(1):ph;
+const ph=phone.replace(/[^0-9]/g,'');const finalPh=ph.startsWith('9292')?ph.slice(2):ph.startsWith('00')?ph.slice(2):ph.startsWith('0')?'92'+ph.slice(1):ph;
 window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 setTimeout(loadAppointments,1000);
 }
@@ -236,8 +234,7 @@ setTimeout(loadAppointments,1000);
 window.waMsg=function waMsg(phone,name){
 const docName=document.getElementById('docName').textContent;
 const msg='Hello '+name+', this is Dr.'+docName+' from Pakistan Prime Portal.';
-const ph=phone.replace(/[^0-9]/g,'');
-const finalPh=ph.startsWith('0')?'92'+ph.slice(1):ph;
+const ph=phone.replace(/[^0-9]/g,'');const finalPh=ph.startsWith('9292')?ph.slice(2):ph.startsWith('00')?ph.slice(2):ph.startsWith('0')?'92'+ph.slice(1):ph;
 window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 }
 </script>
