@@ -105,10 +105,7 @@ window.location.href='/vendor/dashboard.html';
 }catch(e){document.getElementById('err').textContent='Error: '+e.message;}
 };
 
-window.fill=function(email,pass){
-document.getElementById('email').value=email;
-document.getElementById('pass').value=pass;
-};
+window.fill=function(email,pass){var e=document.getElementById('email');var p=document.getElementById('pass');e.value=email;p.value=pass;e.dispatchEvent(new Event('input'));p.dispatchEvent(new Event('input'));};
 </script>
 </body>
 </html>
