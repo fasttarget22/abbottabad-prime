@@ -163,6 +163,10 @@ body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-he
 <label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab30" value="Biopsy"> Biopsy</label>
 </div>
 <div class="field">
+<label>📝 Lab Test Details (MRI/CT/X-Ray body part, Blood Sugar type, etc)</label>
+<textarea id="labNotes" rows="2" placeholder="e.g. MRI Brain, X-Ray Chest, Blood Sugar Fasting, CT Scan Abdomen..."></textarea>
+</div>
+<div class="field">
 <label>Follow-up Date</label>
 <input type="date" id="rxFollowup"/>
 </div>
@@ -413,7 +417,7 @@ const patient=document.getElementById("rxPatient").value;
 const diag=document.getElementById("rxDiag").value;
 if(!patient){toast("Please select a patient","err");return;}
 if(!diag){toast("Please enter diagnosis","err");return;}
-const labs=["lab1","lab2","lab3","lab4","lab5","lab6","lab7","lab8","lab9","lab10","lab11","lab12","lab13","lab14","lab15","lab16","lab17","lab18","lab19","lab20","lab21","lab22","lab23","lab24","lab25","lab26","lab27","lab28","lab29","lab30"].filter(id=>document.getElementById(id).checked).map(id=>document.getElementById(id).value);
+const labs=["lab1","lab2","lab3","lab4","lab5","lab6","lab7","lab8","lab9","lab10","lab11","lab12","lab13","lab14","lab15","lab16","lab17","lab18","lab19","lab20","lab21","lab22","lab23","lab24","lab25","lab26","lab27","lab28","lab29","lab30"].filter(id=>document.getElementById(id).checked).map(id=>document.getElementById(id).value);const labNotes=document.getElementById('labNotes').value;
 const followup=document.getElementById("rxFollowup").value;
 const rxId="#RX"+Date.now().toString().slice(-6);
 const medsText=medicines.filter(m=>m.name).map((m,i)=>`${i+1}. ${m.name} - ${m.dosage} - ${m.days} days${m.notes?" ("+m.notes+")":""}`).join("\n");
