@@ -206,7 +206,7 @@ const {getFirestore,doc,updateDoc}=await import('https://www.gstatic.com/firebas
 const db=getFirestore(getApps()[0]);
 await updateDoc(doc(db,'appointments',id),{status:'confirmed'});
 }catch(e){console.error(e);}
-const bookingId='#APT'+Date.now().toString().slice(-6);const msg='🏥 *Appointment CONFIRMED!*\n━━━━━━━━━━━━━━\n\n👋 Dear '+name+',\n\n✅ Your appointment has been confirmed!\n\n👨‍⚕️ Doctor: Dr. '+docName+'\n🆔 Booking ID: '+bookingId+'\n📅 Date: Today\n\n⏰ Please arrive 10 mins early.\n💰 Please bring your fee.\n\n📍 Pakistan Prime Portal\nappabbottabad.com\n━━━━━━━━━━━━━━';
+const bookingId='#APT'+Date.now().toString().slice(-6);const msg='🏥 *Appointment CONFIRMED!*\n━━━━━━━━━━━━━━\n\n👋 Dear '+name+',\n\n✅ Your appointment has been confirmed!\n\n👨‍⚕️ Doctor: Dr. '+docName.replace('Dr. ','').replace('Dr.','')+'\n🆔 Booking ID: '+bookingId+'\n📅 Date: Today\n\n⏰ Please arrive 10 mins early.\n💰 Please bring your fee.\n\n📍 Pakistan Prime Portal\nappabbottabad.com\n━━━━━━━━━━━━━━';
 const ph=phone.replace(/[^0-9]/g,'');const finalPh=ph.startsWith('9292')?ph.slice(2):ph.startsWith('00')?ph.slice(2):ph.startsWith('0')?'92'+ph.slice(1):ph;
 window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 setTimeout(window.loadAppointments,1500);
