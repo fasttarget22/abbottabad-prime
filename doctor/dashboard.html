@@ -716,4 +716,4 @@ async function callNextPatient(){
 }
 
 function doLogout(){localStorage.clear();sessionStorage.clear();document.cookie="doctorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.replace("/doctor/login.html");}
-</script><div style="position:fixed;top:10px;right:10px;z-index:9999"><button onclick="localStorage.clear();document.cookie="doctorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.href="/";" style="background:red;color:white;padding:10px 20px;border:none;border-radius:8px;font-size:1rem;cursor:pointer">🚪 Logout</button></div></body></html>
+</script><div style="position:fixed;top:10px;right:10px;z-index:9999"><button onclick="doLogout();" style="background:red;color:white;padding:10px 20px;border:none;border-radius:8px;font-size:1rem;cursor:pointer">🚪 Logout</button></div></body></html>
