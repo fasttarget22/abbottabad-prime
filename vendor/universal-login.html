@@ -84,9 +84,7 @@ const snap=await getDocs(query(collection(db,'vendors'),where('email','==',email
 if(snap.empty){document.getElementById('err').textContent='Invalid email or password';return;}
 let data=null;
 snap.forEach(d=>{data=d.data();});
-localStorage.setItem('vendorEmail',email);
-localStorage.setItem('vendorCategory',data.category);
-document.cookie='vendorEmail='+email+';path=/';
+localStorage.setItem('vendorEmail',email);localStorage.setItem('vendorCategory',data.category);document.cookie='vendorEmail='+email+';path=/';localStorage.setItem('doctorEmail',email);document.cookie='doctorEmail='+email+';path=/';
 
 const cat=data.category||'';
 if(medicalCats.includes(cat)){
