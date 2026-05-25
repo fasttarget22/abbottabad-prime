@@ -30,7 +30,7 @@ window.doLogin=async function(){
 const email=document.getElementById('email').value.trim();
 const pass=document.getElementById('pass').value.trim();
 if(!email||!pass){document.getElementById('err').textContent='Please fill all fields';return;}
-const snap=await getDocs(query(collection(db,'vendors'),where('email','==',email),where('password','==',pass),where('type','==','doctor')));
+const snap=await getDocs(query(collection(db,'vendors'),where('email','==',email),where('password','==',pass),));
 if(snap.empty){document.getElementById('err').textContent='Invalid email or password';return;}
 localStorage.setItem('doctorEmail',email);
 document.cookie='doctorEmail='+email+';path=/';
