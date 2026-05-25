@@ -131,12 +131,36 @@ body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-he
 <button class="add-btn" onclick="addMed()">+ Add Medicine</button>
 <div class="section-title" style="margin-top:12px">🔬 Lab Tests</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
-<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab1" value="Blood Complete (CBC)"> CBC</label>
-<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab2" value="Urine DR"> Urine DR</label>
-<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab3" value="Blood Sugar"> Blood Sugar</label>
-<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab4" value="X-Ray"> X-Ray</label>
-<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab5" value="Ultrasound"> Ultrasound</label>
-<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab6" value="ECG"> ECG</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab1" value="CBC"> CBC</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab2" value="Urine DR"> Urine DR</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab3" value="Blood Sugar"> Blood Sugar</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab4" value="HbA1c"> HbA1c</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab5" value="LFT"> LFT</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab6" value="KFT"> KFT</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab7" value="Lipid Profile"> Lipid Profile</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab8" value="TSH"> TSH</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab9" value="T3 T4"> T3 T4</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab10" value="Vitamin D"> Vitamin D</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab11" value="Vitamin B12"> Vitamin B12</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab12" value="Hepatitis B"> Hepatitis B</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab13" value="Hepatitis C"> Hepatitis C</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab14" value="HIV Test"> HIV Test</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab15" value="Pregnancy HCG"> Pregnancy HCG</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab16" value="ESR"> ESR</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab17" value="CRP"> CRP</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab18" value="Stool DR"> Stool DR</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab19" value="Culture Sensitivity"> Culture</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab20" value="X-Ray"> X-Ray</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab21" value="Ultrasound"> Ultrasound</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab22" value="MRI"> MRI</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab23" value="CT Scan"> CT Scan</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab24" value="Echo Heart"> Echo</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab25" value="ECG"> ECG</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab26" value="Mammography"> Mammography</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab27" value="Bone Density"> Bone Density</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab28" value="COVID Test"> COVID Test</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab29" value="PSA Prostate"> PSA</label>
+<label style="font-size:.78rem;display:flex;align-items:center;gap:5px"><input type="checkbox" id="lab30" value="Biopsy"> Biopsy</label>
 </div>
 <div class="field">
 <label>Follow-up Date</label>
@@ -389,7 +413,7 @@ const patient=document.getElementById("rxPatient").value;
 const diag=document.getElementById("rxDiag").value;
 if(!patient){toast("Please select a patient","err");return;}
 if(!diag){toast("Please enter diagnosis","err");return;}
-const labs=["lab1","lab2","lab3","lab4","lab5","lab6"].filter(id=>document.getElementById(id).checked).map(id=>document.getElementById(id).value);
+const labs=["lab1","lab2","lab3","lab4","lab5","lab6","lab7","lab8","lab9","lab10","lab11","lab12","lab13","lab14","lab15","lab16","lab17","lab18","lab19","lab20","lab21","lab22","lab23","lab24","lab25","lab26","lab27","lab28","lab29","lab30"].filter(id=>document.getElementById(id).checked).map(id=>document.getElementById(id).value);
 const followup=document.getElementById("rxFollowup").value;
 const rxId="#RX"+Date.now().toString().slice(-6);
 const medsText=medicines.filter(m=>m.name).map((m,i)=>`${i+1}. ${m.name} - ${m.dosage} - ${m.days} days${m.notes?" ("+m.notes+")":""}`).join("\n");
