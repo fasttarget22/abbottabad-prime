@@ -3,260 +3,441 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Doctor Dashboard v2 — Pakistan Prime Portal</title>
+<title>Doctor Dashboard — Pakistan Prime Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0b0f19;--surface:#121826;--cyan:#00f2fe;--green:#1aff8c;--red:#ff5d6c;--txt:#eaf2ff;--dim:#9fb0cc;--line:rgba(0,242,254,0.15);--grad:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c)}
 body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .topbar h1{font-family:Orbitron,sans-serif;font-size:.9rem;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .logout-btn{background:var(--red);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer}
 .container{padding:16px;max-width:800px;margin:0 auto}
-.profile-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:16px}
-.avatar{width:70px;height:70px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;color:#04121f;flex-shrink:0}
-.avatar img{width:70px;height:70px;border-radius:50%;object-fit:cover}
-.profile-info h2{font-size:1.2rem;font-weight:800;color:var(--cyan)}
-.profile-info p{font-size:.85rem;color:var(--dim);margin-top:4px}
-.badge{display:inline-block;background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3);padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;margin-top:6px}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
-.stat-num{font-family:Orbitron,sans-serif;font-size:1.8rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.stat-label{font-size:.75rem;color:var(--dim);margin-top:4px;font-weight:600}
-.section{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
-.section h3{font-family:Orbitron,sans-serif;font-size:.85rem;color:var(--cyan);margin-bottom:14px}
-.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:.85rem}
-.info-row:last-child{border-bottom:none}
-.info-label{color:var(--dim);font-weight:600}
-.info-value{color:var(--txt);font-weight:700;text-align:right}
-.empty{text-align:center;padding:30px;color:var(--dim);font-size:.9rem}
-.online-toggle{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:16px}
-.toggle{width:48px;height:26px;background:#333;border-radius:13px;cursor:pointer;position:relative;transition:.3s}
+.profile-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.avatar{width:65px;height:65px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:#04121f;flex-shrink:0}
+.avatar img{width:65px;height:65px;border-radius:50%;object-fit:cover}
+.doc-name{font-size:1.1rem;font-weight:800;color:var(--cyan)}
+.doc-spec{font-size:.82rem;color:var(--dim);margin-top:2px}
+.doc-city{font-size:.82rem;color:var(--dim);margin-top:2px}
+.verified{display:inline-block;background:rgba(26,255,140,.15);color:var(--green);border:1px solid rgba(26,255,140,.3);padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:700;margin-top:4px}
+.online-bar{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.toggle{width:44px;height:24px;background:#333;border-radius:12px;cursor:pointer;position:relative;transition:.3s;flex-shrink:0}
 .toggle.on{background:var(--green)}
-.toggle::after{content:'';position:absolute;width:22px;height:22px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.3s}
-.toggle.on::after{left:24px}
-.online-text{font-weight:700;font-size:.9rem}
-.nav-tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
-.tab{padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--dim);font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.3s}
+.toggle.on::after{left:22px}
+.online-txt{font-weight:700;font-size:.85rem;flex:1}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
+.stat-n{font-family:Orbitron,sans-serif;font-size:1.4rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-l{font-size:.65rem;color:var(--dim);margin-top:3px;font-weight:600}
+.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
+.tab{padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--dim);font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0}
 .tab.active{background:rgba(0,242,254,.1);color:var(--cyan);border-color:var(--cyan)}
 .panel{display:none}
 .panel.active{display:block}
+.section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.section-title{font-family:Orbitron,sans-serif;font-size:.8rem;color:var(--cyan);margin-bottom:12px;font-weight:700}
+.appt-card{background:rgba(0,242,254,.03);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
+.appt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.appt-name{font-weight:800;font-size:.9rem}
+.status-badge{padding:2px 10px;border-radius:20px;font-size:.7rem;font-weight:700}
+.status-pending{background:#ff5d6c;color:#fff}
+.status-confirmed{background:#1aff8c;color:#04121f}
+.status-done{background:#9fb0cc;color:#04121f}
+.status-rejected{background:#333;color:#9fb0cc}
+.appt-info{font-size:.78rem;color:var(--dim);margin-bottom:4px}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.btn{border:none;padding:6px 12px;border-radius:7px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:inherit}
+.btn-confirm{background:#1aff8c;color:#04121f}
+.btn-reject{background:#ff5d6c;color:#fff}
+.btn-done{background:#00f2fe;color:#04121f}
+.btn-wa{background:#25d366;color:#fff}
+.btn-rx{background:linear-gradient(110deg,#00f2fe,#2b6fff);color:#04121f}
+.refresh-btn{background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid var(--line);padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;margin-bottom:10px}
+.empty{text-align:center;padding:30px;color:var(--dim);font-size:.85rem}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:.82rem}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--dim);font-weight:600}
+.info-val{font-weight:700;text-align:right;max-width:60%}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.78rem;font-weight:700;color:var(--dim);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;background:rgba(11,15,25,.8);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:inherit;font-size:.85rem;padding:9px 11px;outline:0}
+.field input:focus,.field select:focus{border-color:var(--cyan)}
+.save-btn{width:100%;padding:12px;background:var(--grad);border:none;border-radius:10px;color:#04121f;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;margin-top:4px}
+.med-item{background:rgba(0,242,254,.03);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;position:relative}
+.remove-btn{position:absolute;top:8px;right:8px;background:var(--red);color:#fff;border:none;border-radius:4px;padding:2px 7px;font-size:.75rem;cursor:pointer}
+.add-btn{background:rgba(26,255,140,.1);color:var(--green);border:1px solid rgba(26,255,140,.3);padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;width:100%;margin-top:4px}
+.rx-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.toast-container{position:fixed;top:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:6px}
+.toast{background:var(--surface);border:1px solid var(--line);padding:10px 14px;border-radius:10px;font-size:.82rem;font-weight:600;animation:fadeIn .3s}
+.toast.ok{border-color:rgba(26,255,140,.5);color:var(--green)}
+.toast.err{border-color:rgba(255,93,108,.5);color:var(--red)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:500px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
+<div class="toast-container" id="toaster"></div>
 <div class="topbar">
 <h1>🩺 Doctor Panel</h1>
 <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
 </div>
 <div class="container">
-<div class="profile-card" id="profileCard">
+<div class="profile-card">
 <div class="avatar" id="avatarDiv">👨‍⚕️</div>
-<div class="profile-info">
-<h2 id="docName">Loading...</h2>
-<p id="docCategory">—</p>
-<p id="docCity">—</p>
-<span class="badge" id="docBadge">Loading...</span>
+<div>
+<div class="doc-name" id="docName">Loading...</div>
+<div class="doc-spec" id="docSpec">—</div>
+<div class="doc-city" id="docCity">—</div>
+<span class="verified" id="docBadge">Loading...</span>
 </div>
 </div>
-<div class="online-toggle">
+<div class="online-bar">
 <div class="toggle" id="onlineToggle" onclick="toggleOnline()"></div>
-<span class="online-text" id="onlineText">Offline</span>
-<span style="color:var(--dim);font-size:.8rem;margin-left:auto" id="onlineHint">Tap to go online</span>
+<span class="online-txt" id="onlineTxt">Offline</span>
 </div>
 <div class="stats">
-<div class="stat"><div class="stat-num" id="statToday">0</div><div class="stat-label">Today Patients</div></div>
-<div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Patients</div></div>
-<div class="stat"><div class="stat-num" id="statPending">0</div><div class="stat-label">Pending</div></div>
-<div class="stat"><div class="stat-num" id="statRevenue">0</div><div class="stat-label">Revenue PKR</div></div>
+<div class="stat"><div class="stat-n" id="s1">0</div><div class="stat-l">Today</div></div>
+<div class="stat"><div class="stat-n" id="s2">0</div><div class="stat-l">Total</div></div>
+<div class="stat"><div class="stat-n" id="s3">0</div><div class="stat-l">Pending</div></div>
+<div class="stat"><div class="stat-n" id="s4">0</div><div class="stat-l">Revenue</div></div>
 </div>
-<div class="nav-tabs">
-<button class="tab active" onclick="showTab('overview')">📊 Overview</button>
-<button class="tab" onclick="showTab('appointments')">📅 Appointments</button>
-<button class="tab" onclick="showTab('profile')">👤 My Profile</button>
-<button class="tab" onclick="showTab('schedule')">🕐 Schedule</button>
+<div class="tabs">
+<button class="tab active" onclick="showTab('appts',this)">📅 Appointments</button>
+<button class="tab" onclick="showTab('rx',this)">💊 Prescription</button>
+<button class="tab" onclick="showTab('profile',this)">👤 Profile</button>
+<button class="tab" onclick="showTab('schedule',this)">🕐 Schedule</button>
 </div>
-<div class="panel active" id="tab-overview">
+<div class="panel active" id="panel-appts">
 <div class="section">
-<h3>📋 Quick Info</h3>
-<div class="info-row"><span class="info-label">Fee</span><span class="info-value" id="infoFee">—</span></div>
-<div class="info-row"><span class="info-label">Experience</span><span class="info-value" id="infoExp">—</span></div>
-<div class="info-row"><span class="info-label">Hours</span><span class="info-value" id="infoHours">—</span></div>
-<div class="info-row"><span class="info-label">Rating</span><span class="info-value" id="infoRating">—</span></div>
-<div class="info-row"><span class="info-label">Subscription</span><span class="info-value" id="infoSub">—</span></div>
+<div class="section-title">📅 Appointments</div>
+<button class="refresh-btn" onclick="loadAppts()">🔄 Refresh Appointments</button>
+<div id="apptsList"><div class="empty">Tap Refresh to load</div></div>
 </div>
 </div>
-<div class="panel" id="tab-appointments">
+<div class="panel" id="panel-rx">
 <div class="section">
-<h3>📅 Appointments</h3>
-<button onclick="loadAppointments()" style="background:linear-gradient(110deg,#00f2fe,#2b6fff);color:#04121f;border:none;padding:8px 16px;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;margin-bottom:12px">🔄 Load Appointments</button>
-<div id="appointmentsList"><div class="empty">Tap Load to see appointments</div></div>
+<div class="section-title">💊 Write Prescription</div>
+<div class="field">
+<label>Select Patient (Confirmed)</label>
+<select id="rxPatient"><option value="">-- Select Patient --</option></select>
+</div>
+<div class="field">
+<label>Diagnosis</label>
+<textarea id="rxDiag" rows="2" placeholder="Patient diagnosis..."></textarea>
+</div>
+<div class="section-title" style="margin-top:8px">💊 Medicines</div>
+<div id="medsList"></div>
+<button class="add-btn" onclick="addMed()">+ Add Medicine</button>
+<div class="section-title" style="margin-top:12px">🔬 Lab Tests</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab1" value="Blood Complete (CBC)"> CBC</label>
+<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab2" value="Urine DR"> Urine DR</label>
+<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab3" value="Blood Sugar"> Blood Sugar</label>
+<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab4" value="X-Ray"> X-Ray</label>
+<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab5" value="Ultrasound"> Ultrasound</label>
+<label style="font-size:.8rem;display:flex;align-items:center;gap:6px"><input type="checkbox" id="lab6" value="ECG"> ECG</label>
+</div>
+<div class="field">
+<label>Follow-up Date</label>
+<input type="date" id="rxFollowup"/>
+</div>
+<div class="field">
+<label>📸 Upload Handwritten Prescription (optional)</label>
+<input type="file" id="rxPhoto" accept="image/*"/>
+</div>
+<div class="rx-actions">
+<button class="save-btn" onclick="saveRx('patient')" style="background:var(--grad)">💾 Save & Send to Patient</button>
+<button class="save-btn" onclick="saveRx('lab')" style="background:linear-gradient(110deg,#1aff8c,#08b85f)">🔬 Send to Lab</button>
+<button class="save-btn" onclick="saveRx('pharmacy')" style="background:linear-gradient(110deg,#ff5d6c,#c81e3a);grid-column:span 2">💊 Send to Pharmacy</button>
 </div>
 </div>
-<div class="panel" id="tab-profile">
+</div>
+<div class="panel" id="panel-profile">
 <div class="section">
-<h3>👤 My Profile</h3>
-<div class="info-row"><span class="info-label">Name</span><span class="info-value" id="pName">—</span></div>
-<div class="info-row"><span class="info-label">Email</span><span class="info-value" id="pEmail">—</span></div>
-<div class="info-row"><span class="info-label">Phone</span><span class="info-value" id="pPhone">—</span></div>
-<div class="info-row"><span class="info-label">City</span><span class="info-value" id="pCity">—</span></div>
-<div class="info-row"><span class="info-label">Address</span><span class="info-value" id="pAddress">—</span></div>
-<div class="info-row"><span class="info-label">Description</span><span class="info-value" id="pDesc">—</span></div>
+<div class="section-title">👤 My Profile</div>
+<div class="info-row"><span class="info-label">Name</span><span class="info-val" id="pName">—</span></div>
+<div class="info-row"><span class="info-label">Email</span><span class="info-val" id="pEmail">—</span></div>
+<div class="info-row"><span class="info-label">Phone</span><span class="info-val" id="pPhone">—</span></div>
+<div class="info-row"><span class="info-label">City</span><span class="info-val" id="pCity">—</span></div>
+<div class="info-row"><span class="info-label">Address</span><span class="info-val" id="pAddr">—</span></div>
+<div class="info-row"><span class="info-label">Fee</span><span class="info-val" id="pFee">—</span></div>
+<div class="info-row"><span class="info-label">Experience</span><span class="info-val" id="pExp">—</span></div>
+<div class="info-row"><span class="info-label">Hours</span><span class="info-val" id="pHours">—</span></div>
+<div class="info-row"><span class="info-label">Rating</span><span class="info-val" id="pRating">—</span></div>
+<div class="info-row"><span class="info-label">Subscription</span><span class="info-val" id="pSub">—</span></div>
+<div class="info-row"><span class="info-label">Trial Ends</span><span class="info-val" id="pTrial">—</span></div>
 </div>
 </div>
-<div class="panel" id="tab-schedule">
+<div class="panel" id="panel-schedule">
 <div class="section">
-<h3>🕐 My Schedule</h3>
-<div class="info-row"><span class="info-label">Working Hours</span><span class="info-value" id="sHours">—</span></div>
-<div class="info-row"><span class="info-label">Trial Ends</span><span class="info-value" id="sTrial">—</span></div>
+<div class="section-title">🕐 My Schedule</div>
+<div class="field"><label>Morning Start</label><input type="time" id="sch1" value="09:00"/></div>
+<div class="field"><label>Morning End</label><input type="time" id="sch2" value="13:00"/></div>
+<div class="field"><label>Evening Start</label><input type="time" id="sch3" value="16:00"/></div>
+<div class="field"><label>Evening End</label><input type="time" id="sch4" value="20:00"/></div>
+<button class="save-btn" onclick="saveSchedule()">💾 Save Schedule</button>
 </div>
 </div>
 </div>
-<script type="module">
-import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import{getFirestore,collection,getDocs,doc,updateDoc,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
-const db=getFirestore(app);
+<script>
 function getCookie(n){const v=document.cookie.match("(^|;) ?"+n+"=([^;]*)(;|$)");return v?decodeURIComponent(v[2]):null;}
-const email=localStorage.getItem("doctorEmail")||getCookie("doctorEmail");
-if(!email){window.location.href="/doctor/login.html";}
-let docData=null,docId=null;
-async function loadProfile(){
-try{document.getElementById('docName').textContent='Connecting...';
-const snap=await getDocs(query(collection(db,"vendors"),where("email","==",email)));
-if(snap.empty){document.getElementById('docName').textContent='Not Found: '+email;return;}
-snap.forEach(d=>{docData=d.data();docId=d.id;});
-const n=docData.name||"Doctor";
-document.getElementById("docName").textContent=n;
-document.getElementById("docCategory").textContent=docData.category||"—";
-document.getElementById("docCity").textContent="📍 "+(docData.city||"—");
-document.getElementById("docBadge").textContent=docData.adminApproved?"✅ Verified":"⏳ Pending";
-document.getElementById("infoFee").textContent="PKR "+(docData.fee||"500")+" / visit";
-document.getElementById("infoExp").textContent=(docData.experience||"0")+" years";
-document.getElementById("infoHours").textContent=docData.hours||"N/A";
-document.getElementById("infoRating").textContent="⭐ "+(docData.rating||"0");
-document.getElementById("infoSub").textContent=docData.subscription||"trial";
-document.getElementById("pName").textContent=n;
-document.getElementById("pEmail").textContent=docData.email||"—";
-document.getElementById("pPhone").textContent=docData.phone||"—";
-document.getElementById("pCity").textContent=docData.city||"—";
-document.getElementById("pAddress").textContent=docData.address||"—";
-document.getElementById("pDesc").textContent=docData.description||"—";
-document.getElementById("sHours").textContent=docData.hours||"N/A";
-document.getElementById("sTrial").textContent=docData.trialEnd?docData.trialEnd.split("T")[0]:"—";
-const initials=n.charAt(0).toUpperCase();
-if(docData.photo){document.getElementById("avatarDiv").innerHTML='<img src="'+docData.photo+'" alt="photo"/>';}
-else{document.getElementById("avatarDiv").textContent=initials;}
-const isOnline=docData.status==="online";window._docIdReady=true;window._docName=docData.name;
-if(isOnline){document.getElementById("onlineToggle").classList.add("on");document.getElementById("onlineText").textContent="🟢 Online — Patients can find you";document.getElementById("onlineHint").textContent="Tap to go offline";}
-}catch(e){document.getElementById('docName').textContent='Error: '+e.message;console.error(e);}
+const EMAIL=localStorage.getItem("doctorEmail")||getCookie("doctorEmail")||localStorage.getItem("vendorEmail")||getCookie("vendorEmail");
+if(!EMAIL){window.location.href="/vendor/universal-login.html";}
+let DOCTOR=null,DOC_ID=null,DB=null,APP=null;
+let medicines=[{name:"",dosage:"1-0-1",days:"5",notes:""}];
+
+function toast(msg,type){
+const el=document.createElement("div");
+el.className="toast "+(type||"ok");
+el.textContent=msg;
+document.getElementById("toaster").appendChild(el);
+setTimeout(()=>el.remove(),3000);
 }
+
+function showTab(id,btn){
+document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+document.getElementById("panel-"+id).classList.add("active");
+if(btn)btn.classList.add("active");
+if(id==="rx")loadRxPatients();
+}
+
+function doLogout(){
+localStorage.clear();
+sessionStorage.clear();
+document.cookie="doctorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+window.location.href="/vendor/universal-login.html";
+}
+
+async function init(){
+const {initializeApp}=await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+const {getFirestore,collection,getDocs,doc,updateDoc,addDoc,query,where}=await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+APP=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"},{name:"dash-"+Date.now()});
+DB=getFirestore(APP);
+window._col=collection;window._get=getDocs;window._doc=doc;window._upd=updateDoc;window._add=addDoc;window._q=query;window._w=where;
+try{
+const snap=await getDocs(query(collection(DB,"vendors"),where("email","==",EMAIL)));
+if(snap.empty){document.getElementById("docName").textContent="Not found: "+EMAIL;return;}
+snap.forEach(d=>{DOCTOR=d.data();DOC_ID=d.id;});
+document.getElementById("docName").textContent=DOCTOR.name||"Doctor";
+document.getElementById("docSpec").textContent=DOCTOR.category||"—";
+document.getElementById("docCity").textContent="📍 "+(DOCTOR.city||"—");
+document.getElementById("docBadge").textContent=DOCTOR.adminApproved?"✅ Verified":"⏳ Pending";
+document.getElementById("pName").textContent=DOCTOR.name||"—";
+document.getElementById("pEmail").textContent=DOCTOR.email||"—";
+document.getElementById("pPhone").textContent=DOCTOR.phone||"—";
+document.getElementById("pCity").textContent=DOCTOR.city||"—";
+document.getElementById("pAddr").textContent=DOCTOR.address||"—";
+document.getElementById("pFee").textContent="PKR "+(DOCTOR.fee||"500")+" / visit";
+document.getElementById("pExp").textContent=(DOCTOR.experience||"0")+" years";
+document.getElementById("pHours").textContent=DOCTOR.hours||"N/A";
+document.getElementById("pRating").textContent="⭐ "+(DOCTOR.rating||"0");
+document.getElementById("pSub").textContent=DOCTOR.subscription||"trial";
+document.getElementById("pTrial").textContent=DOCTOR.trialEnd?DOCTOR.trialEnd.split("T")[0]:"—";
+const initials=(DOCTOR.name||"D").charAt(0).toUpperCase();
+if(DOCTOR.photo){document.getElementById("avatarDiv").innerHTML='<img src="'+DOCTOR.photo+'" alt=""/>';}
+else{document.getElementById("avatarDiv").textContent=initials;}
+const isOn=DOCTOR.status==="online";
+if(isOn){document.getElementById("onlineToggle").classList.add("on");document.getElementById("onlineTxt").textContent="🟢 Online — Patients can find you";}
+else{document.getElementById("onlineTxt").textContent="⚫ Offline — Tap to go online";}
+}catch(e){document.getElementById("docName").textContent="Error: "+e.message;}
+}
+
 window.toggleOnline=async function(){
-if(!docId)return;
+if(!DOC_ID)return;
 const t=document.getElementById("onlineToggle");
 const isOn=t.classList.contains("on");
-const newStatus=isOn?"offline":"online";
-await updateDoc(doc(db,"vendors",docId),{status:newStatus});
-if(!isOn){t.classList.add("on");document.getElementById("onlineText").textContent="🟢 Online — Patients can find you";document.getElementById("onlineHint").textContent="Tap to go offline";}
-else{t.classList.remove("on");document.getElementById("onlineText").textContent="⚫ Offline";document.getElementById("onlineHint").textContent="Tap to go online";}
+const s=isOn?"offline":"online";
+await window._upd(window._doc(DB,"vendors",DOC_ID),{status:s});
+if(!isOn){t.classList.add("on");document.getElementById("onlineTxt").textContent="🟢 Online — Patients can find you";}
+else{t.classList.remove("on");document.getElementById("onlineTxt").textContent="⚫ Offline — Tap to go online";}
+toast(isOn?"Gone offline":"Now online!");
 };
-loadProfile();
 
-window.loadAppointments=async function loadAppointments(){
-const list=document.getElementById('appointmentsList');
-if(!list)return;
-list.innerHTML='<div style="text-align:center;padding:20px;color:#9fb0cc">Loading...</div>';
+window.loadAppts=async function(){
+const list=document.getElementById("apptsList");
+list.innerHTML='<div class="empty">Loading...</div>';
 try{
-const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-const {getFirestore,collection,getDocs,query,where}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-const app=getApps()[0];
-const db=getFirestore(app);
-const docName=document.getElementById('docName').textContent;
-const snap=await getDocs(query(collection(db,'appointments'),where('doctorName','==',docName)));
-if(snap.empty){list.innerHTML='<div style="text-align:center;padding:20px;color:#9fb0cc">No appointments yet</div>';return;}
-let html='';
-snap.forEach(d=>{
-const a=d.data();
-const id=d.id;
-const statusColor=a.status==='pending'?'#ff5d6c':a.status==='confirmed'?'#1aff8c':'#9fb0cc';
-html+=`<div style="background:rgba(0,242,254,0.05);border:1px solid rgba(0,242,254,0.15);border-radius:12px;padding:14px;margin-bottom:10px">
-<div style="display:flex;justify-content:space-between;margin-bottom:8px">
-<span style="font-weight:800">${a.patientName}</span>
-<span style="background:${statusColor};color:#04121f;padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:700">${(a.status||'pending').toUpperCase()}</span>
+const snap=await window._get(window._q(window._col(DB,"appointments"),window._w("doctorName","==",DOCTOR?DOCTOR.name:"")));
+if(snap.empty){list.innerHTML='<div class="empty">No appointments yet</div>';return;}
+const today=new Date().toISOString().split("T")[0];
+let pending=0,total=0;
+let html="";
+const docs=[];
+snap.forEach(d=>docs.push({id:d.id,...d.data()}));
+docs.sort((a,b)=>new Date(b.bookedAt||0)-new Date(a.bookedAt||0));
+docs.forEach(a=>{
+total++;
+if(a.status==="pending"||!a.status)pending++;
+const sc=a.status==="pending"||!a.status?"status-pending":a.status==="confirmed"?"status-confirmed":a.status==="done"?"status-done":"status-rejected";
+html+=`<div class="appt-card">
+<div class="appt-header">
+<span class="appt-name">${a.patientName||"Unknown"}</span>
+<span class="status-badge ${sc}">${(a.status||"pending").toUpperCase()}</span>
 </div>
-<div style="font-size:.8rem;color:#9fb0cc;margin-bottom:4px">📱 ${a.patientPhone||''}</div>
-<div style="font-size:.8rem;color:#9fb0cc;margin-bottom:4px">📅 ${a.date||''} ${a.time?'⏰ '+a.time:''}</div>
-<div style="font-size:.8rem;color:#9fb0cc;margin-bottom:10px">🤒 ${a.complaint||'Not specified'}</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-${a.status==='pending'||!a.status?`<button onclick="confirmAppt('${id}','${a.patientPhone}','${a.patientName}','${a.date}','${a.time}')" style="background:#1aff8c;color:#04121f;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">✅ Confirm</button>
-<button onclick="rejectAppt('${id}')" style="background:#ff5d6c;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">❌ Reject</button>`:''}
-${a.status==='confirmed'?`<button onclick="doneAppt('${id}','${a.patientPhone}','${a.patientName}')" style="background:#00f2fe;color:#04121f;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">✅ Done</button>`:''}
-<button onclick="waMsg('${a.patientPhone}','${a.patientName}')" style="background:#25d366;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">📱 WhatsApp</button>
+<div class="appt-info">📱 ${a.patientPhone||""}</div>
+<div class="appt-info">📅 ${a.date||""} ${a.time?"⏰ "+a.time:""}</div>
+<div class="appt-info">🤒 ${a.complaint||"Not specified"}</div>
+<div class="btn-row">
+${a.status==="pending"||!a.status?`<button class="btn btn-confirm" onclick="confirmAppt('${a.id}','${a.patientPhone}','${a.patientName}','${a.date}','${a.time}')">✅ Confirm</button><button class="btn btn-reject" onclick="rejectAppt('${a.id}')">❌ Reject</button>`:""}
+${a.status==="confirmed"?`<button class="btn btn-done" onclick="doneAppt('${a.id}','${a.patientPhone}','${a.patientName}')">✅ Done</button><button class="btn btn-rx" onclick="showTab('rx',null)">💊 Prescribe</button>`:""}
+<button class="btn btn-wa" onclick="sendWA('${a.patientPhone}','${a.patientName}')">📱 WhatsApp</button>
 </div>
 </div>`;
 });
 list.innerHTML=html;
-}catch(e){list.innerHTML='<div style="text-align:center;padding:20px;color:#ff5d6c">Error: '+e.message+'</div>';}
+document.getElementById("s2").textContent=total;
+document.getElementById("s3").textContent=pending;
+}catch(e){list.innerHTML='<div class="empty">Error: '+e.message+"</div>";}
+};
+
+window.confirmAppt=async function(id,phone,name,date,time){
+await window._upd(window._doc(DB,"appointments",id),{status:"confirmed"});
+const city=(DOCTOR?DOCTOR.city:"");
+const addr=(DOCTOR?DOCTOR.address:"");
+const fee=(DOCTOR?DOCTOR.fee:"500");
+const bid="#APT"+Date.now().toString().slice(-6);
+const msg="🏥 *Appointment CONFIRMED!*\n━━━━━━━━━━━━━━\n👋 Dear "+name+",\n\n✅ Your appointment is confirmed!\n\n👨‍⚕️ Dr. "+(DOCTOR?DOCTOR.name.replace("Dr. ","").replace("Dr.",""):"")+"\n🆔 "+bid+"\n📅 "+date+"\n⏰ "+time+"\n📍 "+city+"\n🏠 "+addr+"\n💰 Fee: PKR "+fee+"\n\n⏰ Please arrive 10 mins early\n\n🌐 appabbottabad.com\n━━━━━━━━━━━━━━";
+openWA(phone,msg);
+toast("Confirmed! WhatsApp opening...");
+setTimeout(window.loadAppts,1500);
+};
+
+window.rejectAppt=async function(id){
+await window._upd(window._doc(DB,"appointments",id),{status:"rejected"});
+toast("Appointment rejected");
+setTimeout(window.loadAppts,1000);
+};
+
+window.doneAppt=async function(id,phone,name){
+await window._upd(window._doc(DB,"appointments",id),{status:"done"});
+const msg="✅ *Consultation Done!*\n\nDear "+name+",\n\nThank you for visiting Dr. "+(DOCTOR?DOCTOR.name:"")+"\n\nRate your experience:\nappabbottabad.com\n\n🏥 Pakistan Prime Portal";
+openWA(phone,msg);
+toast("Marked as done!");
+setTimeout(window.loadAppts,1000);
+};
+
+window.sendWA=function(phone,name){
+const msg="Hello "+name+", this is Dr. "+(DOCTOR?DOCTOR.name:"")+" from Pakistan Prime Portal. How can I help you?";
+openWA(phone,msg);
+};
+
+function openWA(phone,msg){
+const ph=phone.replace(/[^0-9]/g,"");
+const final=ph.startsWith("9292")?ph.slice(2):ph.startsWith("00")?ph.slice(2):ph.startsWith("0")?"92"+ph.slice(1):ph;
+window.open("https://wa.me/"+final+"?text="+encodeURIComponent(msg),"_blank");
 }
 
-window.confirmAppt=async function confirmAppt(id,phone,name,a_date,a_time){
-const docName=document.getElementById('docName').textContent;
+function addMed(){
+medicines.push({name:"",dosage:"1-0-1",days:"5",notes:""});
+renderMeds();
+}
+
+function removeMed(i){
+medicines.splice(i,1);
+renderMeds();
+}
+
+function renderMeds(){
+const c=document.getElementById("medsList");
+c.innerHTML=medicines.map((m,i)=>`<div class="med-item">
+<button class="remove-btn" onclick="removeMed(${i})">✕</button>
+<div class="field"><label>Medicine Name</label><input value="${m.name}" onchange="medicines[${i}].name=this.value" placeholder="e.g. Panadol 500mg"/></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div class="field"><label>Dosage</label><select onchange="medicines[${i}].dosage=this.value">
+<option ${m.dosage=="1-0-1"?"selected":""}>1-0-1</option>
+<option ${m.dosage=="1-1-1"?"selected":""}>1-1-1</option>
+<option ${m.dosage=="0-0-1"?"selected":""}>0-0-1</option>
+<option ${m.dosage=="1-0-0"?"selected":""}>1-0-0</option>
+<option ${m.dosage=="0-1-0"?"selected":""}>0-1-0</option>
+<option ${m.dosage=="SOS"?"selected":""}>SOS</option>
+</select></div>
+<div class="field"><label>Days</label><select onchange="medicines[${i}].days=this.value">
+<option ${m.days=="3"?"selected":""}>3</option>
+<option ${m.days=="5"?"selected":""}>5</option>
+<option ${m.days=="7"?"selected":""}>7</option>
+<option ${m.days=="10"?"selected":""}>10</option>
+<option ${m.days=="14"?"selected":""}>14</option>
+<option ${m.days=="30"?"selected":""}>30</option>
+</select></div>
+</div>
+<div class="field"><label>Notes</label><input value="${m.notes}" onchange="medicines[${i}].notes=this.value" placeholder="Special instructions..."/></div>
+</div>`).join("");
+}
+
+window.loadRxPatients=function(){
+const sel=document.getElementById("rxPatient");
+sel.innerHTML='<option value="">-- Select Patient --</option>';
+const list=document.getElementById("apptsList");
+const cards=list.querySelectorAll(".appt-card");
+cards.forEach(card=>{
+const name=card.querySelector(".appt-name").textContent;
+const badge=card.querySelector(".status-badge").textContent;
+if(badge.includes("CONFIRMED")){
+const opt=document.createElement("option");
+opt.value=name;
+opt.textContent=name;
+sel.appendChild(opt);
+}
+});
+};
+
+window.saveRx=async function(sendTo){
+const patient=document.getElementById("rxPatient").value;
+const diag=document.getElementById("rxDiag").value;
+if(!patient){toast("Please select a patient","err");return;}
+if(!diag){toast("Please enter diagnosis","err");return;}
+const labs=["lab1","lab2","lab3","lab4","lab5","lab6"].filter(id=>document.getElementById(id).checked).map(id=>document.getElementById(id).value);
+const followup=document.getElementById("rxFollowup").value;
+const rxId="#RX"+Date.now().toString().slice(-6);
+const medsText=medicines.filter(m=>m.name).map((m,i)=>`${i+1}. ${m.name} - ${m.dosage} - ${m.days} days${m.notes?" ("+m.notes+")":""}`).join("\n");
+let photoUrl="";
+const photoFile=document.getElementById("rxPhoto").files[0];
+if(photoFile){
+const formData=new FormData();
+formData.append("image",photoFile);
 try{
-const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-const {getFirestore,doc,updateDoc}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-const db=getFirestore(getApps()[0]);
-await updateDoc(doc(db,'appointments',id),{status:'confirmed'});
-}catch(e){console.error(e);}
-const bookingId='#APT'+Date.now().toString().slice(-6);const city=document.getElementById('docCity')?document.getElementById('docCity').textContent.replace('📍','').trim():'';const addr=document.getElementById('pAddress')?document.getElementById('pAddress').textContent:'';const msg='🏥 *Appointment CONFIRMED!*
-━━━━━━━━━━━━━━
-
-👋 Dear '+name+',
-
-✅ Confirmed!
-
-👨‍⚕️ Dr: '+docName.replace('Dr. ','')+'
-🆔 '+bookingId+'
-📅 '+a_date+'
-⏰ '+a_time+'
-📍 '+city+'
-🏠 '+addr+'
-
-⏰ Arrive early
-💰 Bring fee
-\n🌐 appabbottabad.com\n━━━━━━━━━━━━━━';
-const ph=phone.replace(/[^0-9]/g,'');const finalPh=ph.startsWith('9292')?ph.slice(2):ph.startsWith('00')?ph.slice(2):ph.startsWith('0')?'92'+ph.slice(1):ph;
-window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
-setTimeout(window.loadAppointments,1500);
+const res=await fetch("https://api.imgbb.com/1/upload?key=06ca0498b7cee7caaf0189aacc66151d",{method:"POST",body:formData});
+const data=await res.json();
+photoUrl=data.data.url;
+}catch(e){toast("Photo upload failed","err");}
 }
-
-window.rejectAppt=async function rejectAppt(id){
-try{
-const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-const {getFirestore,doc,updateDoc}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-const db=getFirestore(getApps()[0]);
-await updateDoc(doc(db,'appointments',id),{status:'rejected'});
-}catch(e){console.error(e);}
-setTimeout(window.loadAppointments,1500);
+await window._add(window._col(DB,"prescriptions"),{rxId,patientName:patient,doctorName:DOCTOR?DOCTOR.name:"",doctorEmail:EMAIL,diagnosis:diag,medicines:medicines.filter(m=>m.name),labTests:labs,followUpDate:followup,photoUrl,createdAt:new Date().toISOString()});
+const docCity=DOCTOR?DOCTOR.city:"";
+const docAddr=DOCTOR?DOCTOR.address:"";
+let msg="";
+if(sendTo==="patient"){
+msg="💊 *Prescription Ready!*\n━━━━━━━━━━━━━━\n👋 Dear "+patient+",\n\n👨‍⚕️ Dr. "+(DOCTOR?DOCTOR.name.replace("Dr. ",""):"")+"\n🆔 "+rxId+"\n\n📋 Diagnosis: "+diag+"\n\n💊 Medicines:\n"+medsText+(labs.length?"\n\n🔬 Lab Tests:\n"+labs.map(l=>"• "+l).join("\n"):"")+(followup?"\n\n📅 Follow-up: "+followup:"")+"\n\n📍 View: appabbottabad.com/patient/portal.html\n━━━━━━━━━━━━━━";
+}else if(sendTo==="lab"){
+msg="🔬 *Lab Referral*\n━━━━━━━━━━━━━━\nFrom: Dr. "+(DOCTOR?DOCTOR.name.replace("Dr. ",""):"")+"\nPatient: "+patient+"\n🆔 "+rxId+"\n\nTests needed:\n"+labs.map(l=>"✅ "+l).join("\n")+"\n\nPlease bring this message.\n━━━━━━━━━━━━━━";
+}else if(sendTo==="pharmacy"){
+msg="💊 *Pharmacy Order*\n━━━━━━━━━━━━━━\nFrom: Dr. "+(DOCTOR?DOCTOR.name.replace("Dr. ",""):"")+"\nPatient: "+patient+"\n🆔 "+rxId+"\n\nMedicines needed:\n"+medsText+(photoUrl?"\n\n📸 Prescription: "+photoUrl:"")+"\n\nPlease prepare.\n━━━━━━━━━━━━━━";
 }
-
-window.doneAppt=function doneAppt(id,phone,name){
-const docName=document.getElementById('docName').textContent;
-window.fbUpdate(window.fbDoc(window.db,'appointments',id),{status:'done'});
-const msg='✅ Consultation done!\n\nThank you for visiting Dr.'+docName+'\n\nPakistan Prime Portal';
-const ph=phone.replace(/[^0-9]/g,'');const finalPh=ph.startsWith('9292')?ph.slice(2):ph.startsWith('00')?ph.slice(2):ph.startsWith('0')?'92'+ph.slice(1):ph;
-window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
-setTimeout(loadAppointments,1000);
+toast("Prescription saved! "+rxId);
+alert("📋 "+rxId+" saved!\n\nNow select WHO to send WhatsApp to\n(Patient/Lab/Pharmacy)");
+if(sendTo==="lab"){
+const labPhone=prompt("Enter Lab WhatsApp number:");
+if(labPhone)openWA(labPhone,msg);
+}else if(sendTo==="pharmacy"){
+const pharmPhone=prompt("Enter Pharmacy WhatsApp number:");
+if(pharmPhone)openWA(pharmPhone,msg);
+}else{
+const patPhone=prompt("Enter Patient WhatsApp number:");
+if(patPhone)openWA(patPhone,msg);
 }
+};
 
-window.waMsg=function waMsg(phone,name){
-const docName=document.getElementById('docName').textContent;
-const msg='Hello '+name+', this is Dr.'+docName+' from Pakistan Prime Portal.';
-const ph=phone.replace(/[^0-9]/g,'');const finalPh=ph.startsWith('9292')?ph.slice(2):ph.startsWith('00')?ph.slice(2):ph.startsWith('0')?'92'+ph.slice(1):ph;
-window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
-}
-</script>
-<script>
-function doLogout(){localStorage.clear();sessionStorage.clear();document.cookie="doctorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.replace("/doctor/login.html");}
-function showTab(t){document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+t).classList.add("active");event.target.classList.add("active");if(t==="appointments"){const n=document.getElementById("docName").textContent;if(n&&n!=="Loading...")loadAppointments();else setTimeout(loadAppointments,2000);}}
+window.saveSchedule=async function(){
+if(!DOC_ID)return;
+const s=document.getElementById("sch1").value+"-"+document.getElementById("sch2").value+" / "+document.getElementById("sch3").value+"-"+document.getElementById("sch4").value;
+await window._upd(window._doc(DB,"vendors",DOC_ID),{hours:s});
+toast("Schedule saved!");
+};
+
+renderMeds();
+init();
 </script>
 </body>
 </html>
