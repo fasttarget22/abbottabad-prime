@@ -233,7 +233,7 @@ window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 </script>
 <script>
 function doLogout(){localStorage.clear();sessionStorage.clear();document.cookie="doctorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";document.cookie="vendorEmail=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";window.location.replace("/doctor/login.html");}
-function showTab(t){document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+t).classList.add("active");event.target.classList.add("active");}
+function showTab(t){document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+t).classList.add("active");event.target.classList.add("active");if(t==="appointments")setTimeout(loadAppointments,500);}
 </script>
 </body>
 </html>
