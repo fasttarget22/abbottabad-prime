@@ -198,7 +198,7 @@ list.innerHTML=html;
 }catch(e){list.innerHTML='<div style="text-align:center;padding:20px;color:#ff5d6c">Error: '+e.message+'</div>';}
 }
 
-function confirmAppt(id,phone,name){
+window.confirmAppt=function confirmAppt(id,phone,name){
 const docName=document.getElementById('docName').textContent;
 window.fbUpdate(window.fbDoc(window.db,'appointments',id),{status:'confirmed'});
 const msg='✅ Appointment CONFIRMED!\n\nDr. '+docName+' will see you.\n\nPakistan Prime Portal';
@@ -208,12 +208,12 @@ window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 setTimeout(loadAppointments,1000);
 }
 
-function rejectAppt(id){
+window.rejectAppt=function rejectAppt(id){
 window.fbUpdate(window.fbDoc(window.db,'appointments',id),{status:'rejected'});
 setTimeout(loadAppointments,1000);
 }
 
-function doneAppt(id,phone,name){
+window.doneAppt=function doneAppt(id,phone,name){
 const docName=document.getElementById('docName').textContent;
 window.fbUpdate(window.fbDoc(window.db,'appointments',id),{status:'done'});
 const msg='✅ Consultation done!\n\nThank you for visiting Dr.'+docName+'\n\nPakistan Prime Portal';
@@ -223,7 +223,7 @@ window.open('https://wa.me/'+finalPh+'?text='+encodeURIComponent(msg),'_blank');
 setTimeout(loadAppointments,1000);
 }
 
-function waMsg(phone,name){
+window.waMsg=function waMsg(phone,name){
 const docName=document.getElementById('docName').textContent;
 const msg='Hello '+name+', this is Dr.'+docName+' from Pakistan Prime Portal.';
 const ph=phone.replace(/[^0-9]/g,'');
