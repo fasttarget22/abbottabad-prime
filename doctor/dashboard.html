@@ -101,7 +101,7 @@
 <button class="btn grad full" onclick="addToQueue()">Add to Queue</button>
 </div></div></main><button class="mobile-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">Menu</button><script type="module">import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getFirestore,collection,getDocs,doc,updateDoc,addDoc,query,where,deleteDoc}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});const db=getFirestore(app);window.db=db;window.fbCol=collection;window.fbGet=getDocs;window.fbDoc=doc;window.fbUpdate=updateDoc;window.fbAdd=addDoc;window.fbQ=query;window.fbWhere=where;window.fbDelete=deleteDoc;</script><script>
 function getCookie(n){const v=document.cookie.match("(^|;) ?"+n+"=([^;]*)(;|$)");return v?decodeURIComponent(v[2]):null;}
-const doctorEmail=localStorage.getItem("doctorEmail")||getCookie("vendorEmail");
+const doctorEmail=localStorage.getItem("doctorEmail")||getCookie("doctorEmail");
 if(!doctorEmail){window.location.href="/doctor/booking.html";}
 let doctorData=null,allAppointments=[],allPatients=[];
 document.getElementById("todayDate").textContent=new Date().toLocaleDateString("en-PK",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
