@@ -145,7 +145,7 @@ document.getElementById("sTrial").textContent=docData.trialEnd?docData.trialEnd.
 const initials=n.charAt(0).toUpperCase();
 if(docData.photo){document.getElementById("avatarDiv").innerHTML='<img src="'+docData.photo+'" alt="photo"/>';}
 else{document.getElementById("avatarDiv").textContent=initials;}
-const isOnline=docData.status==="online";
+const isOnline=docData.status==="online";window._docIdReady=true;
 if(isOnline){document.getElementById("onlineToggle").classList.add("on");document.getElementById("onlineText").textContent="🟢 Online — Patients can find you";document.getElementById("onlineHint").textContent="Tap to go offline";}
 }catch(e){console.error(e);}
 }
