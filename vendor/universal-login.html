@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vendor Login — Pakistan Prime Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,sans-serif;background:#0b0f19;color:#eaf2ff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.card{background:#121826;border:1px solid rgba(0,242,254,0.15);border-radius:20px;padding:32px;width:100%;max-width:420px}
+h1{font-family:Orbitron,sans-serif;font-size:1rem;background:linear-gradient(110deg,#00f2fe,#2b6fff 45%,#1aff8c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px}
+p{text-align:center;color:#9fb0cc;font-size:.85rem;margin-bottom:24px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.8rem;font-weight:700;color:#9fb0cc;margin-bottom:6px}
+.field input{width:100%;background:rgba(11,15,25,.8);border:1px solid rgba(0,242,254,0.15);border-radius:10px;color:#eaf2ff;font-family:inherit;font-size:.92rem;padding:12px 14px;outline:0}
+.field input:focus{border-color:#00f2fe}
+.btn{width:100%;padding:14px;background:linear-gradient(110deg,#00f2fe,#2b6fff);border:none;border-radius:10px;color:#04121f;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px}
+.err{color:#ff5d6c;text-align:center;margin-top:12px;font-size:.85rem}
+.back{text-align:center;margin-top:16px}
+.back a{color:#00f2fe;font-size:.85rem;text-decoration:none}
+.accounts{background:rgba(0,242,254,0.05);border:1px solid rgba(0,242,254,0.15);border-radius:12px;padding:16px;margin-bottom:20px}
+.accounts h3{font-size:.8rem;color:#00f2fe;font-weight:700;margin-bottom:10px}
+.acc-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,242,254,0.1);font-size:.78rem;cursor:pointer}
+.acc-item:last-child{border-bottom:none}
+.acc-item:hover{color:#00f2fe}
+.acc-cat{color:#9fb0cc}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🏢 Vendor Login</h1>
+<p>Login to your business dashboard</p>
+
+<div class="accounts">
+<h3>🧪 Test Accounts (tap to fill):</h3>
+<div class="acc-item" onclick="fill('doctor@test.com','test123')"><span>👨‍⚕️ Dr. Ahmed Khan</span><span class="acc-cat">Doctor</span></div>
+<div class="acc-item" onclick="fill('doctor2@test.com','test123')"><span>👩‍⚕️ Dr. Sara Ali</span><span class="acc-cat">Eye Specialist</span></div>
+<div class="acc-item" onclick="fill('lab@test.com','test123')"><span>🔬 City Lab</span><span class="acc-cat">Laboratory</span></div>
+<div class="acc-item" onclick="fill('pharmacy@test.com','test123')"><span>💊 Prime Pharma</span><span class="acc-cat">Pharmacy</span></div>
+<div class="acc-item" onclick="fill('pharmacy2@test.com','test123')"><span>💊 HealthCare Pharmacy</span><span class="acc-cat">Pharmacy</span></div>
+<div class="acc-item" onclick="fill('diagnostics@test.com','test123')"><span>🏥 Scan Center</span><span class="acc-cat">Diagnostics</span></div>
+<div class="acc-item" onclick="fill('transport@test.com','test123')"><span>🚑 Fast Rides</span><span class="acc-cat">Transport</span></div>
+<div class="acc-item" onclick="fill('carshare@test.com','test123')"><span>🚗 City Car Rental</span><span class="acc-cat">Car Share</span></div>
+<div class="acc-item" onclick="fill('bike@test.com','test123')"><span>🏍️ Speedy Bikes</span><span class="acc-cat">Bike Transport</span></div>
+<div class="acc-item" onclick="fill('restaurant@test.com','test123')"><span>🍽️ City Restaurant</span><span class="acc-cat">Restaurant</span></div>
+<div class="acc-item" onclick="fill('shop@test.com','test123')"><span>🛒 Prime Store</span><span class="acc-cat">Shop</span></div>
+<div class="acc-item" onclick="fill('tech@test.com','test123')"><span>🔧 Tech Fix</span><span class="acc-cat">Technical</span></div>
+<div class="acc-item" onclick="fill('beauty@test.com','test123')"><span>💇 Glamour Salon</span><span class="acc-cat">Beauty</span></div>
+<div class="acc-item" onclick="fill('property@test.com','test123')"><span>🏢 Prime Properties</span><span class="acc-cat">Property</span></div>
+<div class="acc-item" onclick="fill('education@test.com','test123')"><span>🎓 Smart Tutors</span><span class="acc-cat">Education</span></div>
+<div class="acc-item" onclick="fill('events@test.com','test123')"><span>📸 Click Photography</span><span class="acc-cat">Events</span></div>
+<div class="acc-item" onclick="fill('it@test.com','test123')"><span>💻 Digital Solutions</span><span class="acc-cat">IT Services</span></div>
+</div>
+
+<div class="field">
+<label>Email</label>
+<input type="email" id="email" placeholder="your@email.com"/>
+</div>
+<div class="field">
+<label>Password</label>
+<input type="password" id="pass" placeholder="••••••••"/>
+</div>
+<button class="btn" onclick="doLogin()">🚀 Login to Dashboard</button>
+<div class="err" id="err"></div>
+<div class="back"><a href="/">← Back to Main Site</a></div>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,getDocs,query,where}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+const app=initializeApp({apiKey:"AIzaSyD37yFDGpB8bLQDLzPcyih65os63p6_6v0",authDomain:"abbottabad-prime.firebaseapp.com",projectId:"abbottabad-prime",storageBucket:"abbottabad-prime.firebasestorage.app",messagingSenderId:"673825253973",appId:"1:673825253973:web:2972cd69f9a2183ca702dc"});
+const db=getFirestore(app);
+
+const medicalCats=['General Physician','Eye Specialist','Heart Specialist','Child Specialist','Gynecologist','Dentist','Skin Specialist','Surgeon','Psychiatrist','Orthopedic'];
+
+window.doLogin=async function(){
+const email=document.getElementById('email').value.trim();
+const pass=document.getElementById('pass').value.trim();
+if(!email||!pass){document.getElementById('err').textContent='Please fill all fields';return;}
+document.getElementById('err').textContent='Logging in...';
+try{
+const snap=await getDocs(query(collection(db,'vendors'),where('email','==',email),where('password','==',pass)));
+if(snap.empty){document.getElementById('err').textContent='Invalid email or password';return;}
+let data=null;
+snap.forEach(d=>{data=d.data();});
+localStorage.setItem('vendorEmail',email);
+localStorage.setItem('vendorCategory',data.category);
+document.cookie='vendorEmail='+email+';path=/';
+
+const cat=data.category||'';
+if(medicalCats.includes(cat)){
+window.location.href='/doctor/dashboard.html';
+}else if(cat==='Laboratory'){
+window.location.href='/lab/portal.html';
+}else if(cat==='Pharmacy'){
+window.location.href='/vendor/dashboard.html';
+}else if(cat==='Transport'||cat==='Car Share & Intercity'||cat==='Bike & Local Transport'){
+window.location.href='/transport/dashboard.html';
+}else if(cat==='Diagnostics'){
+window.location.href='/diagnostics/portal.html';
+}else{
+window.location.href='/vendor/dashboard.html';
+}
+}catch(e){document.getElementById('err').textContent='Error: '+e.message;}
+};
+
+window.fill=function(email,pass){
+document.getElementById('email').value=email;
+document.getElementById('pass').value=pass;
+};
+</script>
+</body>
+</html>
