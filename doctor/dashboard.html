@@ -187,7 +187,7 @@ html+=`<div style="background:rgba(0,242,254,0.05);border:1px solid rgba(0,242,2
 <div style="font-size:.8rem;color:#9fb0cc;margin-bottom:4px">📅 ${a.date||''} ${a.time?'⏰ '+a.time:''}</div>
 <div style="font-size:.8rem;color:#9fb0cc;margin-bottom:10px">🤒 ${a.complaint||'Not specified'}</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
-${a.status==='pending'||!a.status?`<button onclick="confirmAppt('${id}','${a.patientPhone}','${a.patientName}')" style="background:#1aff8c;color:#04121f;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">✅ Confirm</button>
+${a.status==='pending'||!a.status?`<button onclick="confirmAppt('${id}','${a.patientPhone}','${a.patientName}','${a.date}','${a.time}')" style="background:#1aff8c;color:#04121f;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">✅ Confirm</button>
 <button onclick="rejectAppt('${id}')" style="background:#ff5d6c;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">❌ Reject</button>`:''}
 ${a.status==='confirmed'?`<button onclick="doneAppt('${id}','${a.patientPhone}','${a.patientName}')" style="background:#00f2fe;color:#04121f;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">✅ Done</button>`:''}
 <button onclick="waMsg('${a.patientPhone}','${a.patientName}')" style="background:#25d366;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:.8rem;cursor:pointer">📱 WhatsApp</button>
@@ -198,7 +198,7 @@ list.innerHTML=html;
 }catch(e){list.innerHTML='<div style="text-align:center;padding:20px;color:#ff5d6c">Error: '+e.message+'</div>';}
 }
 
-window.confirmAppt=async function confirmAppt(id,phone,name){
+window.confirmAppt=async function confirmAppt(id,phone,name,a_date,a_time){
 const docName=document.getElementById('docName').textContent;
 try{
 const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
